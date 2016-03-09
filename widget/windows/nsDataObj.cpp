@@ -1886,26 +1886,14 @@ nsDataObj :: BuildPlatformHTML ( const char* inOurHTML, char** outPlatformHTML )
                                       kSourceURLLength +
                                       (4 * kNumberLength);
 
-  NS_NAMED_LITERAL_CSTRING(htmlHeaderString, "<html><body>\r\n");
-
-  NS_NAMED_LITERAL_CSTRING(fragmentHeaderString, "<!--StartFragment-->");
-
-  nsDependentCString trailingString(
-      "<!--EndFragment-->\r\n"
-      "</body>\r\n"
-      "</html>");
-
   // calculate the offsets
   int32_t startHTMLOffset = kTotalHeaderLen;
-  int32_t startFragOffset = startHTMLOffset
-                              + htmlHeaderString.Length()
-			      + fragmentHeaderString.Length();
+  int32_t startFragOffset = startHTMLOffset;
 
   int32_t endFragOffset   = startFragOffset
                               + inHTMLString.Length();
 
-  int32_t endHTMLOffset   = endFragOffset
-                              + trailingString.Length();
+  int32_t endHTMLOffset   = endFragOffset;
 
   // now build the final version
   nsCString clipboardString;
@@ -1930,10 +1918,7 @@ nsDataObj :: BuildPlatformHTML ( const char* inOurHTML, char** outPlatformHTML )
 
   clipboardString.Append(endFragTrailer);
 
-  clipboardString.Append(htmlHeaderString);
-  clipboardString.Append(fragmentHeaderString);
   clipboardString.Append(inHTMLString);
-  clipboardString.Append(trailingString);
 
   *outPlatformHTML = ToNewCString(clipboardString);
   if (!*outPlatformHTML)

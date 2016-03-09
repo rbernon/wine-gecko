@@ -27,6 +27,7 @@
 #include "nsIDOMProcessingInstruction.h"
 #include "nsIDOMDocumentType.h"
 #include "nsIDOMNodeList.h"
+#include "nsIDOMHTMLHeadElement.h"
 #include "nsRange.h"
 #include "nsIDOMRange.h"
 #include "nsIDOMDocument.h"
@@ -1531,16 +1532,29 @@ nsHTMLCopyEncoder::EncodeToString(nsAString& aOutputString)
   return nsDocumentEncoder::EncodeToString(aOutputString);
 }
 
+template<uint32_t flag> class SaveAndUnsetFlag {
+public:
+  SaveAndUnsetFlag(uint32_t *flags) : flags(flags) {
+    *flags &= ~flag;
+  }
+  ~SaveAndUnsetFlag() {
+    *flags |= flag;
+  }
+private:
+  uint32_t *flags;
+};
+
 NS_IMETHODIMP
 nsHTMLCopyEncoder::EncodeToStringWithContext(nsAString& aContextString,
                                              nsAString& aInfoString,
                                              nsAString& aEncodedString)
 {
-  nsresult rv = EncodeToString(aEncodedString);
-  NS_ENSURE_SUCCESS(rv, rv);
-
   // do not encode any context info or range hints if we are in a text widget.
-  if (mIsTextWidget) return NS_OK;
+  if (mIsTextWidget) return EncodeToString(aEncodedString);
+
+  nsAutoString encodedString;
+  nsresult rv = EncodeToString(encodedString);
+  NS_ENSURE_SUCCESS(rv, rv);
 
   // now encode common ancestors into aContextString.  Note that the common ancestors
   // will be for the last range in the selection in the case of multirange selections.
@@ -1565,18 +1579,63 @@ nsHTMLCopyEncoder::EncodeToStringWithContext(nsAString& aContextString,
     // and the count
     count--;
   }
-  
+
+  SaveAndUnsetFlag<SkipInvisibleContent> saveFlags(&mFlags);
   i = count;
+
   while (i > 0)
   {
     node = mCommonAncestors.ElementAt(--i);
-    SerializeNodeStart(node, 0, -1, aContextString);
+    SerializeNodeStart(node, 0, -1, aEncodedString);
+    if (node->IsElement())
+      break;
   }
+
+  aEncodedString.Append(NS_LITERAL_STRING("<head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\r\n"));
+
+  if (mDocument->IsHTMLOrXHTML()) {
+    nsCOMPtr<nsIDOMHTMLDocument> htmlDoc = do_QueryInterface(mDocument);
+    nsCOMPtr<nsIDOMHTMLHeadElement> head;
+    nsresult rv = htmlDoc->GetHead(getter_AddRefs(head));
+    if (NS_SUCCEEDED(rv) && head) {
+      nsCOMPtr<nsIDOMNodeList> childList;
+      nsCOMPtr<nsIDOMNode> child;
+      uint32_t length;
+
+      nsCOMPtr<nsIDOMNode> headNode = do_QueryInterface(head);
+      rv = headNode->GetChildNodes(getter_AddRefs(childList));
+      MOZ_ASSERT(NS_SUCCEEDED(rv) && childList);
+
+      rv = childList->GetLength(&length);
+      MOZ_ASSERT(NS_SUCCEEDED(rv));
+      for (uint32_t j=0; j < length; j++) {
+        childList->Item(j, getter_AddRefs(child));
+        nsCOMPtr<Element> element = do_QueryInterface(child);
+        if (element && element->IsHTMLElement(nsGkAtoms::style)) {
+          rv = SerializeToStringRecursive(element, aEncodedString, false);
+          NS_ENSURE_SUCCESS(rv, rv);
+        }
+      }
+    }
+  }
+
+  aEncodedString.Append(NS_LITERAL_STRING("</head>\r\n"));
+
+  while (i > 0)
+  {
+    node = mCommonAncestors.ElementAt(--i);
+    SerializeNodeStart(node, 0, -1, aEncodedString);
+  }
+
+  aEncodedString.Append(NS_LITERAL_STRING("<!--StartFragment-->"));
+  aEncodedString.Append(encodedString);
+  aEncodedString.Append(NS_LITERAL_STRING("<!--EndFragment-->\r\n"));
+
   //i = 0; guaranteed by above
   while (i < count)
   {
     node = mCommonAncestors.ElementAt(i++);
-    SerializeNodeEnd(node, aContextString);
+    SerializeNodeEnd(node, aEncodedString);
   }
 
   // encode range info : the start and end depth of the selection, where the depth is 
