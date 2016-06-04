@@ -290,7 +290,7 @@ public:
       const nsACString& blacklistedDLL = IsD3D11DLLBlacklisted();
       if (!blacklistedDLL.IsEmpty()) {
         failureReason->AppendPrintf("D3D11 blacklisted with DLL %s",
-                                    blacklistedDLL);
+                                    PromiseFlatCString(blacklistedDLL).get());
       } else {
         mDXVA2Manager = DXVA2Manager::CreateD3D11DXVA(*failureReason);
         if (mDXVA2Manager) {
