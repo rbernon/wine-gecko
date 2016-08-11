@@ -934,7 +934,7 @@ PresentationPresentingInfo::ResolvedCallback(JSContext* aCx,
   }
 
   nsCOMPtr<nsIFrameLoader> frameLoader;
-  rv = owner->GetFrameLoader(getter_AddRefs(frameLoader));
+  rv = owner->GetFrameLoaderXPCOM(getter_AddRefs(frameLoader));
   if (NS_WARN_IF(NS_FAILED(rv))) {
     ReplyError(NS_ERROR_DOM_OPERATION_ERR);
     return;

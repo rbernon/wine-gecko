@@ -409,7 +409,7 @@ public:
     virtual nsresult Clone(mozilla::dom::NodeInfo *aNodeInfo, nsINode **aResult) const override;
     virtual mozilla::EventStates IntrinsicState() const override;
 
-    nsresult GetFrameLoader(nsIFrameLoader** aFrameLoader);
+    nsresult GetFrameLoaderXPCOM(nsIFrameLoader** aFrameLoader);
     nsresult GetParentApplication(mozIApplication** aApplication);
     nsresult SetIsPrerendered();
     nsresult SwapFrameLoaders(nsIFrameLoaderOwner* aOtherOwner);
