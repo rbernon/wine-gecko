@@ -142,7 +142,7 @@ then
         MOZCONFIG=$build_dir/mozconfig ./mach configure
     fi
 
-    MOZCONFIG=$build_dir/mozconfig ./mach build
+    MOZCONFIG=$build_dir/mozconfig make $MAKEOPTS -C $build_dir
 fi
 
 echo "make_package: Preparing Wine Gecko files..."
@@ -150,7 +150,7 @@ rm -rf $build_dir/dist/wine_gecko
 
 if [ "$no_xulinstaller" != "yes" ]
 then
-    MOZCONFIG=$build_dir/mozconfig ./mach build browser/installer
+    MOZCONFIG=$build_dir/mozconfig make $MAKEOPTS -C $build_dir/browser/installer
 fi
 
 cp -r $build_dir/dist/firefox $build_dir/dist/wine_gecko
