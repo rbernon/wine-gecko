@@ -1,5 +1,5 @@
 // Intentionally left blank
-#ifdef GCC_GTHR_POSIX_H
+#ifdef HAVE_PTHREAD_H
 #include_next <pthread.h>
 #endif
 
