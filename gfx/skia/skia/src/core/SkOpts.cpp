@@ -26,7 +26,6 @@
         #include <intrin.h>
         static void cpuid (uint32_t abcd[4]) { __cpuid  ((int*)abcd, 1);    }
         static void cpuid7(uint32_t abcd[4]) { __cpuidex((int*)abcd, 7, 0); }
-        static uint64_t xgetbv(uint32_t xcr) { return _xgetbv(xcr); }
     #else
         #include <cpuid.h>
         #if !defined(__cpuid_count)  // Old Mac Clang doesn't have this defined.
@@ -37,6 +36,10 @@
         static void cpuid7(uint32_t abcd[4]) {
             __cpuid_count(7, 0, abcd[0], abcd[1], abcd[2], abcd[3]);
         }
+    #endif
+    #if defined(SK_BUILD_FOR_WIN32) && !defined(__GNUC__)
+        static uint64_t xgetbv(uint32_t xcr) { return _xgetbv(xcr); }
+    #else
         static uint64_t xgetbv(uint32_t xcr) {
             uint32_t eax, edx;
             __asm__ __volatile__ ( "xgetbv" : "=a"(eax), "=d"(edx) : "c"(xcr));
