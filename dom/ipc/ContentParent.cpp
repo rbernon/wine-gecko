@@ -3436,7 +3436,7 @@ ContentParent::RecvGetXPCOMProcessAttributes(bool* aIsOffline,
       return false;
     }
     JS::RootedValue init(jsapi.cx());
-    nsresult result = mm->GetInitialProcessData(jsapi.cx(), &init);
+    nsresult result = static_cast<nsIGlobalProcessScriptLoader*>(mm)->GetInitialProcessData(jsapi.cx(), &init);
     if (NS_FAILED(result)) {
       return false;
     }
