@@ -294,7 +294,7 @@ class DoubleToStringConverter {
   // kBase10MaximalLength.
   // Note that DoubleToAscii null-terminates its input. So the given buffer
   // should be at least kBase10MaximalLength + 1 characters long.
-  static const MFBT_DATA int kBase10MaximalLength = 17;
+  static const int kBase10MaximalLength = 17;
 
   // Converts the given double 'v' to ascii. 'v' must not be NaN, +Infinity, or
   // -Infinity. In SHORTEST_SINGLE-mode this restriction also applies to 'v'
