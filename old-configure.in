@@ -379,6 +379,11 @@ fi # !COMPILE_ENVIRONMENT
 if test "$COMPILE_ENVIRONMENT"; then
 
 if test "$target" != "$host"; then
+    case "$target" in
+    *-mingw*)
+        ac_exeext=".exe"
+        ;;
+    esac
     MOZ_CROSS_COMPILER
 else
     AC_PROG_CC

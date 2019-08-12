@@ -255,6 +255,11 @@ if test "$COMPILE_ENVIRONMENT"; then
 #     - $target (in its correct usage) is for compilers who generate code for a
 #       different platform than $host, so it would not be used by Mozilla.
 if test "$target" != "$host"; then
+    case "$target" in
+    *-mingw*)
+        ac_exeext=".exe"
+        ;;
+    esac
     MOZ_CROSS_COMPILER
 else
     AC_PROG_CC
