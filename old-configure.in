@@ -2873,6 +2873,11 @@ AC_PROG_GCC_TRADITIONAL
 AC_FUNC_MEMCMP
 AC_CHECK_FUNCS(stat64 lstat64 truncate64 statvfs64 statvfs statfs64 statfs getpagesize gmtime_r localtime_r arc4random arc4random_buf mallinfo gettid lchown setpriority strerror syscall)
 
+case $target_os in
+    mingw*)
+        ;;
+    *)
+
 dnl check for clock_gettime(), the CLOCK_MONOTONIC clock
 AC_CACHE_CHECK(for clock_gettime(CLOCK_MONOTONIC),
                ac_cv_clock_monotonic,
@@ -2895,6 +2900,8 @@ if test "$ac_cv_clock_monotonic" != "no"; then
     AC_SUBST(HAVE_CLOCK_MONOTONIC)
     AC_SUBST_LIST(REALTIME_LIBS)
 fi
+    ;;
+esac
 
 dnl check for wcrtomb/mbrtowc
 dnl =======================================================================
