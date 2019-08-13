@@ -10,7 +10,7 @@ class StringVersion(str):
     A string version that can be compared with comparison operators.
     """
     def __init__(self, vstring):
-        str.__init__(self, vstring)
+        assert(str(self) == vstring) # __new__ should take care of this
         self.version = LooseVersion(vstring)
 
     def __repr__(self):
