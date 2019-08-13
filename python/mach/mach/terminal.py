@@ -8,7 +8,7 @@ All the terminal interaction code is consolidated so the complexity can be in
 one place, away from code that is commonly looked at.
 """
 
-from __future__ import absolute_import, print_function, unicode_literals
+
 
 import logging
 import sys
@@ -59,7 +59,7 @@ class TerminalFooter(object):
         self.fh = sys.stdout
 
     def _clear_lines(self, n):
-        for i in xrange(n):
+        for i in range(n):
             self.fh.write(self.t.move_x(0))
             self.fh.write(self.t.clear_eol())
             self.fh.write(self.t.move_up())

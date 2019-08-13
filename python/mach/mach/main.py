@@ -5,7 +5,7 @@
 # This module provides functionality for the command-line build tool
 # (mach). It is packaged as a module because everything is a library.
 
-from __future__ import absolute_import, print_function, unicode_literals
+
 from collections import Iterable
 
 import argparse

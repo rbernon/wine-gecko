@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import, unicode_literals
+
 
 from .base import MachError
 
@@ -78,7 +78,7 @@ class MachRegistrar(object):
                     fail_conditions.append(c)
 
             if fail_conditions:
-                print(self._condition_failed_message(handler.name, fail_conditions))
+                print((self._condition_failed_message(handler.name, fail_conditions)))
                 return 1
 
         fn = getattr(instance, handler.method)
@@ -90,7 +90,7 @@ class MachRegistrar(object):
             result = fn(**kwargs)
 
         result = result or 0
-        assert isinstance(result, (int, long))
+        assert isinstance(result, int)
 
         if context:
             postrun = getattr(context, 'post_dispatch_handler', None)

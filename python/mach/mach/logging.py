@@ -6,7 +6,7 @@
 # support for a structured logging framework built on top of Python's built-in
 # logging framework.
 
-from __future__ import absolute_import, unicode_literals
+
 
 try:
     import blessings

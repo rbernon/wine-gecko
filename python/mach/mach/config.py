@@ -25,7 +25,7 @@ msgfmt binary to perform this conversion. Generation of the original .po file
 can be done via the write_pot() of ConfigSettings.
 """
 
-from __future__ import absolute_import, unicode_literals
+
 
 import collections
 import gettext
@@ -36,8 +36,8 @@ if sys.version_info[0] == 3:
     from configparser import RawConfigParser
     str_type = str
 else:
-    from ConfigParser import RawConfigParser
-    str_type = basestring
+    from configparser import RawConfigParser
+    str_type = str
 
 
 class ConfigType(object):
@@ -304,7 +304,7 @@ class ConfigSettings(collections.Mapping):
             return len(self._settings)
 
         def __iter__(self):
-            return iter(self._settings.keys())
+            return iter(list(self._settings.keys()))
 
         def __contains__(self, k):
             return k in self._settings
@@ -411,10 +411,10 @@ class ConfigSettings(collections.Mapping):
 
         provider.register_settings()
 
-        for section_name, settings in provider.config_settings.items():
+        for section_name, settings in list(provider.config_settings.items()):
             section = self._settings.get(section_name, {})
 
-            for k, v in settings.items():
+            for k, v in list(settings.items()):
                 if k in section:
                     raise Exception('Setting already registered: %s.%s' %
                         section_name, k)
@@ -460,7 +460,7 @@ class ConfigSettings(collections.Mapping):
         if self._finalized:
             return
 
-        for section, settings in self._settings.items():
+        for section, settings in list(self._settings.items()):
             s = ConfigSettings.ConfigSection(self._config, section, settings)
             self._sections[section] = s
 
@@ -473,7 +473,7 @@ class ConfigSettings(collections.Mapping):
     def __iter__(self):
         self._finalize()
 
-        return iter(self._sections.keys())
+        return iter(list(self._sections.keys()))
 
     def __contains__(self, k):
         return k in self._settings

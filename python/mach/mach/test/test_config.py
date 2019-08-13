@@ -1,7 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
-from __future__ import unicode_literals
+
 
 import sys
 import unittest
@@ -26,7 +26,7 @@ from mozunit import main
 if sys.version_info[0] == 3:
     str_type = str
 else:
-    str_type = basestring
+    str_type = str
 
 CONFIG1 = r"""
 [foo]
