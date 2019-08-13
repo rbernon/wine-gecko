@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this,
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import unicode_literals
+
 
 from configobj import ConfigObj
 import codecs
@@ -93,7 +93,7 @@ class MercurialConfig(object):
         if 'hostfingerprints' not in self._c:
             self._c['hostfingerprints'] = {}
 
-        for k, v in HOST_FINGERPRINTS.items():
+        for k, v in list(HOST_FINGERPRINTS.items()):
             self._c['hostfingerprints'][k] = v
 
     def set_username(self, name, email):

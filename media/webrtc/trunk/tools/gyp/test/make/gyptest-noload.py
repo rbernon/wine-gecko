@@ -10,7 +10,7 @@ optional.
 """
 
 # Python 2.5 needs this for the with statement.
-from __future__ import with_statement
+
 
 import os
 import TestGyp

@@ -101,7 +101,7 @@ def run(parseMethod, f, encoding):
 
 def printOutput(parser, document, opts):
     if opts.encoding:
-        print("Encoding:", parser.tokenizer.stream.charEncoding)
+        print(("Encoding:", parser.tokenizer.stream.charEncoding))
 
     for item in parser.log:
         print(item)
@@ -113,7 +113,7 @@ def printOutput(parser, document, opts):
             if not hasattr(document,'__getitem__'):
                 document = [document]
             for fragment in document:
-                print(parser.tree.testSerializer(fragment))
+                print((parser.tree.testSerializer(fragment)))
         elif opts.hilite:
             sys.stdout.write(document.hilite("utf-8"))
         elif opts.html:

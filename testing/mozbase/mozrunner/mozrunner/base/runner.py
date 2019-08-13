@@ -19,11 +19,10 @@ from ..application import DefaultContext
 from ..errors import RunnerNotStartedError
 
 
-class BaseRunner(object):
+class BaseRunner(object, metaclass=ABCMeta):
     """
     The base runner class for all mozrunner objects, both local and remote.
     """
-    __metaclass__ = ABCMeta
     last_test = 'mozrunner-startup'
     process_handler = None
     timeout = None
@@ -34,7 +33,7 @@ class BaseRunner(object):
                  dump_save_path=None, addons=None):
         self.app_ctx = app_ctx or DefaultContext()
 
-        if isinstance(profile, basestring):
+        if isinstance(profile, str):
             self.profile = self.app_ctx.profile_class(profile=profile,
                                                       addons=addons)
         else:

@@ -1,4 +1,4 @@
-import json, os, urllib, urlparse
+import json, os, urllib.request, urllib.parse, urllib.error, urllib.parse
 
 def redirect(url, response):
     response.add_required_headers = False
@@ -9,7 +9,7 @@ def redirect(url, response):
     response.writer.write("")
 
 def create_redirect_url(request, swap_scheme = False):
-    parsed = urlparse.urlsplit(request.url)
+    parsed = urllib.parse.urlsplit(request.url)
     destination_netloc = parsed.netloc
     scheme = parsed.scheme
 
@@ -20,15 +20,15 @@ def create_redirect_url(request, swap_scheme = False):
         destination_netloc = ":".join([hostname, str(port)])
 
     # Remove "redirection" from query to avoid redirect loops.
-    parsed_query = dict(urlparse.parse_qsl(parsed.query))
+    parsed_query = dict(urllib.parse.parse_qsl(parsed.query))
     assert "redirection" in parsed_query
     del parsed_query["redirection"]
 
-    destination_url = urlparse.urlunsplit(urlparse.SplitResult(
+    destination_url = urllib.parse.urlunsplit(urllib.parse.SplitResult(
         scheme = scheme,
         netloc = destination_netloc,
         path = parsed.path,
-        query = urllib.urlencode(parsed_query),
+        query = urllib.parse.urlencode(parsed_query),
         fragment = None))
 
     return destination_url

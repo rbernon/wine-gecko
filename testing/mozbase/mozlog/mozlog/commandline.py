@@ -107,7 +107,7 @@ def add_logging_group(parser, include_formatters=None):
                          "or '-' to write to stdout.")
 
     if include_formatters is None:
-        include_formatters = log_formatters.keys()
+        include_formatters = list(log_formatters.keys())
 
     if isinstance(parser, optparse.OptionParser):
         group = optparse.OptionGroup(parser,
@@ -122,12 +122,12 @@ def add_logging_group(parser, include_formatters=None):
         opt_log_type = log_file
         group_add = group.add_argument
 
-    for name, (cls, help_str) in log_formatters.iteritems():
+    for name, (cls, help_str) in log_formatters.items():
         if name in include_formatters:
             group_add("--log-" + name, action="append", type=opt_log_type,
                       help=help_str)
 
-    for optname, (cls, help_str, formatters, action) in fmt_options.iteritems():
+    for optname, (cls, help_str, formatters, action) in fmt_options.items():
         for fmt in formatters:
             # make sure fmt is in log_formatters and is accepted
             if fmt in log_formatters and fmt in include_formatters:
@@ -151,12 +151,12 @@ def setup_handlers(logger, formatters, formatter_options):
                list(unused_options))
         raise ValueError(msg)
 
-    for fmt, streams in formatters.iteritems():
+    for fmt, streams in formatters.items():
         formatter_cls = log_formatters[fmt][0]
         formatter = formatter_cls()
         handler_wrappers_and_options = []
 
-        for option, value in formatter_options[fmt].iteritems():
+        for option, value in formatter_options[fmt].items():
             wrapper, wrapper_args = None, ()
             if option == "valgrind":
                 wrapper = valgrind_handler_wrapper
@@ -217,7 +217,7 @@ def setup_logging(logger, args, defaults=None, formatter_defaults=None):
         else:
             defaults = {"raw": sys.stdout}
 
-    for name, values in args.iteritems():
+    for name, values in args.items():
         parts = name.split('_')
         if len(parts) > 3:
             continue
@@ -231,7 +231,7 @@ def setup_logging(logger, args, defaults=None, formatter_defaults=None):
                 _, formatter = parts
                 for value in values:
                     found = True
-                    if isinstance(value, basestring):
+                    if isinstance(value, str):
                         value = log_file(value)
                     if value == sys.stdout:
                         found_stdout_logger = True
@@ -245,11 +245,11 @@ def setup_logging(logger, args, defaults=None, formatter_defaults=None):
 
     #If there is no user-specified logging, go with the default options
     if not found:
-        for name, value in defaults.iteritems():
+        for name, value in defaults.items():
             formatters[name].append(value)
 
-    elif not found_stdout_logger and sys.stdout in defaults.values():
-        for name, value in defaults.iteritems():
+    elif not found_stdout_logger and sys.stdout in list(defaults.values()):
+        for name, value in defaults.items():
             if value == sys.stdout:
                 formatters[name].append(value)
 

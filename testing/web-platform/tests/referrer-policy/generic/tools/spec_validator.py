@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
 import json, sys
-from common_paths import *
+from .common_paths import *
 
 def assert_non_empty_string(obj, field):
     assert field in obj, 'Missing field "%s"' % field
-    assert isinstance(obj[field], basestring), \
+    assert isinstance(obj[field], str), \
         'Field "%s" must be a string' % field
     assert len(obj[field]) > 0, 'Field "%s" must not be empty' % field
 
@@ -29,7 +29,7 @@ def assert_value_from(obj, field, items):
         'Field "%s" must be from: %s' % (field, str(items))
 
 def assert_atom_or_list_items_from(obj, field, items):
-    if isinstance(obj[field], basestring) or isinstance(obj[field], int):
+    if isinstance(obj[field], str) or isinstance(obj[field], int):
         assert_value_from(obj, field, items)
         return
 
@@ -72,7 +72,7 @@ def validate(spec_json, details):
     excluded_tests = spec_json['excluded_tests']
     subresource_path = spec_json['subresource_path']
 
-    valid_test_expansion_fields = ['name'] + test_expansion_schema.keys()
+    valid_test_expansion_fields = ['name'] + list(test_expansion_schema.keys())
 
     # Validate each single spec.
     for spec in specification:
@@ -150,16 +150,16 @@ def assert_valid_spec_json(spec_json):
     error_details = {}
     try:
         validate(spec_json, error_details)
-    except AssertionError, err:
-        print 'ERROR:', err.message
-        print json.dumps(error_details, indent=4)
+    except AssertionError as err:
+        print('ERROR:', err.message)
+        print(json.dumps(error_details, indent=4))
         sys.exit(1)
 
 
 def main():
     spec_json = load_spec_json();
     assert_valid_spec_json(spec_json)
-    print "Spec JSON is valid."
+    print("Spec JSON is valid.")
 
 
 if __name__ == '__main__':

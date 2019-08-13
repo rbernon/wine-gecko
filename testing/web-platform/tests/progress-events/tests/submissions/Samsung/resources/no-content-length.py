@@ -6,7 +6,7 @@ def main(request, response):
     response.explicit_flush = True
 
     string = "W3C"
-    for i in xrange(1000):
+    for i in range(1000):
         response.writer.write("%s\r\n%s\r\n" % (len(string), string))
         response.writer.flush();
 

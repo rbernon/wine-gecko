@@ -11,7 +11,7 @@ import glob
 import re
 import tempfile
 from datetime import datetime
-import urlparse
+import urllib.parse
 import multiprocessing
 import xml.dom.minidom
 
@@ -418,7 +418,7 @@ class B2GBuild(LocalesMixin, PurgeMixin,
         languages_file = os.path.join(abs_work_dir, 'gaia', self.config['gaia_languages_file'])
         l10n_base_dir = self.query_abs_dirs()['gaia_l10n_base_dir']
 
-        self.pull_gaia_locale_source(l10n_config, parse_config_file(languages_file).keys(), l10n_base_dir)
+        self.pull_gaia_locale_source(l10n_config, list(parse_config_file(languages_file).keys()), l10n_base_dir)
 
     def checkout_gecko_l10n(self):
         hg_l10n_base = self.load_gecko_config().get('gecko_l10n_root')
@@ -468,7 +468,7 @@ class B2GBuild(LocalesMixin, PurgeMixin,
             gaia_l10n_git_root = None
             if self.query_do_translate_hg_to_git(gecko_config_key='gaia_l10n_git_root'):
                 gaia_l10n_git_root = self.gecko_config['gaia_l10n_git_root']
-            for locale in self.gaia_locale_revisions.keys():
+            for locale in list(self.gaia_locale_revisions.keys()):
                 repo = self.gaia_locale_revisions[locale]['repo']
                 revision = self.gaia_locale_revisions[locale]['revision']
                 locale_manifest.append('  <!-- Mercurial-Information: <project name="%s" path="gaia-l10n/%s" remote="hgmozillaorg" revision="%s"/> -->' %
@@ -488,7 +488,7 @@ class B2GBuild(LocalesMixin, PurgeMixin,
             gecko_l10n_git_root = None
             if self.query_do_translate_hg_to_git(gecko_config_key='gecko_l10n_git_root'):
                 gecko_l10n_git_root = self.gecko_config['gecko_l10n_git_root']
-            for locale in self.gecko_locale_revisions.keys():
+            for locale in list(self.gecko_locale_revisions.keys()):
                 repo = self.gecko_locale_revisions[locale]['repo']
                 revision = self.gecko_locale_revisions[locale]['revision']
                 locale_manifest.append('  <!-- Mercurial-Information: <project name="%s" path="gecko-l10n/%s" remote="hgmozillaorg" revision="%s"/> -->' %
@@ -530,7 +530,7 @@ class B2GBuild(LocalesMixin, PurgeMixin,
             git_base_url = "https://git.mozilla.org/"
             for element in dom.getElementsByTagName('remote'):
                 if element.getAttribute('name') == 'mozillaorg':
-                    pieces = urlparse.urlparse(element.getAttribute('fetch'))
+                    pieces = urllib.parse.urlparse(element.getAttribute('fetch'))
                     if pieces:
                         git_base_url = "https://git.mozilla.org%s" % pieces[2]
                         if not git_base_url.endswith('/'):

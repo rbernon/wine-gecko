@@ -102,7 +102,7 @@ def parse_auto_props():
         if re.match("\s*\[auto-props\]", propline):  # Match the [auto-props] line.
             continue
         if not re.match("\s*[^\s]+\s*=", propline):  # minimal syntax check for <file-type> =
-            print "Bad line from autoprops definitions: " + propline
+            print("Bad line from autoprops definitions: " + propline)
             continue
         file_type, string_proplist = propline.split("=", 1)
 
@@ -141,13 +141,13 @@ def runCommand(cmd):
     output_text = output_file.read();
     exit_status = output_file.close();
     if exit_status:
-        print >>sys.stderr, '"', cmd, '" failed.  Exiting.'
+        print('"', cmd, '" failed.  Exiting.', file=sys.stderr)
         sys.exit(exit_status)
     return output_text
 
 
 def usage():
-    print "usage: " + sys.argv[0] + " [-f | --fix] [-h | --help]"
+    print("usage: " + sys.argv[0] + " [-f | --fix] [-h | --help]")
 
     
 #
@@ -176,11 +176,11 @@ def check_utf8(file_name, base_mime_type, actual_mime_type):
     try:
         bytes.decode("UTF-8")
     except UnicodeDecodeError:
-        print "warning: %s: not ASCII, not UTF-8" % file_name
+        print("warning: %s: not ASCII, not UTF-8" % file_name)
         return base_mime_type
 
     if ord(bytes[0]) != 0xef:
-      print "UTF-8 file with no BOM: " + file_name
+      print("UTF-8 file with no BOM: " + file_name)
 
     # Append charset=utf-8.
     return base_mime_type + ';charset=utf-8'
@@ -191,7 +191,7 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv, "fh", ("fix", "help"))
     except getopt.GetoptError:
-        print "unrecognized option: " + argv[0]
+        print("unrecognized option: " + argv[0])
         usage()
         sys.exit(2)
     for opt, arg in opts:
@@ -201,7 +201,7 @@ def main(argv):
         if opt in ("-f", "--fix"):
             fix_problems = True
     if args:
-        print "unexpected command line argument"
+        print("unexpected command line argument")
         usage()
         sys.exit()
 
@@ -214,7 +214,7 @@ def main(argv):
             # print "Skipping dir " + f
             continue
         if not os.path.isfile(f):
-            print "Repository file not in working copy: " + f
+            print("Repository file not in working copy: " + f)
             continue;
 
         for file_pattern, props in file_types:
@@ -227,16 +227,16 @@ def main(argv):
                         # check for UTF-8 text files, should have svn:mime-type=text/something; charset=utf8
                         propval = check_utf8(f, propval, actual_propval)
                     if not (propval == actual_propval or (propval == "" and actual_propval == "*")):
-                        print "svn propset %s '%s' %s" % (propname, propval, f)
+                        print("svn propset %s '%s' %s" % (propname, propval, f))
                         if fix_problems:
                             os.system("svn propset %s '%s' %s" % (propname, propval, f))
                     if propname == "svn:eol-style" and propval == "native":
                         if os.system("grep -q -v \r " + f):
                             if fix_problems:
-                                print f + ": Removing DOS CR characters."
+                                print(f + ": Removing DOS CR characters.")
                                 os.system("sed -i s/\r// " + f);
                             else:
-                                print f + " contains DOS CR characters."
+                                print(f + " contains DOS CR characters.")
 
 
 if __name__ == "__main__":

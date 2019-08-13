@@ -616,7 +616,7 @@ class SystemResourceMonitor(object):
 
         o['events'] = [list(ev) for ev in self.events]
 
-        for phase, v in self.phases.items():
+        for phase, v in list(self.phases.items()):
             e = dict(
                 name=phase,
                 start=v[0],

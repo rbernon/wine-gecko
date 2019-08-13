@@ -133,8 +133,8 @@ class SymbolFileParser(object):
     Returns:
         The actual path to use when writing the FILE record.
     """
-    return path[len(filter(path.startswith,
-                           self.ignored_prefixes + [''])[0]):]
+    return path[len(list(filter(path.startswith,
+                           self.ignored_prefixes + ['']))[0]):]
 
   def _ParseFileRecord(self, file_record):
     """Parses and corrects a FILE record."""
@@ -194,9 +194,9 @@ def main():
     symbol_parser = SymbolFileParser(sys.stdin, sys.stdout, options.prefixes,
                                      path_handler)
     symbol_parser.Process()
-  except BreakpadParseError, e:
-    print >> sys.stderr, 'Got an error while processing symbol file'
-    print >> sys.stderr, str(e)
+  except BreakpadParseError as e:
+    print('Got an error while processing symbol file', file=sys.stderr)
+    print(str(e), file=sys.stderr)
     return 1
   return 0
 

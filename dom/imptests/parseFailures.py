@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import print_function, unicode_literals
+
 
 import collections
 import json
@@ -58,7 +58,7 @@ def writeFiles(files):
         dirp, leaf = path.rsplit('/', 1)
         pathmap.setdefault(dirp, []).append(leaf)
 
-    for k, v in pathmap.items():
+    for k, v in list(pathmap.items()):
         with open(k + '/mochitest.ini', 'w') as fh:
             result = writeBuildFiles.substManifest('parseFailures.py', v, [])
             fh.write(result)

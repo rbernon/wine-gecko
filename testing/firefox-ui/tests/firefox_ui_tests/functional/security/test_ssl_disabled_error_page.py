@@ -36,7 +36,7 @@ class TestSSLDisabledErrorPage(FirefoxTestCase):
             # Verify "Secure Connection Failed" error page title
             title = self.marionette.find_element(By.ID, 'errorTitleText')
             nss_failure2title = self.browser.get_entity('nssFailure2.title')
-            self.assertEquals(title.get_attribute('textContent'), nss_failure2title)
+            self.assertEqual(title.get_attribute('textContent'), nss_failure2title)
 
             # Verify "Try Again" button appears
             try_again_button = self.marionette.find_element(By.ID, 'errorTryAgain')

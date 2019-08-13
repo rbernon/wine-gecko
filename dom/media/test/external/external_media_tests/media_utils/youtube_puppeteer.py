@@ -8,7 +8,7 @@ from json import loads
 
 from marionette_driver import By, expected, Wait
 from marionette_driver.errors import TimeoutException, NoSuchElementException
-from video_puppeteer import VideoPuppeteer, VideoException
+from .video_puppeteer import VideoPuppeteer, VideoException
 from external_media_tests.utils import verbose_until
 
 
@@ -27,7 +27,7 @@ class YouTubePuppeteer(VideoPuppeteer):
         'BUFFERING': 3,
         'CUED': 5
     }
-    _yt_player_state_name = {v: k for k, v in _yt_player_state.items()}
+    _yt_player_state_name = {v: k for k, v in list(_yt_player_state.items())}
     _time_pattern = re.compile('(?P<minute>\d+):(?P<second>\d+)')
 
     def __init__(self, marionette, url, **kwargs):

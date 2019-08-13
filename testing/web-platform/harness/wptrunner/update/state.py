@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
-import cPickle as pickle
+import pickle as pickle
 
 here = os.path.abspath(os.path.split(__file__)[0])
 
@@ -109,7 +109,7 @@ class State(object):
         self.save()
 
     def keys(self):
-        return self._data[self._index].keys()
+        return list(self._data[self._index].keys())
 
 class StateContext(object):
     def __init__(self, state, init_values):

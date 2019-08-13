@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
+
 import os
 import os.path
 import json
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import sys
 import re
 import subprocess
@@ -12,7 +12,7 @@ import subprocess
 repo_matcher = re.compile(r'[a-z]+://(hg|git)\.mozilla\.org')
 
 def get_task(taskid):
-    return json.load(urllib2.urlopen('https://queue.taskcluster.net/v1/task/' + taskid))
+    return json.load(urllib.request.urlopen('https://queue.taskcluster.net/v1/task/' + taskid))
 
 def check_task(task):
     payload = task['payload']

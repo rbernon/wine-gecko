@@ -1,11 +1,11 @@
 from marionette import MarionetteTestCase
 from marionette_driver.errors import NoSuchElementException
 import threading
-import SimpleHTTPServer
-import SocketServer
-import BaseHTTPServer
-import urllib
-import urlparse
+import http.server
+import socketserver
+import http.server
+import urllib.request, urllib.parse, urllib.error
+import urllib.parse
 import os
 
 DEBUG = False
@@ -40,15 +40,15 @@ REDIRECTIONS = {
 }
 
 
-class ThreadingSimpleServer(SocketServer.ThreadingMixIn,
-                            BaseHTTPServer.HTTPServer):
+class ThreadingSimpleServer(socketserver.ThreadingMixIn,
+                            http.server.HTTPServer):
     pass
 
 
 # Overrides the simpler HTTP server handler to introduce redirects to map
 # files that are opened using absolete paths to ones which are relative
 # to the source tree.
-class HttpRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
+class HttpRequestHandler(http.server.SimpleHTTPRequestHandler):
     def do_HEAD(s):
         lastSlash = s.path.rfind("/")
         path = s.path[:lastSlash]
@@ -61,7 +61,7 @@ class HttpRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             s.send_header("Location", "/" + gCommonDir + REDIRECTIONS.get(path, "/") + filename)
             s.end_headers()
         else:
-            SimpleHTTPServer.SimpleHTTPRequestHandler.do_HEAD(s)
+            http.server.SimpleHTTPRequestHandler.do_HEAD(s)
 
     def do_GET(s):
         lastSlash = s.path.rfind("/")
@@ -70,11 +70,11 @@ class HttpRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         if (path in REDIRECTIONS):
             s.do_HEAD()
         else:
-            SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(s)
+            http.server.SimpleHTTPRequestHandler.do_GET(s)
 
     def log_message(self, format, *args, **kwargs):
         if DEBUG:
-            BaseHTTPServer.BaseHTTPRequestHandler.log_message(self, format, *args, **kwargs)
+            http.server.BaseHTTPRequestHandler.log_message(self, format, *args, **kwargs)
         else:
             pass
 
@@ -137,7 +137,7 @@ class BaseTestFrontendUnits(MarionetteTestCase):
         # Now get the relative path between the two
         self.relPath = os.path.relpath(os.path.dirname(__file__), commonPath)
 
-        self.relPath = urllib.pathname2url(os.path.join(self.relPath, srcdir_path))
+        self.relPath = urllib.request.pathname2url(os.path.join(self.relPath, srcdir_path))
 
         # This is the common directory segment, what you need to get from the
         # common path to the relative path location. Used to get the redirects
@@ -147,16 +147,16 @@ class BaseTestFrontendUnits(MarionetteTestCase):
         gCommonDir = os.path.normpath(self.relPath).replace("\\", "//")
 
         # Finally join the relative path with the given src path
-        self.server_prefix = urlparse.urljoin("http://localhost:" + str(self.port),
+        self.server_prefix = urllib.parse.urljoin("http://localhost:" + str(self.port),
                                               self.relPath)
 
     def check_page(self, page):
 
-        self.marionette.navigate(urlparse.urljoin(self.server_prefix, page))
+        self.marionette.navigate(urllib.parse.urljoin(self.server_prefix, page))
         try:
             self.marionette.find_element("id", 'complete')
         except NoSuchElementException:
-            fullPageUrl = urlparse.urljoin(self.relPath, page)
+            fullPageUrl = urllib.parse.urljoin(self.relPath, page)
 
             details = "%s: 1 failure encountered\n%s" % \
                       (fullPageUrl,
@@ -190,7 +190,7 @@ class BaseTestFrontendUnits(MarionetteTestCase):
     def get_failure_details(self, page):
         fail_nodes = self.marionette.find_elements("css selector",
                                                    '.test.fail')
-        fullPageUrl = urlparse.urljoin(self.relPath, page)
+        fullPageUrl = urllib.parse.urljoin(self.relPath, page)
 
         details = ["%s: %d failure(s) encountered:" % (fullPageUrl, len(fail_nodes))]
 

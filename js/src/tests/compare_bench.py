@@ -2,7 +2,7 @@
 """usage: %progname candidate_path baseline_path
 """
 
-from __future__ import print_function
+
 
 import json
 import optparse
@@ -15,7 +15,7 @@ def avg(seq):
 
 def compare(current, baseline):
     percent_speedups = []
-    for key, current_result in current.iteritems():
+    for key, current_result in current.items():
         try:
             baseline_result = baseline[key]
         except KeyError:

@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import print_function, unicode_literals
+
 
 import os
 import subprocess
@@ -45,7 +45,7 @@ def get_hg_info(workdir):
 def source_repo_header(output):
     # We allow the source repo and changeset to be specified via the
     # environment (see configure)
-    import buildconfig
+    from . import buildconfig
     repo = buildconfig.substs.get('MOZ_SOURCE_REPO')
     changeset = buildconfig.substs.get('MOZ_SOURCE_CHANGESET')
     source = ''

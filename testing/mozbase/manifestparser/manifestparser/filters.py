@@ -92,7 +92,7 @@ class InstanceFilter(object):
     def __init__(self, *args, **kwargs):
         self.fmt_args = ', '.join(itertools.chain(
             [str(a) for a in args],
-            ['{}={}'.format(k, v) for k, v in kwargs.iteritems()]))
+            ['{}={}'.format(k, v) for k, v in kwargs.items()]))
 
     def __eq__(self, other):
         if self.unique:
@@ -248,7 +248,7 @@ class chunk_by_dir(InstanceFilter):
         # be yielded for reporting purposes. Put them all in chunk 1 for
         # simplicity.
         if self.this_chunk == 1:
-            disabled_dirs = [v for k, v in tests_by_dir.iteritems()
+            disabled_dirs = [v for k, v in tests_by_dir.items()
                              if k not in ordered_dirs]
             for disabled_test in itertools.chain(*disabled_dirs):
                 yield disabled_test
@@ -325,7 +325,7 @@ class tags(InstanceFilter):
 
     def __init__(self, tags):
         InstanceFilter.__init__(self, tags)
-        if isinstance(tags, basestring):
+        if isinstance(tags, str):
             tags = [tags]
         self.tags = tags
 
@@ -348,7 +348,7 @@ class pathprefix(InstanceFilter):
 
     def __init__(self, paths):
         InstanceFilter.__init__(self, paths)
-        if isinstance(paths, basestring):
+        if isinstance(paths, str):
             paths = [paths]
         self.paths = paths
 

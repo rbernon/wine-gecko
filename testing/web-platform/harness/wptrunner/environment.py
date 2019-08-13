@@ -12,7 +12,7 @@ import time
 
 from mozlog import get_default_logger, handlers
 
-from wptlogging import LogLevelRewriter
+from .wptlogging import LogLevelRewriter
 
 here = os.path.split(__file__)[0]
 
@@ -113,7 +113,7 @@ class TestEnvironment(object):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.process_interrupts()
-        for scheme, servers in self.servers.iteritems():
+        for scheme, servers in self.servers.items():
             for port, server in servers:
                 server.kill()
         self.cache_manager.__exit__(exc_type, exc_val, exc_tb)
@@ -150,7 +150,7 @@ class TestEnvironment(object):
 
         host = self.options.get("certificate_domain", config["host"])
         hosts = [host]
-        hosts.extend("%s.%s" % (item[0], host) for item in serve.get_subdomains(host).values())
+        hosts.extend("%s.%s" % (item[0], host) for item in list(serve.get_subdomains(host).values()))
         key_file, certificate = self.ssl_env.host_cert_path(hosts)
 
         config["key_file"] = key_file
@@ -185,7 +185,7 @@ class TestEnvironment(object):
             path = os.path.normpath(os.path.join(here, path))
             route_builder.add_static(path, format_args, content_type, route)
 
-        for url_base, paths in self.test_paths.iteritems():
+        for url_base, paths in self.test_paths.items():
             if url_base == "/":
                 continue
             route_builder.add_mount_point(url_base, paths["tests_path"])
@@ -198,7 +198,7 @@ class TestEnvironment(object):
     def ensure_started(self):
         # Pause for a while to ensure that the server has a chance to start
         time.sleep(2)
-        for scheme, servers in self.servers.iteritems():
+        for scheme, servers in self.servers.items():
             for port, server in servers:
                 if self.test_server_port:
                     s = socket.socket()

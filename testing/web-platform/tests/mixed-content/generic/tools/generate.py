@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import os, sys, json
-from common_paths import *
-import spec_validator
+from .common_paths import *
+from . import spec_validator
 import argparse
 
 
@@ -19,7 +19,7 @@ def expand_pattern(expansion_pattern, test_expansion_schema):
             expansion[artifact_key] = []
             values_dict = expand_pattern(artifact_value,
                                          test_expansion_schema[artifact_key])
-            for sub_key in values_dict.keys():
+            for sub_key in list(values_dict.keys()):
                 expansion[artifact_key] += values_dict[sub_key]
         else:
             expansion[artifact_key] = [artifact_value]
@@ -113,7 +113,7 @@ def generate_test_source_files(spec_json, target):
     # Choose a debug/release template depending on the target.
     html_template = "test.%s.html.template" % target
 
-    artifact_order = test_expansion_schema.keys() + ['name']
+    artifact_order = list(test_expansion_schema.keys()) + ['name']
 
     # Create list of excluded tests.
     exclusion_dict = {}
@@ -136,7 +136,7 @@ def generate_test_source_files(spec_json, target):
                                        spec,
                                        html_template)
                 else:
-                    print 'Excluding selection:', selection_path
+                    print('Excluding selection:', selection_path)
 
 
 def main(target, spec_filename):

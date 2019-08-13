@@ -19,7 +19,7 @@ def vcs(bin_name):
         repo = kwargs.pop("repo", None)
         log_error = kwargs.pop("log_error", True)
         if kwargs:
-            raise TypeError, kwargs
+            raise TypeError(kwargs)
 
         args = list(args)
 

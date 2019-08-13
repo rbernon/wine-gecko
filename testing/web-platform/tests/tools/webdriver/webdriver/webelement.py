@@ -1,6 +1,6 @@
 """Element-level WebDriver operations."""
 
-import searchcontext
+from . import searchcontext
 
 class WebElement(searchcontext.SearchContext):
     """Corresponds to a DOM element in the current page."""

@@ -8,7 +8,7 @@ implements a 'serialize' method taking a tree as sole argument and
 returning an iterator generating tokens.
 """
 
-from __future__ import absolute_import, division, unicode_literals
+
 
 import sys
 

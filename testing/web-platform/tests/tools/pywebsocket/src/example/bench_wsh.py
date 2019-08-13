@@ -52,7 +52,7 @@ def web_socket_transfer_data(request):
     wait = float(parts[0])
     count = int(parts[1])
     message = parts[2]
-    for i in xrange(count):
+    for i in range(count):
         request.ws_stream.send_message(message)
         time.sleep(wait)
 

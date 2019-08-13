@@ -33,7 +33,7 @@ import fnmatch
 import subprocess
 import time
 import ctypes
-import urlparse
+import urllib.parse
 import concurrent.futures
 import multiprocessing
 
@@ -147,7 +147,7 @@ class HGRepoInfo:
             root = read_output('hg', '-R', path,
                                'showconfig', 'paths.default')
             if not root:
-                print >> sys.stderr, "Failed to get HG Repo for %s" % path
+                print("Failed to get HG Repo for %s" % path, file=sys.stderr)
         cleanroot = None
         if root:
             match = rootRegex.match(root)
@@ -156,9 +156,9 @@ class HGRepoInfo:
                 if cleanroot.endswith('/'):
                     cleanroot = cleanroot[:-1]
         if cleanroot is None:
-            print >> sys.stderr, textwrap.dedent("""\
+            print(textwrap.dedent("""\
                 Could not determine repo info for %s.  This is either not a clone of the web-based
-                repository, or you have not specified SRCSRV_ROOT, or the clone is corrupt.""") % path
+                repository, or you have not specified SRCSRV_ROOT, or the clone is corrupt.""") % path, file=sys.stderr)
             sys.exit(1)
         self.rev = rev
         self.root = root
@@ -203,9 +203,9 @@ class GitRepoInfo:
                 if cleanroot.endswith('/'):
                     cleanroot = cleanroot[:-1]
         if cleanroot is None:
-            print >> sys.stderr, textwrap.dedent("""\
+            print(textwrap.dedent("""\
                 Could not determine repo info for %s (%s).  This is either not a clone of a web-based
-                repository, or you have not specified SRCSRV_ROOT, or the clone is corrupt.""") % (path, root)
+                repository, or you have not specified SRCSRV_ROOT, or the clone is corrupt.""") % (path, root), file=sys.stderr)
             sys.exit(1)
         self.rev = rev
         self.cleanroot = cleanroot
@@ -297,7 +297,7 @@ def validate_install_manifests(install_manifest_args):
         if len(bits) != 2:
             raise ValueError('Invalid format for --install-manifest: '
                              'specify manifest,target_dir')
-        manifest_file, destination = map(os.path.abspath, bits)
+        manifest_file, destination = list(map(os.path.abspath, bits))
         if not os.path.isfile(manifest_file):
             raise IOError(errno.ENOENT, 'Manifest file not found',
                           manifest_file)
@@ -377,7 +377,7 @@ class JobPool(object):
         Yields (future, callback) pairs.
         '''
         while cls.jobs:
-            completed, _ = concurrent.futures.wait(cls.jobs.keys(), return_when=concurrent.futures.FIRST_COMPLETED)
+            completed, _ = concurrent.futures.wait(list(cls.jobs.keys()), return_when=concurrent.futures.FIRST_COMPLETED)
             for f in completed:
                 callback = cls.jobs[f]
                 del cls.jobs[f]
@@ -498,7 +498,7 @@ class Dumper:
             if not path:
                 path = name
             if not (name and path and rev and remote):
-                print "Skipping project %s" % proj.toxml()
+                print("Skipping project %s" % proj.toxml())
                 continue
             remote = remotes[remote]
             # Turn git URLs into http URLs so that urljoin works.
@@ -509,7 +509,7 @@ class Dumper:
             self.srcdirs.append(srcdir)
             # And cache its VCS file info. Currently all repos mentioned
             # in a repo manifest are assumed to be git.
-            root = urlparse.urljoin(remote, name)
+            root = urllib.parse.urljoin(remote, name)
             Dumper.srcdirRepoInfo[srcdir] = GitRepoInfo(srcdir, rev, root)
 
     # subclasses override this
@@ -642,7 +642,7 @@ class Dumper:
                 self.output_pid(sys.stderr, ' '.join(cmd))
                 proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                                         stderr=open(os.devnull, 'wb'))
-                module_line = proc.stdout.next()
+                module_line = next(proc.stdout)
                 if module_line.startswith("MODULE"):
                     # MODULE os cpu guid debug_file
                     (guid, debug_file) = (module_line.split())[3:5]
@@ -1020,7 +1020,7 @@ to canonical locations in the source repository. Specify
     if options.srcsrv:
         pdbstr = os.environ.get("PDBSTR_PATH")
         if not os.path.exists(pdbstr):
-            print >> sys.stderr, "Invalid path to pdbstr.exe - please set/check PDBSTR_PATH.\n"
+            print("Invalid path to pdbstr.exe - please set/check PDBSTR_PATH.\n", file=sys.stderr)
             sys.exit(1)
 
     if len(args) < 3:

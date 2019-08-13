@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import, unicode_literals
+
 
 import os
 import sys
@@ -37,7 +37,7 @@ def run_firefox_ui_test(tests, testtype=None, topsrcdir=None, **kwargs):
 
     args = parser.parse_args(args=tests)
 
-    for k, v in kwargs.iteritems():
+    for k, v in kwargs.items():
         setattr(args, k, v)
 
     parser.verify_usage(args)

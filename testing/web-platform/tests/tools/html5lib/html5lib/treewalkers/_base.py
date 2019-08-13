@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, unicode_literals
+
 from six import text_type, string_types
 
 import gettext
@@ -52,7 +52,7 @@ class TreeWalker(object):
         assert all((namespace is None or isinstance(namespace, string_types)) and
                    isinstance(name, string_types) and
                    isinstance(value, string_types)
-                   for (namespace, name), value in attrs.items())
+                   for (namespace, name), value in list(attrs.items()))
 
         yield {"type": "EmptyTag", "name": to_text(name, False),
                "namespace": to_text(namespace),
@@ -66,14 +66,14 @@ class TreeWalker(object):
         assert all((namespace is None or isinstance(namespace, string_types)) and
                    isinstance(name, string_types) and
                    isinstance(value, string_types)
-                   for (namespace, name), value in attrs.items())
+                   for (namespace, name), value in list(attrs.items()))
 
         return {"type": "StartTag",
                 "name": text_type(name),
                 "namespace": to_text(namespace),
                 "data": dict(((to_text(namespace, False), to_text(name)),
                               to_text(value, False))
-                             for (namespace, name), value in attrs.items())}
+                             for (namespace, name), value in list(attrs.items()))}
 
     def endTag(self, namespace, name):
         assert namespace is None or isinstance(namespace, string_types), type(namespace)

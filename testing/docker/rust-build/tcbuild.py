@@ -5,7 +5,7 @@ fetches the artifacts, uploads them to tooltool, and updates
 the in-tree tooltool manifests.
 '''
 
-from __future__ import print_function
+
 
 import requests.packages.urllib3
 requests.packages.urllib3.disable_warnings()
@@ -34,8 +34,8 @@ def read_tc_auth(tc_auth_file):
     return json.load(open(tc_auth_file, 'rb'))
 
 def fill_template_dict(d, keys):
-    for key, val in d.items():
-        if isinstance(val, basestring) and '{' in val:
+    for key, val in list(d.items()):
+        if isinstance(val, str) and '{' in val:
             d[key] = val.format(**keys)
         elif isinstance(val, dict):
             fill_template_dict(val, keys)

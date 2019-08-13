@@ -20,7 +20,7 @@ def entity_characters(inp):
                     if item)
 
 def codepoint_to_character(inp):
-    return ("\U000"+inp[2:]).decode("unicode-escape")
+    return ("\\U000"+inp[2:]).decode("unicode-escape")
 
 def make_tests_json(entities):
     test_list = make_test_list(entities)
@@ -55,7 +55,7 @@ def test_expected(name, characters, good):
 
 def make_test_list(entities):
     tests = []
-    for entity_name, characters in entities.items():
+    for entity_name, characters in list(entities.items()):
         if entity_name.endswith(";") and not subentity_exists(entity_name, entities):
             tests.append((entity_name[:-1], "&" + entity_name[:-1], False))
         tests.append((entity_name, characters, True))

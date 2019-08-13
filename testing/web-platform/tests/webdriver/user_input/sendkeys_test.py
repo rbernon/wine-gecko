@@ -19,14 +19,14 @@ class SendKeysTest(base_test.WebDriverBaseTest):
         element = self.driver.find_element_by_id("Text1")
         element.send_keys("lorem ipsum")
 
-        self.assertEquals(self.driver.find_element_by_id("text").get_text(), u"lorem ipsum")
+        self.assertEqual(self.driver.find_element_by_id("text").get_text(), "lorem ipsum")
 
     def test_send_return(self):
         element = self.driver.find_element_by_id("Text1")
-        returnkey = unichr(int("E006", 16))
+        returnkey = chr(int("E006", 16))
         element.send_keys([returnkey])
 
-        self.assertEquals(u"" + self.driver.get_current_url(), u"" + self.webserver.where_is("user_input/res/text-form-landing.html?e=mc2"))
+        self.assertEqual("" + self.driver.get_current_url(), "" + self.webserver.where_is("user_input/res/text-form-landing.html?e=mc2"))
 
     def test_send_backspace(self):
         element = self.driver.find_element_by_id("Text1")
@@ -35,41 +35,41 @@ class SendKeysTest(base_test.WebDriverBaseTest):
         element.send_keys("web ")
         element.send_keys("consortium")
 
-        backspace= unichr(int("E003", 16))
+        backspace= chr(int("E003", 16))
         for i in range(0, 11):
             element.send_keys([backspace])
 
-        self.assertEquals(self.driver.find_element_by_id("text").get_text(), u"world wide web")
+        self.assertEqual(self.driver.find_element_by_id("text").get_text(), "world wide web")
 
     def test_send_tab(self):
         element1 = self.driver.find_element_by_id("Text1")
         element2 = self.driver.find_element_by_id("Text2")
         element1.send_keys("typing here")
 
-        tab= unichr(int("E004", 16))
+        tab= chr(int("E004", 16))
         element1.send_keys([tab])
 
         output = self.driver.find_element_by_id("output")
         tab_pressed = output.get_attribute("checked")
-        self.assertEquals(tab_pressed, u"true")
+        self.assertEqual(tab_pressed, "true")
 
     def test_send_shift(self):
         element = self.driver.find_element_by_id("Text1")
         element.send_keys("low ")
 
-        shift= unichr(int("E008", 16))
+        shift= chr(int("E008", 16))
         element.send_keys([shift , "u", "p", shift])
 
-        self.assertEquals(self.driver.find_element_by_id("text").get_text(), u"low UP")
+        self.assertEqual(self.driver.find_element_by_id("text").get_text(), "low UP")
 
     def test_send_arrow_keys(self):
         element = self.driver.find_element_by_id("Text1")
 
         element.send_keys("internet")
 
-        backspace= unichr(int("E003", 16))
-        left= unichr(int("E012", 16))
-        right= unichr(int("E014", 16))
+        backspace= chr(int("E003", 16))
+        left= chr(int("E012", 16))
+        right= chr(int("E014", 16))
         for i in range(0, 4):
             element.send_keys([left])
 
@@ -77,19 +77,19 @@ class SendKeysTest(base_test.WebDriverBaseTest):
         element.send_keys([right])
         element.send_keys("a")
 
-        self.assertEquals(self.driver.find_element_by_id("text").get_text(), u"intranet")
+        self.assertEqual(self.driver.find_element_by_id("text").get_text(), "intranet")
 
     def test_select_text_with_shift(self):
         element = self.driver.find_element_by_id("Text1")
 
         element.send_keys("WebDriver")
-        backspace= unichr(int("E003", 16))
-        shift= unichr(int("E008", 16))
-        left= unichr(int("E012", 16))
+        backspace= chr(int("E003", 16))
+        shift= chr(int("E008", 16))
+        left= chr(int("E012", 16))
 
         element.send_keys([shift, left, left, left, left, left, left, backspace])
 
-        self.assertEquals(self.driver.find_element_by_id("text").get_text(), u"Web")
+        self.assertEqual(self.driver.find_element_by_id("text").get_text(), "Web")
 
 
 if __name__ == "__main__":

@@ -10,7 +10,7 @@ of gcc's -MD -MP, adding phony targets for dependencies.
 
 
 def add_phony_targets(path):
-    print path
+    print(path)
     deps = set()
     targets = set()
     for stmt in pymake.parser.parsefile(path):

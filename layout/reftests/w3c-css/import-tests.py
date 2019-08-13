@@ -75,7 +75,7 @@ def log_output_of(subprocess):
     global gLog
     subprocess.wait()
     if (subprocess.returncode != 0):
-        raise StandardError("error while running subprocess")
+        raise Exception("error while running subprocess")
     gLog.write(subprocess.stdout.readline().rstrip())
 
 def write_log_header():
@@ -119,7 +119,7 @@ def populate_test_files():
 def copy_file(test, srcfile, destname, isSupportFile=False):
     global gDestPath, gLog, gSrcPath
     if not srcfile.startswith(gSrcPath):
-        raise StandardError("Filename " + srcfile + " does not start with " + gSrcPath)
+        raise Exception("Filename " + srcfile + " does not start with " + gSrcPath)
     logname = srcfile[len(gSrcPath):]
     gLog.write("Importing " + logname + " to " + destname + "\n")
     destfile = os.path.join(gDestPath, destname)
@@ -127,7 +127,7 @@ def copy_file(test, srcfile, destname, isSupportFile=False):
     if not os.path.exists(destdir):
         os.makedirs(destdir)
     if os.path.exists(destfile):
-        raise StandardError("file " + destfile + " already exists")
+        raise Exception("file " + destfile + " already exists")
     copy_and_prefix(test, srcfile, destfile, gPrefixedProperties, isSupportFile)
 
 def copy_support_files(test, dirname, spec):
@@ -200,9 +200,9 @@ def add_test_items(fn, spec):
             continue
         arr.append(os.path.join(os.path.dirname(fn), str(link.getAttribute("href"))))
     if len(refs) > 1:
-        raise StandardError("Need to add code to specify which reference we want to match.")
+        raise Exception("Need to add code to specify which reference we want to match.")
     if spec is None:
-        raise StandardError("Could not associate test with specification")
+        raise Exception("Could not associate test with specification")
     for ref in refs:
         tests.append(["==", map_file(fn, spec), map_file(ref, spec)])
     for notref in notrefs:
@@ -258,7 +258,7 @@ def setup_paths():
     gSrcPath = gArgs[0]
     if not os.path.isdir(gSrcPath) or \
     not os.path.isdir(os.path.join(gSrcPath, ".hg")):
-        raise StandardError("source path does not appear to be a mercurial clone")
+        raise Exception("source path does not appear to be a mercurial clone")
 
     gDestPath = os.path.join(os.path.dirname(os.path.realpath(__file__)), "received")
     newSubtrees = []
@@ -306,7 +306,7 @@ def main():
                 listfile.write("\ndefault-preferences {0}\n\n".format(defaultPreferences))
             lastDefaultPreferences = defaultPreferences
         key = 0
-        while not test[key] in gTestFlags.keys() and key < len(test):
+        while not test[key] in list(gTestFlags.keys()) and key < len(test):
             key = key + 1
         testKey = test[key]
         if 'ahem' in gTestFlags[testKey]:

@@ -1,23 +1,23 @@
-import BaseHTTPServer
+import http.server
 import errno
 import os
 import re
 import socket
-from SocketServer import ThreadingMixIn
+from socketserver import ThreadingMixIn
 import ssl
 import sys
 import threading
 import time
 import traceback
 import types
-import urlparse
+import urllib.parse
 
-import routes as default_routes
-from logger import get_logger
-from request import Server, Request
-from response import Response
-from router import Router
-from utils import HTTPException
+from . import routes as default_routes
+from .logger import get_logger
+from .request import Server, Request
+from .response import Response
+from .router import Router
+from .utils import HTTPException
 
 
 """HTTP server designed for testing purposes.
@@ -79,7 +79,7 @@ class RequestRewriter(object):
         :param output_path: Path to replace the input path with in
                             the request.
         """
-        if type(methods) in types.StringTypes:
+        if type(methods) in (str,):
             methods = [methods]
         self.rules[input_path] = (methods, output_path)
 
@@ -90,7 +90,7 @@ class RequestRewriter(object):
         :param request_handler: BaseHTTPRequestHandler for which to
                                 rewrite the request.
         """
-        split_url = urlparse.urlsplit(request_handler.path)
+        split_url = urllib.parse.urlsplit(request_handler.path)
         if split_url.path in self.rules:
             methods, destination = self.rules[split_url.path]
             if "*" in methods or request_handler.command in methods:
@@ -98,11 +98,11 @@ class RequestRewriter(object):
                              (request_handler.path, destination))
                 new_url = list(split_url)
                 new_url[2] = destination
-                new_url = urlparse.urlunsplit(new_url)
+                new_url = urllib.parse.urlunsplit(new_url)
                 request_handler.path = new_url
 
 
-class WebTestServer(ThreadingMixIn, BaseHTTPServer.HTTPServer):
+class WebTestServer(ThreadingMixIn, http.server.HTTPServer):
     allow_reuse_address = True
     acceptable_errors = (errno.EPIPE, errno.ECONNABORTED)
     request_queue_size = 2000
@@ -161,7 +161,7 @@ class WebTestServer(ThreadingMixIn, BaseHTTPServer.HTTPServer):
             hostname_port = ("",server_address[1])
 
         #super doesn't work here because BaseHTTPServer.HTTPServer is old-style
-        BaseHTTPServer.HTTPServer.__init__(self, hostname_port, RequestHandlerClass, **kwargs)
+        http.server.HTTPServer.__init__(self, hostname_port, RequestHandlerClass, **kwargs)
 
         if config is not None:
             Server.config = config
@@ -183,7 +183,7 @@ class WebTestServer(ThreadingMixIn, BaseHTTPServer.HTTPServer):
                                           server_side=True)
 
     def handle_error(self, request, client_address):
-        error = sys.exc_value
+        error = sys.exc_info()[1]
 
         if ((isinstance(error, socket.error) and
              isinstance(error.args, tuple) and
@@ -196,7 +196,7 @@ class WebTestServer(ThreadingMixIn, BaseHTTPServer.HTTPServer):
             self.logger.error(traceback.format_exc())
 
 
-class WebTestRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+class WebTestRequestHandler(http.server.BaseHTTPRequestHandler):
     """RequestHandler for WebTestHttpd"""
 
     protocol_version = "HTTP/1.1"
@@ -282,7 +282,7 @@ class WebTestRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 # Ensure that the whole request has been read from the socket
                 request.raw_input.read()
 
-        except socket.timeout, e:
+        except socket.timeout as e:
             self.log_error("Request timed out: %r", e)
             self.close_connection = True
             return
@@ -458,6 +458,6 @@ class WebTestHttpd(object):
         if not self.started:
             return None
 
-        return urlparse.urlunsplit(("http" if not self.use_ssl else "https",
+        return urllib.parse.urlunsplit(("http" if not self.use_ssl else "https",
                                     "%s:%s" % (self.host, self.port),
                                     path, query, fragment))

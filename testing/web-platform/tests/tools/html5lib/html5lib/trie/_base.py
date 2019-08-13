@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, unicode_literals
+
 
 from collections import Mapping
 
@@ -7,7 +7,7 @@ class Trie(Mapping):
     """Abstract base class for tries"""
 
     def keys(self, prefix=None):
-        keys = super().keys()
+        keys = list(super().keys())
 
         if prefix is None:
             return set(keys)
@@ -16,7 +16,7 @@ class Trie(Mapping):
         return set([x for x in keys if x.startswith(prefix)])
 
     def has_keys_with_prefix(self, prefix):
-        for key in self.keys():
+        for key in list(self.keys()):
             if key.startswith(prefix):
                 return True
 

@@ -3,14 +3,14 @@ import re
 import subprocess
 import sys
 import tempfile
-import urlparse
+import urllib.parse
 
 from wptrunner.update.sync import LoadManifest
 from wptrunner.update.tree import get_unique_name
 from wptrunner.update.base import Step, StepRunner, exit_clean, exit_unclean
 
 from .tree import Commit, GitTree, Patch
-import github
+from . import github
 from .github import GitHub
 
 
@@ -168,9 +168,9 @@ class SelectCommits(Step):
         while True:
             commits = state.source_commits[:]
             for i, commit in enumerate(commits):
-                print "%i:\t%s" % (i, commit.message.summary)
+                print("%i:\t%s" % (i, commit.message.summary))
 
-            remove = raw_input("Provide a space-separated list of any commits numbers to remove from the list to upstream:\n").strip()
+            remove = input("Provide a space-separated list of any commits numbers to remove from the list to upstream:\n").strip()
             remove_idx = set()
             for item in remove.split(" "):
                 try:
@@ -183,10 +183,10 @@ class SelectCommits(Step):
 
             keep_commits = [(i,cmt) for i,cmt in enumerate(commits) if i not in remove_idx]
             #TODO: consider printed removed commits
-            print "Selected the following commits to keep:"
+            print("Selected the following commits to keep:")
             for i, commit in keep_commits:
-                print "%i:\t%s" % (i, commit.message.summary)
-            confirm = raw_input("Keep the above commits? y/n\n").strip().lower()
+                print("%i:\t%s" % (i, commit.message.summary))
+            confirm = input("Keep the above commits? y/n\n").strip().lower()
 
             if confirm == "y":
                 state.source_commits = [item[1] for item in keep_commits]
@@ -223,8 +223,8 @@ class MovePatches(Step):
             except:
                 with tempfile.NamedTemporaryFile(delete=False, suffix=".diff") as f:
                     f.write(stripped_patch.diff)
-                    print """Patch failed to apply. Diff saved in %s.
-Fix this file so it applies and run with --continue""" % f.name
+                    print("""Patch failed to apply. Diff saved in %s.
+Fix this file so it applies and run with --continue""" % f.name)
                     state.patch = (f.name, stripped_patch)
                 raise
             state.commits_loaded = i
@@ -276,7 +276,7 @@ class MergeUpstream(Step):
         if "merge_index" not in state:
             state.merge_index = 0
 
-        org, name = urlparse.urlsplit(state.sync["remote_url"]).path[1:].split("/")
+        org, name = urllib.parse.urlsplit(state.sync["remote_url"]).path[1:].split("/")
         if name.endswith(".git"):
             name = name[:-4]
         state.gh_repo = gh.repo(org, name)

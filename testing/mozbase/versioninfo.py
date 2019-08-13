@@ -61,7 +61,7 @@ def changelog(args):
                         if StrictVersion(v) == plus_version:
                             return rev
 
-        print("Could not find %s revision for version %s." % (args.module, v or 'latest'))
+        print(("Could not find %s revision for version %s." % (args.module, v or 'latest')))
         sys.exit(1)
 
     from_ref = args.from_ref or get_version_rev()
@@ -80,8 +80,8 @@ def changelog(args):
         lines = [('* %s' if i == 0 else '  %s') % l for i, l in enumerate(lines)]
         return '\n'.join(lines)
 
-    changelog = map(prettify, changelog)
-    print '\n'.join(changelog)
+    changelog = list(map(prettify, changelog))
+    print('\n'.join(changelog))
 
 
 def dependencies(args):
@@ -96,9 +96,9 @@ def dependencies(args):
         dependencies[name] = _dependencies
 
     # print package version information
-    for value in info.values():
-        print '%s %s : %s' % (value['Name'], value['Version'],
-                              ', '.join(dependencies[value['Name']]))
+    for value in list(info.values()):
+        print('%s %s : %s' % (value['Name'], value['Version'],
+                              ', '.join(dependencies[value['Name']])))
 
 
 def main(args=sys.argv[1:]):

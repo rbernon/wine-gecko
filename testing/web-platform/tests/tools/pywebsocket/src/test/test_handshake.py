@@ -35,7 +35,7 @@
 
 import unittest
 
-import set_sys_path  # Update sys.path to locate mod_pywebsocket module.
+from . import set_sys_path  # Update sys.path to locate mod_pywebsocket module.
 
 from mod_pywebsocket.common import ExtensionParameter
 from mod_pywebsocket.common import ExtensionParsingException
@@ -73,7 +73,7 @@ class ValidateSubprotocolTest(unittest.TestCase):
         self.assertRaises(HandshakeException,
                           validate_subprotocol,
                           # "Japan" in Japanese
-                          u'\u65e5\u672c')
+                          '\u65e5\u672c')
 
 
 _TEST_TOKEN_EXTENSION_DATA = [

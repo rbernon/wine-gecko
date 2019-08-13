@@ -1,6 +1,6 @@
 import os
 import re
-import urlparse
+import urllib.parse
 from collections import namedtuple
 
 from mozharness.base.script import ScriptMixin
@@ -94,8 +94,8 @@ class HgtoolVCS(ScriptMixin, LogMixin, TransferMixin):
             cmd.extend(['-r', revision])
 
         for base_mirror_url in self.config.get('hgtool_base_mirror_urls', self.config.get('vcs_base_mirror_urls', [])):
-            bits = urlparse.urlparse(repo)
-            mirror_url = urlparse.urljoin(base_mirror_url, bits.path)
+            bits = urllib.parse.urlparse(repo)
+            mirror_url = urllib.parse.urljoin(base_mirror_url, bits.path)
             cmd.extend(['--mirror', mirror_url])
 
         for base_bundle_url in self.config.get('hgtool_base_bundle_urls', self.config.get('vcs_base_bundle_urls', [])):
@@ -141,7 +141,7 @@ class HgtoolVCS(ScriptMixin, LogMixin, TransferMixin):
             #
             # So we grab the first element ("28537" in this case) and then pull
             # out the 'date' field.
-            pushid = contents.iterkeys().next()
+            pushid = next(iter(contents.keys()))
             self.info('Pushid is: %s' % pushid)
             pushdate = contents[pushid]['date']
             self.info('Pushdate is: %s' % pushdate)

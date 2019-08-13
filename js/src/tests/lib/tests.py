@@ -8,7 +8,7 @@ from contextlib import contextmanager
 from subprocess import Popen, PIPE
 from threading import Thread
 
-from results import TestOutput
+from .results import TestOutput
 
 # When run on tbpl, we run each test multiple times with the following
 # arguments.
@@ -40,7 +40,7 @@ JITFLAGS = {
 
 def get_jitflags(variant, **kwargs):
     if variant not in JITFLAGS:
-        print('Invalid jitflag: "{}"'.format(variant))
+        print(('Invalid jitflag: "{}"'.format(variant)))
         sys.exit(1)
     if variant == 'none' and 'none' in kwargs:
         return kwargs['none']
@@ -76,7 +76,7 @@ def get_environment_overlay(js_shell):
 def change_env(env_overlay):
     # Apply the overlaid environment and record the current state.
     prior_env = {}
-    for key, val in env_overlay.items():
+    for key, val in list(env_overlay.items()):
         prior_env[key] = os.environ.get(key, None)
         if 'PATH' in key and key in os.environ:
             os.environ[key] = '{}{}{}'.format(val, os.pathsep, os.environ[key])
@@ -89,7 +89,7 @@ def change_env(env_overlay):
 
     finally:
         # Restore the prior environment.
-        for key, val in prior_env.items():
+        for key, val in list(prior_env.items()):
             if val is not None:
                 os.environ[key] = val
             else:

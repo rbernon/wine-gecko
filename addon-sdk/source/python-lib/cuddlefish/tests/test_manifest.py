@@ -4,24 +4,24 @@
 
 
 import unittest
-from StringIO import StringIO
+from io import StringIO
 from cuddlefish.manifest import scan_module
 
 class Extra:
     def failUnlessKeysAre(self, d, keys):
-        self.failUnlessEqual(sorted(d.keys()), sorted(keys))
+        self.assertEqual(sorted(d.keys()), sorted(keys))
 
 class Require(unittest.TestCase, Extra):
     def scan(self, text):
         lines = StringIO(text).readlines()
         requires, problems, locations = scan_module("fake.js", lines)
-        self.failUnlessEqual(problems, False)
+        self.assertEqual(problems, False)
         return requires
 
     def scan_locations(self, text):
         lines = StringIO(text).readlines()
         requires, problems, locations = scan_module("fake.js", lines)
-        self.failUnlessEqual(problems, False)
+        self.assertEqual(problems, False)
         return requires, locations
 
     def test_modules(self):
@@ -44,7 +44,7 @@ class Require(unittest.TestCase, Extra):
         mod = """require('one').immediately.do().stuff();"""
         requires, locations = self.scan_locations(mod)
         self.failUnlessKeysAre(requires, ["one"])
-        self.failUnlessEqual(locations, {"one": 1})
+        self.assertEqual(locations, {"one": 1})
 
         # these forms are commented out, and thus ignored
 
@@ -74,15 +74,15 @@ class Require(unittest.TestCase, Extra):
         const foo = require('two');"""
         requires, locations = self.scan_locations(mod)
         self.failUnlessKeysAre(requires, ["one", "two"])
-        self.failUnlessEqual(locations["one"], 1)
-        self.failUnlessEqual(locations["two"], 2)
+        self.assertEqual(locations["one"], 1)
+        self.assertEqual(locations["two"], 2)
 
         mod = """const foo = require('repeated');
         const bar = require('repeated');
         const baz = require('repeated');"""
         requires, locations = self.scan_locations(mod)
         self.failUnlessKeysAre(requires, ["repeated"])
-        self.failUnlessEqual(locations["repeated"], 1) # first occurrence
+        self.assertEqual(locations["repeated"], 1) # first occurrence
 
         mod = """const foo = require('one'); const foo = require('two');"""
         requires = self.scan(mod)
@@ -161,49 +161,49 @@ class Chrome(unittest.TestCase, Extra):
         mod = """let {Cc,Ci} = require('chrome');"""
         requires, problems, err = scan2(mod, "blah/cuddlefish.js")
         self.failUnlessKeysAre(requires, ["chrome"])
-        self.failUnlessEqual(problems, False)
-        self.failUnlessEqual(err, [])
+        self.assertEqual(problems, False)
+        self.assertEqual(err, [])
 
     def test_chrome(self):
         mod = """let {Cc,Ci} = require('chrome');"""
         requires, problems, err = scan2(mod)
         self.failUnlessKeysAre(requires, ["chrome"])
-        self.failUnlessEqual(problems, False)
-        self.failUnlessEqual(err, [])
+        self.assertEqual(problems, False)
+        self.assertEqual(err, [])
 
         mod = """var foo = require('foo');
         let {Cc,Ci} = require('chrome');"""
         requires, problems, err = scan2(mod)
         self.failUnlessKeysAre(requires, ["foo", "chrome"])
-        self.failUnlessEqual(problems, False)
-        self.failUnlessEqual(err, [])
+        self.assertEqual(problems, False)
+        self.assertEqual(err, [])
 
         mod = """let c = require('chrome');"""
         requires, problems, err = scan2(mod)
         self.failUnlessKeysAre(requires, ["chrome"])
-        self.failUnlessEqual(problems, False)
-        self.failUnlessEqual(err, [])
+        self.assertEqual(problems, False)
+        self.assertEqual(err, [])
 
         mod = """var foo = require('foo');
         let c = require('chrome');"""
         requires, problems, err = scan2(mod)
         self.failUnlessKeysAre(requires, ["foo", "chrome"])
-        self.failUnlessEqual(problems, False)
-        self.failUnlessEqual(err, [])
+        self.assertEqual(problems, False)
+        self.assertEqual(err, [])
 
     def test_not_chrome(self):
         # from bug 596595
         mod = r'soughtLines: new RegExp("^\\s*(\\[[0-9 .]*\\])?\\s*\\(\\((EE|WW)\\)|.* [Cc]hipsets?: \\)|\\s*Backtrace")'
         requires, problems, err = scan2(mod)
         self.failUnlessKeysAre(requires, [])
-        self.failUnlessEqual((problems,err), (False, []))
+        self.assertEqual((problems,err), (False, []))
 
     def test_not_chrome2(self):
         # from bug 655788
         mod = r"var foo = 'some stuff Cr';"
         requires, problems, err = scan2(mod)
         self.failUnlessKeysAre(requires, [])
-        self.failUnlessEqual((problems,err), (False, []))
+        self.assertEqual((problems,err), (False, []))
 
 class BadChrome(unittest.TestCase, Extra):
     def test_bad_alias(self):
@@ -214,14 +214,14 @@ class BadChrome(unittest.TestCase, Extra):
         """
         requires, problems, err = scan2(mod)
         self.failUnlessKeysAre(requires, [])
-        self.failUnlessEqual(problems, True)
-        self.failUnlessEqual(err[1], "The following lines from file fake.js:\n")
-        self.failUnlessEqual(err[2], "   1: let Cc = Components.classes;\n")
-        self.failUnlessEqual(err[3], "   2: let Cu = Components.utils;\n")
-        self.failUnlessEqual(err[4], "use 'Components' to access chrome authority. To do so, you need to add a\n")
-        self.failUnlessEqual(err[5], "line somewhat like the following:\n")
-        self.failUnlessEqual(err[7], '  const {Cc,Cu} = require("chrome");\n')
-        self.failUnlessEqual(err[9], "Then you can use any shortcuts to its properties that you import from the\n")
+        self.assertEqual(problems, True)
+        self.assertEqual(err[1], "The following lines from file fake.js:\n")
+        self.assertEqual(err[2], "   1: let Cc = Components.classes;\n")
+        self.assertEqual(err[3], "   2: let Cu = Components.utils;\n")
+        self.assertEqual(err[4], "use 'Components' to access chrome authority. To do so, you need to add a\n")
+        self.assertEqual(err[5], "line somewhat like the following:\n")
+        self.assertEqual(err[7], '  const {Cc,Cu} = require("chrome");\n')
+        self.assertEqual(err[9], "Then you can use any shortcuts to its properties that you import from the\n")
 
     def test_bad_misc(self):
         # If it looks like you're using something that doesn't have an alias,
@@ -230,13 +230,13 @@ class BadChrome(unittest.TestCase, Extra):
         """
         requires, problems, err = scan2(mod)
         self.failUnlessKeysAre(requires, [])
-        self.failUnlessEqual(problems, True)
-        self.failUnlessEqual(err[1], "The following lines from file fake.js:\n")
-        self.failUnlessEqual(err[2], "   1: if (Components.isSuccessCode(foo))\n")
-        self.failUnlessEqual(err[3], "use 'Components' to access chrome authority. To do so, you need to add a\n")
-        self.failUnlessEqual(err[4], "line somewhat like the following:\n")
-        self.failUnlessEqual(err[6], '  const {components} = require("chrome");\n')
-        self.failUnlessEqual(err[8], "Then you can use any shortcuts to its properties that you import from the\n")
+        self.assertEqual(problems, True)
+        self.assertEqual(err[1], "The following lines from file fake.js:\n")
+        self.assertEqual(err[2], "   1: if (Components.isSuccessCode(foo))\n")
+        self.assertEqual(err[3], "use 'Components' to access chrome authority. To do so, you need to add a\n")
+        self.assertEqual(err[4], "line somewhat like the following:\n")
+        self.assertEqual(err[6], '  const {components} = require("chrome");\n')
+        self.assertEqual(err[8], "Then you can use any shortcuts to its properties that you import from the\n")
 
     def test_chrome_components(self):
         # Bug 636145/774636: We no longer tolerate usages of "Components",
@@ -245,13 +245,13 @@ class BadChrome(unittest.TestCase, Extra):
         var ios = Components.classes['@mozilla.org/network/io-service;1'];"""
         requires, problems, err = scan2(mod)
         self.failUnlessKeysAre(requires, ["chrome"])
-        self.failUnlessEqual(problems, True)
-        self.failUnlessEqual(err[1], "The following lines from file fake.js:\n")
-        self.failUnlessEqual(err[2], "   2: var ios = Components.classes['@mozilla.org/network/io-service;1'];\n")
-        self.failUnlessEqual(err[3], "use 'Components' to access chrome authority. To do so, you need to add a\n")
-        self.failUnlessEqual(err[4], "line somewhat like the following:\n")
-        self.failUnlessEqual(err[6], '  const {Cc} = require("chrome");\n')
-        self.failUnlessEqual(err[8], "Then you can use any shortcuts to its properties that you import from the\n")
+        self.assertEqual(problems, True)
+        self.assertEqual(err[1], "The following lines from file fake.js:\n")
+        self.assertEqual(err[2], "   2: var ios = Components.classes['@mozilla.org/network/io-service;1'];\n")
+        self.assertEqual(err[3], "use 'Components' to access chrome authority. To do so, you need to add a\n")
+        self.assertEqual(err[4], "line somewhat like the following:\n")
+        self.assertEqual(err[6], '  const {Cc} = require("chrome");\n')
+        self.assertEqual(err[8], "Then you can use any shortcuts to its properties that you import from the\n")
 
 if __name__ == '__main__':
     unittest.main()

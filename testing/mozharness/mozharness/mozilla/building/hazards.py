@@ -165,14 +165,14 @@ jobs = 4
                  ('hazards.txt',
                   'hazards',
                   'list of just the hazards, together with gcFunction reason for each'))
-        for f, short, long in files:
+        for f, short, int in files:
             builder.copy_to_upload_dir(os.path.join(analysis_dir, f),
                                        short_desc=short,
-                                       long_desc=long,
+                                       long_desc=int,
                                        compress=False,  # blobber will compress
                                        upload_dir=upload_dir)
         print("== Hazards (temporarily inline here, beware weirdly interleaved output, see bug 1211402) ==")
-        print(file(os.path.join(analysis_dir, "hazards.txt")).read())
+        print((file(os.path.join(analysis_dir, "hazards.txt")).read()))
 
     def upload_results(self, builder):
         """Upload the results of the analysis."""

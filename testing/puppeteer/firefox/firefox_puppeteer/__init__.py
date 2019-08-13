@@ -6,7 +6,7 @@ import os
 
 from marionette_driver.marionette import HTMLElement
 
-from decorators import use_class_as_property
+from .decorators import use_class_as_property
 
 
 __version__ = '3.2.0'

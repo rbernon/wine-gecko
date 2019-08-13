@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, unicode_literals
+
 
 import os
 import unittest
@@ -6,7 +6,7 @@ import unittest
 try:
     unittest.TestCase.assertEqual
 except AttributeError:
-    unittest.TestCase.assertEqual = unittest.TestCase.assertEquals
+    unittest.TestCase.assertEqual = unittest.TestCase.assertEqual
 
 from .support import get_data_files, TestData, test_dir, errorMessage
 from html5lib import HTMLParser, inputstream

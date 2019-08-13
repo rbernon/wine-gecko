@@ -25,4 +25,4 @@ parser.add_argument('revision', help='Revision in remote repository')
 parser.add_argument('path', help='Path to file in remote repository')
 
 args = parser.parse_args()
-print(repo_url(args.remote, args.revision, args.path))
+print((repo_url(args.remote, args.revision, args.path)))

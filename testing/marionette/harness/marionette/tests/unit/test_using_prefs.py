@@ -25,16 +25,16 @@ class TestUsingPrefs(MarionetteTestCase):
                                           self.int_pref: 10 ** 9,
                                           self.bool_pref: True,
                                           self.non_existent_pref: 'existent'}):
-            self.assertEquals(self.marionette.get_pref(self.string_pref), 'new')
-            self.assertEquals(self.marionette.get_pref(self.int_pref), 10 ** 9)
-            self.assertEquals(self.marionette.get_pref(self.bool_pref), True)
-            self.assertEquals(self.marionette.get_pref(self.non_existent_pref),
+            self.assertEqual(self.marionette.get_pref(self.string_pref), 'new')
+            self.assertEqual(self.marionette.get_pref(self.int_pref), 10 ** 9)
+            self.assertEqual(self.marionette.get_pref(self.bool_pref), True)
+            self.assertEqual(self.marionette.get_pref(self.non_existent_pref),
                               'existent')
 
-        self.assertEquals(self.marionette.get_pref(self.string_pref), 'old')
-        self.assertEquals(self.marionette.get_pref(self.int_pref), 42)
-        self.assertEquals(self.marionette.get_pref(self.bool_pref), False)
-        self.assertEquals(self.marionette.get_pref(self.non_existent_pref), None)
+        self.assertEqual(self.marionette.get_pref(self.string_pref), 'old')
+        self.assertEqual(self.marionette.get_pref(self.int_pref), 42)
+        self.assertEqual(self.marionette.get_pref(self.bool_pref), False)
+        self.assertEqual(self.marionette.get_pref(self.non_existent_pref), None)
 
     def test_exception_using_prefs(self):
         # Test that throwing an exception inside the context manager doesn't
@@ -42,9 +42,9 @@ class TestUsingPrefs(MarionetteTestCase):
         self.marionette.set_pref(self.string_pref, 'old')
 
         with self.marionette.using_prefs({self.string_pref: 'new'}):
-            self.assertEquals(self.marionette.get_pref(self.string_pref), 'new')
+            self.assertEqual(self.marionette.get_pref(self.string_pref), 'new')
             self.assertRaises(JavascriptException,
                               self.marionette.execute_script,
                               "return foo.bar.baz;")
 
-        self.assertEquals(self.marionette.get_pref(self.string_pref), 'old')
+        self.assertEqual(self.marionette.get_pref(self.string_pref), 'old')

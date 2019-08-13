@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import os
 
 from marionette_driver import By, errors
@@ -10,7 +10,7 @@ from marionette import MarionetteTestCase, skip_if_b2g
 
 
 def inline(doc):
-    return "data:text/html;charset=utf-8,%s" % urllib.quote(doc)
+    return "data:text/html;charset=utf-8,%s" % urllib.parse.quote(doc)
 
 
 elements = inline("<p>foo</p> <p>bar</p>")

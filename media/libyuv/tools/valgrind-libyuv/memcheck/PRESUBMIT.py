@@ -36,10 +36,9 @@ def CheckChange(input_api, output_api):
   # - 'skip_suppression_name': the next line is a suppression name, skip.
   # - 'skip_param': the next line is a system call parameter error, skip.
   skip_next_line = False
-  for f in filter(lambda x: sup_regex.search(x.LocalPath()),
-                  input_api.AffectedFiles()):
+  for f in [x for x in input_api.AffectedFiles() if sup_regex.search(x.LocalPath())]:
     for line, line_num in zip(f.NewContents(),
-                              xrange(1, len(f.NewContents()) + 1)):
+                              range(1, len(f.NewContents()) + 1)):
       line = line.lstrip()
       if line.startswith('#') or not line:
         continue
@@ -49,7 +48,7 @@ def CheckChange(input_api, output_api):
           if 'insert_a_suppression_name_here' in line:
             errors.append('"insert_a_suppression_name_here" is not a valid '
                           'suppression name')
-          if suppressions.has_key(line):
+          if line in suppressions:
             if f.LocalPath() == suppressions[line][1]:
               errors.append('suppression with name "%s" at %s line %s '
                             'has already been defined at line %s' %

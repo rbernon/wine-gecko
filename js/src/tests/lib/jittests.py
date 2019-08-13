@@ -6,19 +6,19 @@
 
 # jit_test.py -- Python harness for JavaScript trace tests.
 
-from __future__ import print_function
+
 import os, posixpath, sys, tempfile, traceback, time
 import subprocess
 from collections import namedtuple
-import StringIO
+import io
 
 if sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
-    from tasks_unix import run_all_tests
+    from .tasks_unix import run_all_tests
 else:
-    from tasks_win import run_all_tests
+    from .tasks_win import run_all_tests
 
-from progressbar import ProgressBar, NullProgressBar
-from results import TestOutput
+from .progressbar import ProgressBar, NullProgressBar
+from .results import TestOutput
 
 TESTS_LIB_DIR = os.path.dirname(os.path.abspath(__file__))
 JS_DIR = os.path.dirname(os.path.dirname(TESTS_LIB_DIR))
@@ -321,7 +321,7 @@ def run_test_remote(test, device, prefix, options):
 
     env['LD_LIBRARY_PATH'] = options.remote_test_root
 
-    buf = StringIO.StringIO()
+    buf = io.StringIO()
     returncode = device.shell(cmd, buf, env=env, cwd=options.remote_test_root,
                               timeout=int(options.timeout))
 
@@ -571,7 +571,7 @@ def get_remote_results(tests, device, prefix, options):
     from mozdevice import devicemanager
 
     try:
-        for i in xrange(0, options.repeat):
+        for i in range(0, options.repeat):
             for test in tests:
                 yield run_test_remote(test, device, prefix, options)
     except devicemanager.DMError as e:

@@ -6,7 +6,7 @@
 Runs the Mochitest test harness.
 """
 
-from __future__ import with_statement
+
 import os
 import sys
 SCRIPT_DIR = os.path.abspath(os.path.realpath(os.path.dirname(__file__)))
@@ -31,7 +31,7 @@ import sys
 import tempfile
 import time
 import traceback
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import uuid
 import zipfile
 import bisection
@@ -61,7 +61,7 @@ from mochitest_options import (
 )
 from mozprofile import Profile, Preferences
 from mozprofile.permissions import ServerLocations
-from urllib import quote_plus as encodeURIComponent
+from urllib.parse import quote_plus as encodeURIComponent
 from mozlog.formatters import TbplFormatter
 from mozlog import commandline
 from mozrunner.utils import get_stack_fixer_function, test_environment
@@ -131,7 +131,7 @@ class MessageLogger(object):
     """File-like object for logging messages (structured logs)"""
     BUFFERING_THRESHOLD = 100
     # This is a delimiter used by the JS side to avoid logs interleaving
-    DELIMITER = u'\ue175\uee31\u2c32\uacbf'
+    DELIMITER = '\ue175\uee31\u2c32\uacbf'
     BUFFERED_ACTIONS = set(['test_status', 'log'])
     VALID_ACTIONS = set(['suite_start', 'suite_end', 'test_start', 'test_end',
                          'test_status', 'log',
@@ -171,8 +171,8 @@ class MessageLogger(object):
         if 'message' in message:
             if isinstance(message['message'], bytes):
                 message['message'] = message['message'].decode('utf-8', 'replace')
-            elif not isinstance(message['message'], unicode):
-                message['message'] = unicode(message['message'])
+            elif not isinstance(message['message'], str):
+                message['message'] = str(message['message'])
 
     def parse_line(self, line):
         """Takes a given line of input (structured or not) and returns a list of structured messages"""
@@ -456,7 +456,7 @@ class MochitestServer(object):
 
     def stop(self):
         try:
-            with urllib2.urlopen(self.shutdownURL) as c:
+            with urllib.request.urlopen(self.shutdownURL) as c:
                 c.read()
 
             # TODO: need ProcessHandler.poll()
@@ -1145,8 +1145,8 @@ toolbar#nav-bar {
             options.hideResultsTable = True
 
         # strip certain unnecessary items to avoid serialization errors in json.dumps()
-        d = dict((k, v) for k, v in options.__dict__.items() if (v is None) or
-                 isinstance(v, (basestring, numbers.Number)))
+        d = dict((k, v) for k, v in list(options.__dict__.items()) if (v is None) or
+                 isinstance(v, (str, numbers.Number)))
         d['testRoot'] = self.testRoot
         if options.jscov_dir_prefix:
             d['jscovDirPrefix'] = options.jscov_dir_prefix
@@ -1454,7 +1454,7 @@ def findTestMediaDevices(log):
     def sine_source_loaded():
         o = subprocess.check_output(
             ['/usr/bin/pactl', 'list', 'short', 'modules'])
-        return filter(lambda x: 'module-sine-source' in x, o.splitlines())
+        return [x for x in o.splitlines() if 'module-sine-source' in x]
 
     if not sine_source_loaded():
         # Load module-sine-source
@@ -1535,7 +1535,7 @@ class MochitestDesktop(MochitestBase):
         try:
             return dict(parseKeyValue(extraPrefs, context='--setpref='))
         except KeyValueParseError as e:
-            print str(e)
+            print(str(e))
             sys.exit(1)
 
     def fillCertificateDB(self, options):
@@ -2183,7 +2183,7 @@ class MochitestDesktop(MochitestBase):
 
         result = 1  # default value, if no tests are run.
         for d in dirs:
-            print "dir: %s" % d
+            print("dir: %s" % d)
             tests_in_dir = [t for t in testsToRun if os.path.dirname(t) == d]
 
             # If we are using --run-by-dir, we should not use the profile path (if) provided
@@ -2199,18 +2199,18 @@ class MochitestDesktop(MochitestBase):
 
         # printing total number of tests
         if options.browserChrome:
-            print "TEST-INFO | checking window state"
-            print "Browser Chrome Test Summary"
-            print "\tPassed: %s" % self.countpass
-            print "\tFailed: %s" % self.countfail
-            print "\tTodo: %s" % self.counttodo
-            print "*** End BrowserChrome Test Results ***"
+            print("TEST-INFO | checking window state")
+            print("Browser Chrome Test Summary")
+            print("\tPassed: %s" % self.countpass)
+            print("\tFailed: %s" % self.countfail)
+            print("\tTodo: %s" % self.counttodo)
+            print("*** End BrowserChrome Test Results ***")
         else:
-            print "0 INFO TEST-START | Shutdown"
-            print "1 INFO Passed:  %s" % self.countpass
-            print "2 INFO Failed:  %s" % self.countfail
-            print "3 INFO Todo:    %s" % self.counttodo
-            print "4 INFO SimpleTest FINISHED"
+            print("0 INFO TEST-START | Shutdown")
+            print("1 INFO Passed:  %s" % self.countpass)
+            print("2 INFO Failed:  %s" % self.countfail)
+            print("3 INFO Todo:    %s" % self.counttodo)
+            print("4 INFO SimpleTest FINISHED")
 
         return result
 
@@ -2630,7 +2630,7 @@ class MochitestDesktop(MochitestBase):
 
 def run_test_harness(options):
     logger_options = {
-        key: value for key, value in vars(options).iteritems()
+        key: value for key, value in vars(options).items()
         if key.startswith('log') or key == 'valgrind'}
 
     runner = MochitestDesktop(logger_options)

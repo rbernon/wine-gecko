@@ -21,7 +21,7 @@ class TestExtract(unittest.TestCase):
             path = os.path.join(directory, *f)
             exists = os.path.exists(path)
             if not exists:
-                print "%s does not exist" % (os.path.join(f))
+                print("%s does not exist" % (os.path.join(f)))
             self.assertTrue(exists)
             if exists:
                 contents = file(path).read().strip()
@@ -111,7 +111,7 @@ class TestExtract(unittest.TestCase):
         try:
             dest = tempfile.mkdtemp()
             mozfile.extract(filename, dest)
-        except Exception, exception:
+        except Exception as exception:
             pass
         finally:
             os.remove(filename)

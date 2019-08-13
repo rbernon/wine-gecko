@@ -82,7 +82,7 @@ class VersionPart(object):
             return
 
         if part == '*':
-            self.numA = sys.maxint
+            self.numA = sys.maxsize
         else:
             match = self._int_part.match(part)
             self.numA = int(match.group(1))

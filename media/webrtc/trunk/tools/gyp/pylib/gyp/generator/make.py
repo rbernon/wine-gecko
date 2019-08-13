@@ -494,7 +494,7 @@ cmd_sun_tool = ./gyp-sun-tool $(4) $< "$@"
 
 
 def WriteRootHeaderSuffixRules(writer):
-  extensions = sorted(COMPILABLE_EXTENSIONS.keys(), key=str.lower)
+  extensions = sorted(list(COMPILABLE_EXTENSIONS.keys()), key=str.lower)
 
   writer.write('# Suffix rules, putting all outputs into $(obj).\n')
   for ext in extensions:
@@ -658,7 +658,7 @@ class MakefileWriter:
     self.suffix_rules_objdir2 = {}
 
     # Generate suffix rules for all compilable extensions.
-    for ext in COMPILABLE_EXTENSIONS.keys():
+    for ext in list(COMPILABLE_EXTENSIONS.keys()):
       # Suffix rules for source folder.
       self.suffix_rules_srcdir.update({ext: ("""\
 $(obj).$(TOOLSET)/$(TARGET)/%%.o: $(srcdir)/%%%s FORCE_DO_CMD
@@ -767,7 +767,7 @@ $(obj).$(TOOLSET)/$(TARGET)/%%.o: $(obj)/%%%s FORCE_DO_CMD
           gyp.xcode_emulation.MacPrefixHeader(
               self.xcode_settings, lambda p: Sourceify(self.Absolutify(p)),
               self.Pchify))
-      sources = filter(Compilable, all_sources)
+      sources = list(filter(Compilable, all_sources))
       if sources:
         self.WriteLn(SHARED_HEADER_SUFFIX_RULES_COMMENT1)
         extensions = set([os.path.splitext(s)[1] for s in sources])
@@ -896,7 +896,7 @@ $(obj).$(TOOLSET)/$(TARGET)/%%.o: $(obj)/%%%s FORCE_DO_CMD
                    '%s%s'
                    % (name, cd_action, command))
       self.WriteLn()
-      outputs = map(self.Absolutify, outputs)
+      outputs = list(map(self.Absolutify, outputs))
       # The makefile rules are all relative to the top dir, but the gyp actions
       # are defined relative to their containing dir.  This replaces the obj
       # variable for the action rule with an absolute version so that the output
@@ -920,7 +920,7 @@ $(obj).$(TOOLSET)/$(TARGET)/%%.o: $(obj)/%%%s FORCE_DO_CMD
       outputs = [gyp.xcode_emulation.ExpandEnvVars(o, env) for o in outputs]
       inputs = [gyp.xcode_emulation.ExpandEnvVars(i, env) for i in inputs]
 
-      self.WriteDoCmd(outputs, map(Sourceify, map(self.Absolutify, inputs)),
+      self.WriteDoCmd(outputs, list(map(Sourceify, list(map(self.Absolutify, inputs)))),
                       part_of_all=part_of_all, command=name)
 
       # Stuff the outputs in a variable so we can refer to them later.
@@ -969,8 +969,8 @@ $(obj).$(TOOLSET)/$(TARGET)/%%.o: $(obj)/%%%s FORCE_DO_CMD
           extra_sources += outputs
         if int(rule.get('process_outputs_as_mac_bundle_resources', False)):
           extra_mac_bundle_resources += outputs
-        inputs = map(Sourceify, map(self.Absolutify, [rule_source] +
-                                    rule.get('inputs', [])))
+        inputs = list(map(Sourceify, list(map(self.Absolutify, [rule_source] +
+                                    rule.get('inputs', [])))))
         actions = ['$(call do_cmd,%s_%d)' % (name, count)]
 
         if name == 'resources_grit':
@@ -986,7 +986,7 @@ $(obj).$(TOOLSET)/$(TARGET)/%%.o: $(obj)/%%%s FORCE_DO_CMD
         outputs = [gyp.xcode_emulation.ExpandEnvVars(o, env) for o in outputs]
         inputs = [gyp.xcode_emulation.ExpandEnvVars(i, env) for i in inputs]
 
-        outputs = map(self.Absolutify, outputs)
+        outputs = list(map(self.Absolutify, outputs))
         all_outputs += outputs
         # Only write the 'obj' and 'builddir' rules for the "primary" output
         # (:1); it's superfluous for the "extra outputs", and this avoids
@@ -1097,7 +1097,7 @@ $(obj).$(TOOLSET)/$(TARGET)/%%.o: $(obj)/%%%s FORCE_DO_CMD
 
     for output, res in gyp.xcode_emulation.GetMacBundleResources(
         generator_default_variables['PRODUCT_DIR'], self.xcode_settings,
-        map(Sourceify, map(self.Absolutify, resources))):
+        list(map(Sourceify, list(map(self.Absolutify, resources))))):
       self.WriteDoCmd([output], [res], 'mac_tool,,,copy-bundle-resource',
                       part_of_all=True)
       bundle_deps.append(output)
@@ -1174,11 +1174,11 @@ $(obj).$(TOOLSET)/$(TARGET)/%%.o: $(obj)/%%%s FORCE_DO_CMD
         self.WriteList(cflags_objcc, 'CFLAGS_OBJCC_%s' % configname)
       includes = config.get('include_dirs')
       if includes:
-        includes = map(Sourceify, map(self.Absolutify, includes))
+        includes = list(map(Sourceify, list(map(self.Absolutify, includes))))
       self.WriteList(includes, 'INCS_%s' % configname, prefix='-I')
 
-    compilable = filter(Compilable, sources)
-    objs = map(self.Objectify, map(self.Absolutify, map(Target, compilable)))
+    compilable = list(filter(Compilable, sources))
+    objs = list(map(self.Objectify, list(map(self.Absolutify, list(map(Target, compilable))))))
     self.WriteList(objs, 'OBJS')
 
     for obj in objs:
@@ -1250,7 +1250,7 @@ $(obj).$(TOOLSET)/$(TARGET)/%%.o: $(obj)/%%%s FORCE_DO_CMD
 
     # If there are any object files in our input file list, link them into our
     # output.
-    extra_link_deps += filter(Linkable, sources)
+    extra_link_deps += list(filter(Linkable, sources))
 
     self.WriteLn()
 
@@ -1315,8 +1315,8 @@ $(obj).$(TOOLSET)/$(TARGET)/%%.o: $(obj)/%%%s FORCE_DO_CMD
     elif self.type == 'none':
       target = '%s.stamp' % target
     elif self.type != 'executable':
-      print ("ERROR: What output file should be generated?",
-             "type", self.type, "target", target)
+      print(("ERROR: What output file should be generated?",
+             "type", self.type, "target", target))
 
     target_prefix = spec.get('product_prefix', target_prefix)
     target = spec.get('product_name', target)
@@ -1478,7 +1478,7 @@ $(obj).$(TOOLSET)/$(TARGET)/%%.o: $(obj)/%%%s FORCE_DO_CMD
       # Postbuilds expect to be run in the gyp file's directory, so insert an
       # implicit postbuild to cd to there.
       postbuilds.insert(0, gyp.common.EncodePOSIXShellList(['cd', self.path]))
-      for i in xrange(len(postbuilds)):
+      for i in range(len(postbuilds)):
         if not postbuilds[i].startswith('$'):
           postbuilds[i] = EscapeShellArgument(postbuilds[i])
       self.WriteLn('%s: builddir := $(abs_builddir)' % QuoteSpaces(self.output))
@@ -1495,7 +1495,7 @@ $(obj).$(TOOLSET)/$(TARGET)/%%.o: $(obj)/%%%s FORCE_DO_CMD
 
       # Bundle dependencies. Note that the code below adds actions to this
       # target, so if you move these two lines, move the lines below as well.
-      self.WriteList(map(QuoteSpaces, bundle_deps), 'BUNDLE_DEPS')
+      self.WriteList(list(map(QuoteSpaces, bundle_deps)), 'BUNDLE_DEPS')
       self.WriteLn('%s: $(BUNDLE_DEPS)' % QuoteSpaces(self.output))
 
       # After the framework is built, package it. Needs to happen before
@@ -1570,7 +1570,7 @@ $(obj).$(TOOLSET)/$(TARGET)/%%.o: $(obj)/%%%s FORCE_DO_CMD
       self.WriteDoCmd([self.output_binary], deps, 'touch', part_of_all,
                       postbuilds=postbuilds)
     else:
-      print "WARNING: no output for", self.type, target
+      print("WARNING: no output for", self.type, target)
 
     # Add an alias for each target (if there are any outputs).
     # Installable target aliases are created below.
@@ -1675,8 +1675,8 @@ $(obj).$(TOOLSET)/$(TARGET)/%%.o: $(obj)/%%%s FORCE_DO_CMD
     phony: if true, the rule does not actually generate the named output, the
            output is just a name to run the rule
     """
-    outputs = map(QuoteSpaces, outputs)
-    inputs = map(QuoteSpaces, inputs)
+    outputs = list(map(QuoteSpaces, outputs))
+    inputs = list(map(QuoteSpaces, inputs))
 
     if comment:
       self.WriteLn('# ' + comment)
@@ -1768,7 +1768,7 @@ $(obj).$(TOOLSET)/$(TARGET)/%%.o: $(obj)/%%%s FORCE_DO_CMD
           default_cpp_ext = ext
     self.WriteLn('LOCAL_CPP_EXTENSION := ' + default_cpp_ext)
 
-    self.WriteList(map(self.Absolutify, filter(Compilable, all_sources)),
+    self.WriteList(list(map(self.Absolutify, list(filter(Compilable, all_sources)))),
                    'LOCAL_SRC_FILES')
 
     # Filter out those which do not match prefix and suffix and produce
@@ -1921,7 +1921,7 @@ def PerformBuild(data, configurations, params):
     if options.toplevel_dir and options.toplevel_dir != '.':
       arguments += '-C', options.toplevel_dir
     arguments.append('BUILDTYPE=' + config)
-    print 'Building [%s]: %s' % (config, arguments)
+    print('Building [%s]: %s' % (config, arguments))
     subprocess.check_call(arguments)
 
 

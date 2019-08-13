@@ -77,4 +77,4 @@ if __name__ == '__main__':
     if len(newest_pids) != 0:
         raise Exception('kill_pid() is malfunctioning')
 
-    print "Test passed."
+    print("Test passed.")

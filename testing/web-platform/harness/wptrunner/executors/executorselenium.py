@@ -8,7 +8,7 @@ import sys
 import threading
 import time
 import traceback
-import urlparse
+import urllib.parse
 import uuid
 
 from .base import (ExecutorException,
@@ -69,7 +69,7 @@ class SeleniumProtocol(Protocol):
             try:
                 self.after_connect()
             except:
-                print >> sys.stderr, traceback.format_exc()
+                print(traceback.format_exc(), file=sys.stderr)
                 self.logger.warning(
                     "Failed to connect to navigate initial page")
                 self.executor.runner.send_message("init_failed")
@@ -97,7 +97,7 @@ class SeleniumProtocol(Protocol):
         self.load_runner("http")
 
     def load_runner(self, protocol):
-        url = urlparse.urljoin(self.executor.server_url(protocol),
+        url = urllib.parse.urljoin(self.executor.server_url(protocol),
                                "/testharness_runner.html")
         self.logger.debug("Loading %s" % url)
         self.webdriver.get(url)

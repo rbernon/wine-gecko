@@ -5,17 +5,17 @@ from taskcluster_graph.try_test_parser import parse_test_opts
 class TryTestParserTest(unittest.TestCase):
 
     def test_parse_opts_valid(self):
-        self.assertEquals(
+        self.assertEqual(
             parse_test_opts('all[Mulet Linux]'),
             [{ 'test': 'all', 'platforms': ['Mulet Linux'] }]
         )
 
-        self.assertEquals(
+        self.assertEqual(
             parse_test_opts('all[Amazing, Foobar woot,yeah]'),
             [{ 'test': 'all', 'platforms': ['Amazing', 'Foobar woot', 'yeah'] }]
         )
 
-        self.assertEquals(
+        self.assertEqual(
             parse_test_opts('a,b, c'),
             [
                 { 'test': 'a' },
@@ -23,7 +23,7 @@ class TryTestParserTest(unittest.TestCase):
                 { 'test': 'c' },
             ]
         )
-        self.assertEquals(
+        self.assertEqual(
             parse_test_opts('woot, bar[b], baz, qux[ z ],a'),
             [
                 { 'test': 'woot' },
@@ -34,7 +34,7 @@ class TryTestParserTest(unittest.TestCase):
             ]
         )
 
-        self.assertEquals(
+        self.assertEqual(
             parse_test_opts('mochitest-3[Ubuntu,10.6,10.8,Windows XP,Windows 7,Windows 8]'),
             [
                 {
@@ -46,7 +46,7 @@ class TryTestParserTest(unittest.TestCase):
             ]
         )
 
-        self.assertEquals(
+        self.assertEqual(
             parse_test_opts(''),
             []
         )

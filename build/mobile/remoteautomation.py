@@ -114,14 +114,14 @@ class RemoteAutomation(Automation):
             proc.kill(True)
         if status == 1:
             if maxTime:
-                print "TEST-UNEXPECTED-FAIL | %s | application ran for longer than " \
-                      "allowed maximum time of %s seconds" % (self.lastTestSeen, maxTime)
+                print("TEST-UNEXPECTED-FAIL | %s | application ran for longer than " \
+                      "allowed maximum time of %s seconds" % (self.lastTestSeen, maxTime))
             else:
-                print "TEST-UNEXPECTED-FAIL | %s | application ran for longer than " \
-                      "allowed maximum time" % (self.lastTestSeen)
+                print("TEST-UNEXPECTED-FAIL | %s | application ran for longer than " \
+                      "allowed maximum time" % (self.lastTestSeen))
         if status == 2:
-            print "TEST-UNEXPECTED-FAIL | %s | application timed out after %d seconds with no output" \
-                % (self.lastTestSeen, int(timeout))
+            print("TEST-UNEXPECTED-FAIL | %s | application timed out after %d seconds with no output" \
+                % (self.lastTestSeen, int(timeout)))
 
         return status
 
@@ -135,7 +135,7 @@ class RemoteAutomation(Automation):
             self._devicemanager.shellCheckOutput(['chmod', '666', traces], root=True,
                                                  timeout=DeviceManager.short_timeout)
         except DMError:
-            print "Error deleting %s" % traces
+            print("Error deleting %s" % traces)
             pass
 
     def checkForANRs(self):
@@ -146,16 +146,16 @@ class RemoteAutomation(Automation):
                 if t:
                     stripped = t.strip()
                     if len(stripped) > 0:
-                        print "Contents of %s:" % traces
-                        print t
+                        print("Contents of %s:" % traces)
+                        print(t)
                 # Once reported, delete traces
                 self.deleteANRs()
             except DMError:
-                print "Error pulling %s" % traces
+                print("Error pulling %s" % traces)
             except IOError:
-                print "Error pulling %s" % traces
+                print("Error pulling %s" % traces)
         else:
-            print "%s not found" % traces
+            print("%s not found" % traces)
 
     def deleteTombstones(self):
         # delete any existing tombstone files from device
@@ -192,15 +192,15 @@ class RemoteAutomation(Automation):
                     # add a unique integer to the file name, in case there are
                     # multiple tombstones generated with the same name, for
                     # instance, after multiple robocop tests
-                    for i in xrange(1, sys.maxint):
+                    for i in range(1, sys.maxsize):
                         newname = "%s.%d.txt" % (f, i)
                         if not os.path.exists(newname):
                             os.rename(f, newname)
                             break
             else:
-                print "%s does not exist; tombstone check skipped" % remoteDir
+                print("%s does not exist; tombstone check skipped" % remoteDir)
         else:
-            print "MOZ_UPLOAD_DIR not defined; tombstone check skipped"
+            print("MOZ_UPLOAD_DIR not defined; tombstone check skipped")
 
     def checkForCrashes(self, directory, symbolsPath):
         self.checkForANRs()
@@ -225,7 +225,7 @@ class RemoteAutomation(Automation):
                 # minidumps directory is automatically created when Fennec
                 # (first) starts, so its lack of presence is a hint that
                 # something went wrong.
-                print "Automation Error: No crash directory (%s) found on remote device" % remoteCrashDir
+                print("Automation Error: No crash directory (%s) found on remote device" % remoteCrashDir)
                 # Whilst no crash was found, the run should still display as a failure
                 return True
             self._devicemanager.getDirectory(remoteCrashDir, dumpDir)
@@ -240,7 +240,7 @@ class RemoteAutomation(Automation):
             try:
                 shutil.rmtree(dumpDir)
             except:
-                print "WARNING: unable to remove directory: %s" % dumpDir
+                print("WARNING: unable to remove directory: %s" % dumpDir)
         return crashed
 
     def buildCommandLine(self, app, debuggerInfo, profileDir, testURL, extraArgs):
@@ -334,7 +334,7 @@ class RemoteAutomation(Automation):
                 testStartFilenames = re.findall(r"TEST-START \| ([^\s]*)", newLogContent)
                 if testStartFilenames:
                     self.lastTestSeen = testStartFilenames[-1]
-                print newLogContent
+                print(newLogContent)
                 return True
 
             self.logBuffer += newLogContent
@@ -412,7 +412,7 @@ class RemoteAutomation(Automation):
                 while retries < 3:
                     pid = self.dm.processExist(self.procName)
                     if pid and pid > 0:
-                        print "%s still alive after SIGABRT: waiting..." % self.procName
+                        print("%s still alive after SIGABRT: waiting..." % self.procName)
                         time.sleep(5)
                     else:
                         return

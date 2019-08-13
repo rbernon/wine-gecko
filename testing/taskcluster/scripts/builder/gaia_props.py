@@ -9,7 +9,7 @@ import argparse
 import os
 import json
 import sys
-import urlparse
+import urllib.parse
 
 parser = argparse.ArgumentParser(
     description='Get various information about gaia version tied to particular \
@@ -22,20 +22,19 @@ parser.add_argument('prop', help="Property type",
 args = parser.parse_args()
 
 if not os.path.isdir(args.gecko):
-        print >> sys.stderr, 'Given gecko path is not a directory'
+        print('Given gecko path is not a directory', file=sys.stderr)
         sys.exit(1)
 
 props_path = os.path.join(args.gecko, 'b2g/config/gaia.json')
 
 if not os.path.isfile(props_path):
-        print >> sys.stderr, \
-            'Gecko directory does not contain b2g/config/gaia.json'
+        print('Gecko directory does not contain b2g/config/gaia.json', file=sys.stderr)
         sys.exit(1)
 
 props = json.load(open(props_path))
 
 if args.prop == 'revision':
-    print(props['revision']);
+    print((props['revision']));
 
 if args.prop == 'repository':
-    print(urlparse.urljoin('https://hg.mozilla.org', props['repo_path']))
+    print((urllib.parse.urljoin('https://hg.mozilla.org', props['repo_path'])))

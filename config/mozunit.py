@@ -5,7 +5,7 @@
 from unittest import TextTestRunner as _TestRunner, TestResult as _TestResult
 import unittest
 import inspect
-from StringIO import StringIO
+from io import StringIO
 import os
 
 '''Helper to make python unit tests report the way that the Mozilla
@@ -128,7 +128,7 @@ class MockedOpen(object):
     '''
     def __init__(self, files = {}):
         self.files = {}
-        for name, content in files.iteritems():
+        for name, content in files.items():
             self.files[os.path.abspath(name)] = content
 
     def __call__(self, name, mode = 'r'):
@@ -146,15 +146,15 @@ class MockedOpen(object):
         return file
 
     def __enter__(self):
-        import __builtin__
-        self.open = __builtin__.open
+        import builtins
+        self.open = builtins.open
         self._orig_path_exists = os.path.exists
-        __builtin__.open = self
+        builtins.open = self
         os.path.exists = self._wrapped_exists
 
     def __exit__(self, type, value, traceback):
-        import __builtin__
-        __builtin__.open = self.open
+        import builtins
+        builtins.open = self.open
         os.path.exists = self._orig_path_exists
 
     def _wrapped_exists(self, p):

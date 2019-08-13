@@ -24,10 +24,10 @@ def measure_vsize_threadfunc(proc, output_file):
         time.sleep(0.5)
         idleTime += 0.5
         if idleTime > 30 * 60:
-          print "Still linking, 30 minutes passed..."
+          print("Still linking, 30 minutes passed...")
           sys.stdout.flush()
           idleTime = 0
-    print "TinderboxPrint: linker max vsize: %d" % maxvsize
+    print("TinderboxPrint: linker max vsize: %d" % maxvsize)
     with open(output_file, "w") as f:
         f.write("%d\n" % maxvsize)
 
@@ -51,10 +51,10 @@ def measure_link_vsize(output_file, args):
 
 if __name__ == "__main__":
     if sys.platform != "win32":
-        print >>sys.stderr, "link.py is only for use on Windows!"
+        print("link.py is only for use on Windows!", file=sys.stderr)
         sys.exit(1)
     if len(sys.argv) < 3:
-        print >>sys.stderr, "Usage: link.py <output filename> <commandline>"
+        print("Usage: link.py <output filename> <commandline>", file=sys.stderr)
         sys.exit(1)
     output_file = sys.argv.pop(1)
     sys.exit(measure_link_vsize(output_file, sys.argv[1:]))

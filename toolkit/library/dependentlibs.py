@@ -134,7 +134,7 @@ def main():
     if not options.libpaths:
         options.libpaths = [os.path.dirname(lib)]
 
-    print '\n'.join(dependentlibs(lib, options.libpaths, func) + [lib])
+    print('\n'.join(dependentlibs(lib, options.libpaths, func) + [lib]))
 
 if __name__ == '__main__':
     main()

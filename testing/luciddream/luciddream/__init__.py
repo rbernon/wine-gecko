@@ -27,7 +27,7 @@ class LucidDreamTestCase(MarionetteTestCase):
         caller_file = sys._getframe(1).f_globals.get('__file__', '')
         caller_file = os.path.abspath(caller_file)
         script = os.path.join(os.path.dirname(caller_file), filename)
-        self.assert_(os.path.exists(script), 'Script "%s" must exist' % script)
+        self.assertTrue(os.path.exists(script), 'Script "%s" must exist' % script)
         if hasattr(MarionetteTestCase, 'run_js_test'):
             return MarionetteTestCase.run_js_test(self, script, marionette)
         #XXX: copy/pasted from marionette_test.py, refactor this!

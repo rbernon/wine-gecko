@@ -36,7 +36,7 @@
 #
 # It uses the C preprocessor to process its inputs.
 
-from __future__ import with_statement
+
 import re, sys, os, subprocess
 import shlex
 import which
@@ -109,7 +109,7 @@ def preprocess(cxx, preprocessorOption, source, args = []):
 
   with open(tmpIn, 'wb') as input:
     input.write(source)
-  print(' '.join(cxx + outputArg + args + [tmpIn]))
+  print((' '.join(cxx + outputArg + args + [tmpIn])))
   result = subprocess.Popen(cxx + outputArg + args + [tmpIn]).wait()
   if (result != 0):
     sys.exit(result);
@@ -132,7 +132,7 @@ def messages(jsmsg):
 
 def get_config_defines(buildconfig):
   # Collect defines equivalent to ACDEFINES and add MOZ_DEBUG_DEFINES.
-  env = {key: value for key, value in buildconfig.defines.iteritems()
+  env = {key: value for key, value in buildconfig.defines.items()
          if key not in buildconfig.non_global_defines}
   for define in buildconfig.substs['MOZ_DEBUG_DEFINES']:
     env[define] = 1

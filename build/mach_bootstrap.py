@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import print_function, unicode_literals
+
 
 import errno
 import json
@@ -12,7 +12,7 @@ import random
 import sys
 import time
 import uuid
-import __builtin__
+import builtins
 
 from types import ModuleType
 
@@ -440,7 +440,7 @@ def bootstrap(topsrcdir, mozilla_dir=None):
     mach = mach.main.Mach(os.getcwd())
     mach.populate_context_handler = populate_context
 
-    for category, meta in CATEGORIES.items():
+    for category, meta in list(CATEGORIES.items()):
         mach.define_category(category, meta['short'], meta['long'],
             meta['priority'])
 
@@ -514,4 +514,4 @@ class ImportHook(object):
 
 
 # Install our hook
-__builtin__.__import__ = ImportHook(__builtin__.__import__)
+builtins.__import__ = ImportHook(builtins.__import__)

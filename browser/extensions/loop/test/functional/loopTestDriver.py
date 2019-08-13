@@ -7,7 +7,7 @@ from marionette_driver import Wait
 
 import pyperclip
 import re
-import urlparse
+import urllib.parse
 import time
 
 from serversetup import ROOMS_WEB_APP_URL_BASE
@@ -120,7 +120,7 @@ class LoopTestDriver():
 
         room_url = self.adjust_url(room_url)
 
-        self.assertIn(urlparse.urlparse(room_url).scheme, ['http', 'https'],
+        self.assertIn(urllib.parse.urlparse(room_url).scheme, ['http', 'https'],
                       "room URL returned by server: '" + room_url +
                       "' has invalid scheme")
         return room_url

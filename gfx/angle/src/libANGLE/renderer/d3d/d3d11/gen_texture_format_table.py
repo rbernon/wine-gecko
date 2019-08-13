@@ -273,7 +273,7 @@ def get_texture_format_item(idx, texture_format):
 
 def parse_json_into_switch_string(json_data):
     table_data = ''
-    for internal_format_item in sorted(json_data.iteritems()):
+    for internal_format_item in sorted(json_data.items()):
         internal_format = internal_format_item[0]
         table_data += '        case ' + internal_format + ':\n'
         table_data += '        {\n'

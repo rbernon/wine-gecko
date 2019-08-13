@@ -144,7 +144,7 @@ class B2gMultilocale(LocalesMixin, BaseScript, VCSMixin, GaiaLocalesMixin):
             'vcs': self.config['gaia_l10n_vcs'],
         }
 
-        self.pull_gaia_locale_source(l10n_config, parse_config_file(languages_file).keys(), l10n_base_dir)
+        self.pull_gaia_locale_source(l10n_config, list(parse_config_file(languages_file).keys()), l10n_base_dir)
         self.pull_locale_source()
         gecko_locales = self.query_locales()
         # populate b2g/overrides, which isn't in gecko atm

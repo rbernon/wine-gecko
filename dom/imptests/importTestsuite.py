@@ -10,7 +10,7 @@ Note: removes both source and destination directory before starting. Do not
       use with outstanding changes in either directory.
 """
 
-from __future__ import print_function, unicode_literals
+
 
 import os
 import shutil

@@ -1,19 +1,19 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
+
 import sys
 from gi.repository import HarfBuzz as hb
 from gi.repository import GLib
 
 # Python 2/3 compatibility
 try:
-	unicode
+	str
 except NameError:
-	unicode = str
+	str = str
 
 def tounicode(s, encoding='utf-8'):
-	if not isinstance(s, unicode):
+	if not isinstance(s, str):
 		return s.decode(encoding)
 	else:
 		return s

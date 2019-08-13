@@ -17,7 +17,7 @@ class WindowHandleTest(base_test.WebDriverBaseTest):
 
     def test_window_handle_is_not_current(self):
         handle = self.driver.get_window_handle()
-        self.assertNotEquals(handle, "current")
+        self.assertNotEqual(handle, "current")
 
     def test_window_handles_are_unique(self):
         number_of_windows = 20

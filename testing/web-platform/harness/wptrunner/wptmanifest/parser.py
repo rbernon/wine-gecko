@@ -17,9 +17,9 @@
 # TODO: keep comments in the tree
 
 import types
-from cStringIO import StringIO
+from io import StringIO
 
-from node import *
+from .node import *
 
 
 class ParseError(Exception):
@@ -76,7 +76,7 @@ class Tokenizer(object):
 
     def tokenize(self, stream):
         self.reset()
-        if type(stream) in types.StringTypes:
+        if type(stream) in (str,):
             stream = StringIO(stream)
         if not hasattr(stream, "name"):
             self.filename = ""
@@ -468,13 +468,13 @@ class Tokenizer(object):
 
     def decode_escape(self, length):
         value = 0
-        for i in xrange(length):
+        for i in range(length):
             c = self.char()
             value *= 16
             value += self.escape_value(c)
             self.consume()
 
-        return unichr(value).encode("utf8")
+        return chr(value).encode("utf8")
 
     def escape_value(self, c):
         if '0' <= c <= '9':
@@ -509,7 +509,7 @@ class Parser(object):
         return self.tree.node
 
     def consume(self):
-        self.token = self.token_generator.next()
+        self.token = next(self.token_generator)
 
     def expect(self, type, value=None):
         if self.token[0] != type:

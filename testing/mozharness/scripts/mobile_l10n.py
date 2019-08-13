@@ -475,7 +475,7 @@ class MobileSingleLocale(MockMixin, LocalesMixin, ReleaseMixin,
     def taskcluster_upload(self):
         auth = os.path.join(os.getcwd(), self.config['taskcluster_credentials_file'])
         credentials = {}
-        execfile(auth, credentials)
+        exec(compile(open(auth, "rb").read(), auth, 'exec'), credentials)
         client_id = credentials.get('taskcluster_clientId')
         access_token = credentials.get('taskcluster_accessToken')
         if not client_id or not access_token:
@@ -585,7 +585,7 @@ class MobileSingleLocale(MockMixin, LocalesMixin, ReleaseMixin,
                     success = True
             if not success:
                 self.add_failure(locale, message="Failed to detect %s url in make upload!" % (locale))
-                print output
+                print(output)
                 continue
             success_count += 1
         self.summarize_success_count(success_count, total_count,

@@ -24,5 +24,5 @@ class Version(unittest.TestCase):
         # the SDK should be able to determine its own version. We don't care
         # what it is, merely that it can be computed.
         version = get_versions()["version"]
-        self.failUnless(isinstance(version, str), (version, type(version)))
-        self.failUnless(len(version) > 0, version)
+        self.assertTrue(isinstance(version, str), (version, type(version)))
+        self.assertTrue(len(version) > 0, version)

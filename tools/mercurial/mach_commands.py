@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this,
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import, print_function, unicode_literals
+
 
 import os
 import sys
@@ -42,7 +42,7 @@ class VersionControlCommands(object):
         config_paths = ['~/.hgrc']
         if sys.platform in ('win32', 'cygwin'):
             config_paths.insert(0, '~/mercurial.ini')
-        config_paths = map(os.path.expanduser, config_paths)
+        config_paths = list(map(os.path.expanduser, config_paths))
 
         # Touch a file so we can periodically prompt to update extensions.
         #
@@ -65,7 +65,7 @@ class VersionControlCommands(object):
         else:
             from hgsetup.wizard import MercurialSetupWizard
             wizard = MercurialSetupWizard(self._context.state_dir)
-            result = wizard.run(map(os.path.expanduser, config_paths))
+            result = wizard.run(list(map(os.path.expanduser, config_paths)))
 
         if result:
             print('(despite the failure, mach will not nag you to run '

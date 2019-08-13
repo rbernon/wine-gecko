@@ -21,4 +21,4 @@ Example usage:
 
 """
 
-from moznetwork import *
+from .moznetwork import *

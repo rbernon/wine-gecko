@@ -2,10 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import errors
+from . import errors
 import types
 
-from marionette import HTMLElement
+from .marionette import HTMLElement
 
 """This file provides a set of expected conditions for common use
 cases when writing Marionette tests.

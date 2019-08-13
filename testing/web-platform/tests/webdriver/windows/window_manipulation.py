@@ -20,7 +20,7 @@ class WindowingTest(base_test.WebDriverBaseTest):
         window_size = self.driver.get_window_size()
         self.assertTrue("width" in window_size)
         self.assertTrue("height" in window_size)
-        self.assertEquals({"width": 400, "height":400}, window_size)
+        self.assertEqual({"width": 400, "height":400}, window_size)
 
         """
         todo: make that work
@@ -36,7 +36,7 @@ class WindowingTest(base_test.WebDriverBaseTest):
         window_position = self.driver.get_window_position()
         self.assertTrue("x" in window_position)
         self.assertTrue("y" in window_position)
-        self.assertEquals({"x": 400, "y": 400}, window_position)
+        self.assertEqual({"x": 400, "y": 400}, window_position)
 
 
 if __name__ == "__main__":

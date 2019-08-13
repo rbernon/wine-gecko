@@ -2,7 +2,7 @@ import hashlib
 import json
 import os
 import tarfile
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 import taskcluster_graph.transform.routes as routes_transform
 from slugid import nice as slugid
@@ -56,11 +56,11 @@ def task_id_for_image(seen_images, project, name):
 def image_artifact_exists_for_task_id(task_id, path):
     ''' Verifies that the artifact exists for the task ID '''
     try:
-        request = urllib2.Request(ARTIFACT_URL.format(task_id, path))
+        request = urllib.request.Request(ARTIFACT_URL.format(task_id, path))
         request.get_method = lambda : 'HEAD'
-        urllib2.urlopen(request)
+        urllib.request.urlopen(request)
         return True
-    except urllib2.HTTPError,e:
+    except urllib.error.HTTPError as e:
         return False
 
 def get_task_id_for_namespace(project, name, context_hash):
@@ -76,7 +76,7 @@ def get_task_id_for_namespace(project, name, context_hash):
     for p in ['mozilla-central', project]:
         image_index_url = INDEX_URL.format(p, name, context_hash)
         try:
-            task = json.load(urllib2.urlopen(image_index_url))
+            task = json.load(urllib.request.urlopen(image_index_url))
             # Ensure that the artifact exists for the task and hasn't expired
             artifact_exists = image_artifact_exists_for_task_id(task['taskId'],
                                                                 'public/image.tar')
@@ -87,7 +87,7 @@ def get_task_id_for_namespace(project, name, context_hash):
             # branches have been tried
             if artifact_exists:
                 return task['taskId']
-        except urllib2.HTTPError:
+        except urllib.error.HTTPError:
             pass
 
     return None
@@ -154,7 +154,7 @@ def get_image_details(seen_images, task_id):
     Image details can include a path and hash indicating that the image requires
     building.
     '''
-    for name, details in seen_images.items():
+    for name, details in list(seen_images.items()):
         if details['taskId'] == task_id:
             return [name, details]
     return None
@@ -219,7 +219,7 @@ def normalize_image_details(graph, task, seen_images, params, decision_task_id):
 
     graph['scopes'].add(define_task)
     graph['scopes'] |= set(image_task['task'].get('scopes', []))
-    route_scopes = map(lambda route: 'queue:route:' + route, image_task['task'].get('routes', []))
+    route_scopes = ['queue:route:' + route for route in image_task['task'].get('routes', [])]
     graph['scopes'] |= set(route_scopes)
 
     details['required'] = True

@@ -297,7 +297,7 @@ def WebIDLTest(parser, harness):
           };
         """)
         results = parser.finish()
-    except Exception, x:
+    except Exception as x:
         threw = True
     harness.ok(threw, "Should not allow [SetterThrows] on readonly attributes")
 
@@ -310,7 +310,7 @@ def WebIDLTest(parser, harness):
           };
         """)
         results = parser.finish()
-    except Exception, x:
+    except Exception as x:
         threw = True
     harness.ok(threw, "Should spell [Throws] correctly")
 
@@ -323,7 +323,7 @@ def WebIDLTest(parser, harness):
           };
         """)
         results = parser.finish()
-    except Exception, x:
+    except Exception as x:
         threw = True
     harness.ok(threw, "Should not allow [SameObject] on attributes not of interface type")
 
@@ -336,6 +336,6 @@ def WebIDLTest(parser, harness):
           };
         """)
         results = parser.finish()
-    except Exception, x:
+    except Exception as x:
         threw = True
     harness.ok(not threw, "Should allow [SameObject] on attributes of interface type")

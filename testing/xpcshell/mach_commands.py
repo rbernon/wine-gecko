@@ -4,7 +4,7 @@
 
 # Integrates the xpcshell test runner with mach.
 
-from __future__ import absolute_import, unicode_literals, print_function
+
 
 import argparse
 import os
@@ -42,7 +42,7 @@ BUSYBOX_URLS = {
 here = os.path.abspath(os.path.dirname(__file__))
 
 if sys.version_info[0] < 3:
-    unicode_type = unicode
+    unicode_type = str
 else:
     unicode_type = str
 
@@ -125,7 +125,7 @@ class XPCShellRunner(MozbuildObject):
         # Python through 2.7.2 has issues with unicode in some of the
         # arguments. Work around that.
         filtered_args = {}
-        for k, v in kwargs.iteritems():
+        for k, v in kwargs.items():
             if isinstance(v, unicode_type):
                 v = v.encode('utf-8')
 
@@ -237,7 +237,7 @@ class B2GXPCShellRunner(MozbuildObject):
         self.bin_dir = os.path.join(self.distdir, 'bin')
 
     def _download_busybox(self, b2g_home, emulator):
-        import urllib2
+        import urllib.request, urllib.error, urllib.parse
 
         target_device = 'generic'
         if emulator == 'x86':
@@ -252,8 +252,8 @@ class B2GXPCShellRunner(MozbuildObject):
             os.makedirs(system_bin)
 
         try:
-            data = urllib2.urlopen(BUSYBOX_URLS[emulator])
-        except urllib2.URLError:
+            data = urllib.request.urlopen(BUSYBOX_URLS[emulator])
+        except urllib.error.URLError:
             print('There was a problem downloading busybox. Proceeding without it,' \
                   'initial setup will be slow.')
             return

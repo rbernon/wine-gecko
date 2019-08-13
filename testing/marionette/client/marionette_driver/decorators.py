@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from errors import MarionetteException
+from .errors import MarionetteException
 from functools import wraps
 import socket
 import sys
@@ -39,7 +39,7 @@ def do_crash_check(func, always=False):
             if not isinstance(e, MarionetteException) or type(e) is MarionetteException:
                 if not always:
                     check()
-            raise exc, val, tb
+            raise exc(val).with_traceback(tb)
         finally:
             if always:
                 check()

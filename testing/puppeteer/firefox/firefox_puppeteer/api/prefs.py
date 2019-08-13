@@ -108,7 +108,7 @@ class Preferences(BaseLib):
         Please see :func:`~Preferences.restore_pref` for details.
         """
         while len(self.archive):
-            self.restore_pref(self.archive.keys()[0])
+            self.restore_pref(list(self.archive.keys())[0])
 
     def restore_pref(self, pref_name):
         """Restores a previously set preference to its former value.

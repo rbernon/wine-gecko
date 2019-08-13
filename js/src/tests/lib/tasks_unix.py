@@ -4,8 +4,8 @@
 
 import errno, os, select
 from datetime import datetime, timedelta
-from progressbar import ProgressBar
-from results import NullTestOutput, TestOutput, escape_cmdline
+from .progressbar import ProgressBar
+from .results import NullTestOutput, TestOutput, escape_cmdline
 
 class Task(object):
     def __init__(self, test, prefix, pid, stdout, stderr):
@@ -25,7 +25,7 @@ def spawn_test(test, prefix, passthrough, run_skipped, show_cmd):
 
     cmd = test.get_command(prefix)
     if show_cmd:
-        print(escape_cmdline(cmd))
+        print((escape_cmdline(cmd)))
 
     if not passthrough:
         (rout, wout) = os.pipe()

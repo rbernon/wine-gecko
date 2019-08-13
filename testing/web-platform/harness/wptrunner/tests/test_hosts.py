@@ -4,7 +4,7 @@
 
 import unittest
 import sys
-from cStringIO import StringIO
+from io import StringIO
 
 sys.path.insert(0, "..")
 
@@ -14,7 +14,7 @@ import hosts
 class HostsTest(unittest.TestCase):
     def do_test(self, input, expected):
         host_file = hosts.HostsFile.from_file(StringIO(input))
-        self.assertEquals(host_file.to_string(), expected)
+        self.assertEqual(host_file.to_string(), expected)
 
     def test_simple(self):
         self.do_test("""127.0.0.1    \tlocalhost  alias # comment

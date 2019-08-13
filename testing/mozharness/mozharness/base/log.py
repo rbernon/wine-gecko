@@ -91,9 +91,9 @@ class LogMixin(object):
         """
         if not hasattr(self, 'config') or self.config.get('log_to_console', True):
             if stderr:
-                print >> sys.stderr, message
+                print(message, file=sys.stderr)
             else:
-                print message
+                print(message)
 
     def log(self, message, level=INFO, exit_code=-1):
         """ log the message passed to it according to level, exit if level == FATAL
@@ -340,7 +340,7 @@ class OutputParser(LogMixin):
             output (str | list): string or list of string to parse
         """
 
-        if isinstance(output, basestring):
+        if isinstance(output, str):
             output = [output]
         for line in output:
             if not line or line.isspace():
@@ -666,7 +666,7 @@ class MultiFileLogger(BaseLogger):
 
         BaseLogger.new_logger(self)
         min_logger_level = self.get_logger_level(self.log_level)
-        for level in self.LEVELS.keys():
+        for level in list(self.LEVELS.keys()):
             if self.get_logger_level(level) >= min_logger_level:
                 self.log_files[level] = '%s_%s.log' % (self.log_name,
                                                        level)

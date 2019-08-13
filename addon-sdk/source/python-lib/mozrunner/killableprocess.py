@@ -72,7 +72,7 @@ except ImportError:
 mswindows = (sys.platform == "win32")
 
 if mswindows:
-    import winprocess
+    from . import winprocess
 else:
     import signal
 
@@ -124,7 +124,7 @@ class Popen(subprocess.Popen):
                     c2pread, c2pwrite,
                     errread, errwrite) = args_tuple
 
-            if not isinstance(args, types.StringTypes):
+            if not isinstance(args, (str,)):
                 args = subprocess.list2cmdline(args)
 
             # Always or in the create new process group
@@ -274,7 +274,7 @@ class Popen(subprocess.Popen):
                 def group_wait(timeout):
                     try:
                         os.waitpid(self.pid, 0)
-                    except OSError, e:
+                    except OSError as e:
                         pass # If wait has already been called on this pid, bad things happen
                     return self.returncode
             elif sys.platform == 'darwin':

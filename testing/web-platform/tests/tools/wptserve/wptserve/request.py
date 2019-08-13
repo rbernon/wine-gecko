@@ -1,13 +1,13 @@
 import base64
 import cgi
-import Cookie
+import http.cookies
 import os
-import StringIO
+import io
 import tempfile
-import urlparse
+import urllib.parse
 
-import stash
-from utils import HTTPException
+from . import stash
+from .utils import HTTPException
 
 missing = object()
 
@@ -52,7 +52,7 @@ class InputFile(object):
         if length > self.max_buffer_size:
             self._buf = tempfile.TemporaryFile(mode="rw+b")
         else:
-            self._buf = StringIO.StringIO()
+            self._buf = io.StringIO()
 
     @property
     def _buf_position(self):
@@ -144,7 +144,7 @@ class InputFile(object):
                 break
         return rv
 
-    def next(self):
+    def __next__(self):
         data = self.readline()
         if data:
             return data
@@ -266,7 +266,7 @@ class Request(object):
                                       host,
                                       port,
                                       self.request_path)
-        self.url_parts = urlparse.urlsplit(self.url)
+        self.url_parts = urllib.parse.urlsplit(self.url)
 
         self._raw_headers = request_handler.headers
 
@@ -291,7 +291,7 @@ class Request(object):
     @property
     def GET(self):
         if self._GET is None:
-            params = urlparse.parse_qsl(self.url_parts.query, keep_blank_values=True)
+            params = urllib.parse.parse_qsl(self.url_parts.query, keep_blank_values=True)
             self._GET = MultiDict()
             for key, value in params:
                 self._GET.add(key, value)
@@ -314,11 +314,11 @@ class Request(object):
     @property
     def cookies(self):
         if self._cookies is None:
-            parser = Cookie.BaseCookie()
+            parser = http.cookies.BaseCookie()
             cookie_headers = self.headers.get("cookie", "")
             parser.load(cookie_headers)
             cookies = Cookies()
-            for key, value in parser.iteritems():
+            for key, value in parser.items():
                 cookies[key] = CookieValue(value)
             self._cookies = cookies
         return self._cookies
@@ -348,7 +348,7 @@ class Request(object):
 class RequestHeaders(dict):
     """Dictionary-like API for accessing request headers."""
     def __init__(self, items):
-        for key, value in zip(items.keys(), items.values()):
+        for key, value in zip(list(items.keys()), list(items.values())):
             key = key.lower()
             if key in self:
                 self[key].append(value)

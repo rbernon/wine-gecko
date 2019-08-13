@@ -11,7 +11,7 @@ class GetFromHttpTest(base_test.WebDriverBaseTest):
         page = self.webserver.where_is('navigation/res/empty.html')
         self.driver.get(page)
         url = self.driver.current_url
-        self.assertEquals(page, url)
+        self.assertEqual(page, url)
 
 
     def testGetWillFollowTheLocationHeader(self):
@@ -19,7 +19,7 @@ class GetFromHttpTest(base_test.WebDriverBaseTest):
         self.driver.get(page)
         expected = self.webserver.where_is('navigation/res/empty.html')
         url = self.driver.current_url
-        self.assertEquals(expected, url)
+        self.assertEqual(expected, url)
 
 
     def testGetWillFollowMetaRefreshThatRefreshesInstantly(self):
@@ -27,7 +27,7 @@ class GetFromHttpTest(base_test.WebDriverBaseTest):
         self.driver.get(page)
         expected = self.webserver.where_is('navigation/res/empty.html')
         url = self.driver.current_url
-        self.assertEquals(expected, url)
+        self.assertEqual(expected, url)
 
 
     def testGetWillFollowMetaRefreshThatRefreshesAfterOneSecond(self):
@@ -35,14 +35,14 @@ class GetFromHttpTest(base_test.WebDriverBaseTest):
         self.driver.get(page)
         expected = self.webserver.where_is('navigation/res/empty.html')
         url = self.driver.current_url
-        self.assertEquals(expected, url)
+        self.assertEqual(expected, url)
 
 
     def testGetWillNotFollowMetaRefreshThatRefreshesAfterMoreThanOneSecond(self):
         page = self.webserver.where_is('navigation/res/60s-meta-redirect.html')
         self.driver.get(page)
         url = self.driver.current_url
-        self.assertEquals(page, url)
+        self.assertEqual(page, url)
 
 
     def testGetFragmentInCurrentDocumentDoesNotReloadPage(self):
@@ -53,7 +53,7 @@ class GetFromHttpTest(base_test.WebDriverBaseTest):
         self.driver.execute_script("state = true")
 
         self.driver.get(fragment_page)
-        self.assertEquals(True, self.driver.execute_script("return state"))
+        self.assertEqual(True, self.driver.execute_script("return state"))
 
 
 if __name__ == '__main__':

@@ -35,7 +35,7 @@
 
 import unittest
 
-import set_sys_path  # Update sys.path to locate mod_pywebsocket module.
+from . import set_sys_path  # Update sys.path to locate mod_pywebsocket module.
 
 from mod_pywebsocket.handshake._base import HandshakeException
 from mod_pywebsocket.handshake.hybi00 import Handshaker
@@ -506,7 +506,7 @@ class HyBi00ValidateSubprotocolTest(unittest.TestCase):
         self.assertRaises(HandshakeException,
                           _validate_subprotocol,
                           # "Japan" in Japanese
-                          u'\u65e5\u672c')
+                          '\u65e5\u672c')
 
 
 if __name__ == '__main__':

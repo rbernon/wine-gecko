@@ -1,4 +1,4 @@
-import BaseHTTPServer
+import http.server
 import os
 import ssl
 import sys
@@ -21,7 +21,7 @@ class InvalidCertTest(base_test.WebDriverBaseTest):
             'navigation/res/empty.html').replace('http:', 'https:', 1)
 
         self.driver.get(expected)
-        self.assertEquals(expected, self.driver.current_url)
+        self.assertEqual(expected, self.driver.current_url)
 
 
 if __name__ == '__main__':

@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, unicode_literals
+
 
 import json
 import unittest
@@ -8,7 +8,7 @@ from .support import get_data_files
 try:
     unittest.TestCase.assertEqual
 except AttributeError:
-    unittest.TestCase.assertEqual = unittest.TestCase.assertEquals
+    unittest.TestCase.assertEqual = unittest.TestCase.assertEqual
 
 import html5lib
 from html5lib import constants
@@ -81,7 +81,7 @@ class JsonWalker(TreeWalker):
 
 
 def serialize_html(input, options):
-    options = dict([(str(k), v) for k, v in options.items()])
+    options = dict([(str(k), v) for k, v in list(options.items())])
     stream = JsonWalker(input)
     serializer = HTMLSerializer(alphabetical_attributes=True, **options)
     return serializer.render(stream, options.get("encoding", None))

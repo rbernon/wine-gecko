@@ -1,11 +1,11 @@
-from __future__ import absolute_import, division, unicode_literals
+
 
 from xml.sax.xmlreader import AttributesNSImpl
 
 from ..constants import adjustForeignAttributes, unadjustForeignAttributes
 
 prefix_mapping = {}
-for prefix, localName, namespace in adjustForeignAttributes.values():
+for prefix, localName, namespace in list(adjustForeignAttributes.values()):
     if prefix is not None:
         prefix_mapping[prefix] = namespace
 
@@ -13,7 +13,7 @@ for prefix, localName, namespace in adjustForeignAttributes.values():
 def to_sax(walker, handler):
     """Call SAX-like content handler based on treewalker walker"""
     handler.startDocument()
-    for prefix, namespace in prefix_mapping.items():
+    for prefix, namespace in list(prefix_mapping.items()):
         handler.startPrefixMapping(prefix, namespace)
 
     for token in walker:
@@ -39,6 +39,6 @@ def to_sax(walker, handler):
         else:
             assert False, "Unknown token type"
 
-    for prefix, namespace in prefix_mapping.items():
+    for prefix, namespace in list(prefix_mapping.items()):
         handler.endPrefixMapping(prefix)
     handler.endDocument()

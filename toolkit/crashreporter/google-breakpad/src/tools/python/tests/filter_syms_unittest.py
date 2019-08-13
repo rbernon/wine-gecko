@@ -30,10 +30,10 @@
 
 """Unit tests for filter_syms.py"""
 
-import cStringIO
+import io
 import ntpath
 import os
-import StringIO
+import io
 import sys
 import unittest
 
@@ -45,8 +45,8 @@ import filter_syms
 
 class FilterSysmsTest(unittest.TestCase):
   def assertParsed(self, input_data, ignored_prefixes, expected):
-    input_io = cStringIO.StringIO(input_data)
-    output_io = cStringIO.StringIO()
+    input_io = io.StringIO(input_data)
+    output_io = io.StringIO()
     parser = filter_syms.SymbolFileParser(input_io, output_io,
                                           ignored_prefixes, ntpath)
     parser.Process()

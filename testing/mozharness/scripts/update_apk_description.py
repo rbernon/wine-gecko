@@ -7,7 +7,7 @@
 """
 import sys
 import os
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import json
 
 from oauth2client import client
@@ -113,8 +113,8 @@ class UpdateDescriptionAPK(BaseScript, GooglePlayMixin, VirtualenvMixin):
         Idem for not translated locale
         """
         try:
-            response = urllib2.urlopen(self.all_locales_url.format(channel=package_name))
-        except urllib2.HTTPError:
+            response = urllib.request.urlopen(self.all_locales_url.format(channel=package_name))
+        except urllib.error.HTTPError:
             self.fatal("Could not download the locale list. Channel: '" + package_name + "', URL: '" + self.all_locales_url + "'")
 
         return json.load(response)
@@ -123,8 +123,8 @@ class UpdateDescriptionAPK(BaseScript, GooglePlayMixin, VirtualenvMixin):
         """ Download and load the locale mapping
         """
         try:
-            response = urllib2.urlopen(self.mapping_url)
-        except urllib2.HTTPError:
+            response = urllib.request.urlopen(self.mapping_url)
+        except urllib.error.HTTPError:
             self.fatal("Could not download the locale mapping list. URL: '" + self.mapping_url + "'")
         self.mappings = json.load(response)
 
@@ -142,8 +142,8 @@ class UpdateDescriptionAPK(BaseScript, GooglePlayMixin, VirtualenvMixin):
         """
         localeURL = self.locale_url.format(channel=package_name, locale=locale)
         try:
-            response = urllib2.urlopen(localeURL)
-        except urllib2.HTTPError:
+            response = urllib.request.urlopen(localeURL)
+        except urllib.error.HTTPError:
             self.fatal("Could not download the locale translation. Locale: '" + locale + "', Channel: '" + package_name + "', URL: '" + localeURL + "'")
         return json.load(response)
 

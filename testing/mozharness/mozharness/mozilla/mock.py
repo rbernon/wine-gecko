@@ -101,7 +101,7 @@ class MockMixin(object):
             cmd += ['--unpriv']
         cmd += ['--shell']
 
-        if not isinstance(command, basestring):
+        if not isinstance(command, str):
             command = subprocess.list2cmdline(command)
 
         # XXX - Hack - gets around AB_CD=%(locale)s type arguments
@@ -110,7 +110,7 @@ class MockMixin(object):
 
         if env:
             env_cmd = ['/usr/bin/env']
-            for key, value in env.items():
+            for key, value in list(env.items()):
                 # $HOME won't work inside the mock chroot
                 if key == 'HOME':
                     continue

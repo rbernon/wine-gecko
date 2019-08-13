@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this,
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import unicode_literals
+
 
 import os
 
@@ -72,10 +72,10 @@ class MercurialUpdater(object):
                                  global_args=global_args)
 
     def _update_repo(self, binary, url, dest, branch, msg, fn, *args, **kwargs):
-        print('=' * 80)
+        print(('=' * 80))
         print(msg)
         try:
             fn(binary, url, dest, branch, *args, **kwargs)
         finally:
-            print('=' * 80)
+            print(('=' * 80))
             print('')

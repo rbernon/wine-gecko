@@ -4,7 +4,7 @@
 
 # Integrates luciddream test runner with mach.
 
-from __future__ import absolute_import
+
 
 import os
 
@@ -67,21 +67,21 @@ class MachCommands(MachCommandBase):
                 browser_path = binary_path
 
         if not browser_path:
-            print "Need firefox binary path via --browser_path argument"
+            print("Need firefox binary path via --browser_path argument")
             return 1
         elif not os.path.exists(browser_path):
-            print "Firefox binary doesn't exists: " + browser_path
+            print("Firefox binary doesn't exists: " + browser_path)
             return 1
 
         if not b2g_desktop_path:
-            print "Need b2g desktop binary path via --b2g-desktop argument"
+            print("Need b2g desktop binary path via --b2g-desktop argument")
             return 1
         elif not os.path.exists(b2g_desktop_path):
-            print "B2G desktop binary doesn't exists: " + b2g_desktop_path
+            print("B2G desktop binary doesn't exists: " + b2g_desktop_path)
             return 1
 
         if not test_paths or len(test_paths) == 0:
-            print "Please specify a test manifest to run"
+            print("Please specify a test manifest to run")
             return 1
 
         browser_args = None

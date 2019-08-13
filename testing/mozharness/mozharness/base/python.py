@@ -158,7 +158,7 @@ class VirtualenvMixin(object):
                 self.log("package_versions: Program pip not in path", level=error_level)
                 return {}
             pip_freeze_output = self.get_output_from_command([pip, "freeze"], silent=True)
-            if not isinstance(pip_freeze_output, basestring):
+            if not isinstance(pip_freeze_output, str):
                 self.fatal("package_versions: Error encountered running `pip freeze`: %s" % pip_freeze_output)
 
         for line in pip_freeze_output.splitlines():
@@ -186,7 +186,7 @@ class VirtualenvMixin(object):
         """
         Return whether the package is installed
         """
-        packages = self.package_versions(error_level=error_level).keys()
+        packages = list(self.package_versions(error_level=error_level).keys())
         return package_name.lower() in [package.lower() for package in packages]
 
     def install_module(self, module=None, module_url=None, install_method=None,
@@ -434,7 +434,7 @@ class VirtualenvMixin(object):
         """Import the virtualenv's packages into this Python interpreter."""
         bin_dir = os.path.dirname(self.query_python_path())
         activate = os.path.join(bin_dir, 'activate_this.py')
-        execfile(activate, dict(__file__=activate))
+        exec(compile(open(activate, "rb").read(), activate, 'exec'), dict(__file__=activate))
 
 
 class ResourceMonitoringMixin(object):
@@ -552,7 +552,7 @@ class ResourceMonitoringMixin(object):
 
         log_usage('Total resource usage', duration, cpu_percent, cpu_times, io)
 
-        for phase in rm.phases.keys():
+        for phase in list(rm.phases.keys()):
             start_time, end_time = rm.phases[phase]
             cpu_percent, cpu_times, io = resources(phase)
             log_usage(phase, end_time - start_time, cpu_percent, cpu_times, io)
@@ -596,7 +596,7 @@ class InfluxRecordingMixin(object):
                 self.warning("Unable to start influxdb recording: %s not found" % (auth,))
                 return
             credentials = {}
-            execfile(auth, credentials)
+            exec(compile(open(auth, "rb").read(), auth, 'exec'), credentials)
             if 'influxdb_credentials' in credentials:
                 self.posturl = credentials['influxdb_credentials']
                 self.recording = True
@@ -767,7 +767,7 @@ class InfluxRecordingMixin(object):
                 # Disable recording for the rest of this job. Even if it's just
                 # intermittent, we don't want to keep the build from progressing.
                 self.recording = False
-        except Exception, e:
+        except Exception as e:
             self.warning('Failed to log stats. Exception = %s' % str(e))
             self.recording = False
 

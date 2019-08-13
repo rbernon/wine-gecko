@@ -10,11 +10,11 @@ be included or excluded.
 """
 import glob
 import os
-import urlparse
+import urllib.parse
 
-from wptmanifest.node import DataNode
-from wptmanifest.backends import conditional
-from wptmanifest.backends.conditional import ManifestItem
+from .wptmanifest.node import DataNode
+from .wptmanifest.backends import conditional
+from .wptmanifest.backends.conditional import ManifestItem
 
 
 class IncludeManifest(ManifestItem):
@@ -68,7 +68,7 @@ class IncludeManifest(ManifestItem):
 
     def _get_components(self, url):
         rv = []
-        url_parts = urlparse.urlsplit(url)
+        url_parts = urllib.parse.urlsplit(url)
         variant = ""
         if url_parts.query:
             variant += "?" + url_parts.query
@@ -96,7 +96,7 @@ class IncludeManifest(ManifestItem):
         if paths:
             urls = []
             for path in paths:
-                for manifest, data in test_manifests.iteritems():
+                for manifest, data in test_manifests.items():
                     rel_path = os.path.relpath(path, data["tests_path"])
                     if ".." not in rel_path.split(os.sep):
                         urls.append(data["url_base"] + rel_path.replace(os.path.sep, "/") + variant)

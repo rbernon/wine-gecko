@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import ConfigParser
+import configparser
 import os
 import sys
 from collections import OrderedDict
@@ -24,7 +24,7 @@ class ConfigDict(dict):
 def read(config_path):
     config_path = os.path.abspath(config_path)
     config_root = os.path.split(config_path)[0]
-    parser = ConfigParser.SafeConfigParser()
+    parser = configparser.SafeConfigParser()
     success = parser.read(config_path)
     assert config_path in success, success
 

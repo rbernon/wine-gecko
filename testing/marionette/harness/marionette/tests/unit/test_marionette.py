@@ -20,7 +20,7 @@ class TestProtocol1Errors(TC):
 
     def test_malformed_packet(self):
         for t in [{}, {"error": None}]:
-            with self.assertRaisesRegexp(errors.MarionetteException, "Malformed packet"):
+            with self.assertRaisesRegex(errors.MarionetteException, "Malformed packet"):
                 self.marionette._handle_error(t)
 
     def test_known_error_code(self):
@@ -58,7 +58,7 @@ class TestProtocol2Errors(TC):
         for p in [p for i in range(0, len(req) + 1) for p in itertools.permutations(req, i)]:
             ps.append(dict((x, None) for x in p))
 
-        for p in filter(lambda p: len(p) < 3, ps):
+        for p in [p for p in ps if len(p) < 3]:
             self.assertRaises(KeyError, self.marionette._handle_error, p)
 
     def test_known_error_code(self):

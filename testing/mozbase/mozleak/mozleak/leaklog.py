@@ -30,7 +30,7 @@ def expectedTabProcessLeakCounts():
     leaks = {}
 
     def appendExpectedLeakCounts(leaks2):
-        for obj, count in leaks2.iteritems():
+        for obj, count in leaks2.items():
             leaks[obj] = leaks.get(obj, 0) + count
 
     # Bug 1117203 - ImageBridgeChild is not shut down in tab processes.

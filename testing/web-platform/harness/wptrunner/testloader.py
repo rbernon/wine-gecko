@@ -1,15 +1,15 @@
 import json
 import os
 import sys
-import urlparse
+import urllib.parse
 from abc import ABCMeta, abstractmethod
-from Queue import Empty
+from queue import Empty
 from collections import defaultdict, OrderedDict, deque
 from multiprocessing import Queue
 
-import manifestinclude
-import manifestexpected
-import wpttest
+from . import manifestinclude
+from . import manifestexpected
+from . import wpttest
 from mozlog import structured
 
 manifest = None
@@ -181,7 +181,7 @@ class EqualTimeChunker(TestChunker):
                 break
 
         self.logger.debug(self.expected_time)
-        for i, chunk in chunks.iteritems():
+        for i, chunk in chunks.items():
             self.logger.debug("%i: %i, %i" % (i + 1, chunk.time, chunk.badness))
 
         assert self._all_tests(by_dir) == self._chunked_tests(chunks)
@@ -191,13 +191,13 @@ class EqualTimeChunker(TestChunker):
     @staticmethod
     def _all_tests(by_dir):
         """Return a set of all tests in the manifest from a grouping by directory"""
-        return set(x[0] for item in by_dir.itervalues()
+        return set(x[0] for item in by_dir.values()
                    for x in item.tests)
 
     @staticmethod
     def _chunked_tests(chunks):
         """Return a set of all tests in the manifest from the chunk list"""
-        return set(x[0] for chunk in chunks.itervalues()
+        return set(x[0] for chunk in chunks.values()
                    for path in chunk.paths
                    for x in path.tests)
 
@@ -245,12 +245,12 @@ class EqualTimeChunker(TestChunker):
 
         initial_size = len(by_dir) / self.total_chunks
         chunk_boundaries = [initial_size * i
-                            for i in xrange(self.total_chunks)] + [len(by_dir)]
+                            for i in range(self.total_chunks)] + [len(by_dir)]
 
         chunks = OrderedDict()
         for i, lower in enumerate(chunk_boundaries[:-1]):
             upper = chunk_boundaries[i + 1]
-            paths = by_dir.values()[lower:upper]
+            paths = list(by_dir.values())[lower:upper]
             chunks[i] = Chunk(paths, i)
 
         assert self._all_tests(by_dir) == self._chunked_tests(chunks)
@@ -263,7 +263,7 @@ class EqualTimeChunker(TestChunker):
         :param chunks: - List of chunks
         """
         #TODO: consider replacing this with a heap
-        sorted_chunks = sorted(chunks.values(), key=lambda x:-x.badness)
+        sorted_chunks = sorted(list(chunks.values()), key=lambda x:-x.badness)
         got_improvement = False
         for chunk in sorted_chunks:
             if chunk.time < self.expected_time:
@@ -364,7 +364,7 @@ class ManifestLoader(object):
 
     def load(self):
         rv = {}
-        for url_base, paths in self.test_paths.iteritems():
+        for url_base, paths in self.test_paths.items():
             manifest_file = self.load_manifest(url_base=url_base,
                                                **paths)
             path_data = {"url_base": url_base}
@@ -477,7 +477,7 @@ class TestLoader(object):
     def load_dir_metadata(self, test_manifest, metadata_path, test_path):
         rv = []
         path_parts = os.path.dirname(test_path).split(os.path.sep)
-        for i in xrange(1,len(path_parts) + 1):
+        for i in range(1,len(path_parts) + 1):
             path = os.path.join(os.path.sep.join(path_parts[:i]), "__dir__.ini")
             if path not in self.directory_manifests:
                 self.directory_manifests[path] = manifestexpected.get_dir_manifest(
@@ -496,7 +496,7 @@ class TestLoader(object):
     def iter_tests(self):
         manifest_items = []
 
-        for manifest in sorted(self.manifests.keys(), key=lambda x:x.url_base):
+        for manifest in sorted(list(self.manifests.keys()), key=lambda x:x.url_base):
             manifest_iter = iterfilter(self.manifest_filters,
                                        manifest.itertypes(*self.test_types))
             manifest_items.extend(manifest_iter)
@@ -543,9 +543,7 @@ class TestLoader(object):
         return groups
 
 
-class TestSource(object):
-    __metaclass__ = ABCMeta
-
+class TestSource(object, metaclass=ABCMeta):
     @abstractmethod
     def queue_tests(self, test_queue):
         pass
@@ -592,7 +590,7 @@ class PathGroupedSource(TestSource):
         group = None
 
         for test in tests[test_type]:
-            path = urlparse.urlsplit(test.url).path.split("/")[1:-1][:depth]
+            path = urllib.parse.urlsplit(test.url).path.split("/")[1:-1][:depth]
             if path != prev_path:
                 group = []
                 test_queue.put(group)

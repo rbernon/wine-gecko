@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import, unicode_literals
+
 
 import mozpack.path as mozpath
 
@@ -92,7 +92,7 @@ class SyncTestCommands(MachCommandBase):
             ]
 
         profile_dir = mkdtemp()
-        print 'Created profile directory: %s' % profile_dir
+        print('Created profile directory: %s' % profile_dir)
 
         try:
             env = {'XPCSHELL_TEST_PROFILE_DIR': profile_dir}
@@ -101,7 +101,7 @@ class SyncTestCommands(MachCommandBase):
             return proc.wait()
 
         finally:
-            print 'Removing profile directory %s' % profile_dir
+            print('Removing profile directory %s' % profile_dir)
             rmtree(profile_dir)
 
     @Command('storage-server', category='services',

@@ -288,7 +288,7 @@ e.g. --branch-order v2.0,master"""
         self.info("Outputting branch_repo_dict:")
         self.info(pprint.pformat(branch_repo_dict))
         message = ""
-        for name, r in branch_repo_dict.iteritems():
+        for name, r in branch_repo_dict.items():
             if r.get("revision") is None:
                 self.warning("Sanity: No revision set for %s %s; we'll fall back to master" % (name, r["fetch"]))
             if len(r.get("branch_revisions", {})) > 1:
@@ -372,7 +372,7 @@ e.g. --branch-order v2.0,master"""
 
     def pull_branch_repos(self):
         repos = []
-        for name, conf in self.query_branch_repos().iteritems():
+        for name, conf in self.query_branch_repos().items():
             self.info("%s: %s" % (name, pprint.pformat(conf)))
             repos.append({
                 "vcs": "gittool",
@@ -403,7 +403,7 @@ e.g. --branch-order v2.0,master"""
                     error_list=GitErrorList,
                     halt_on_failure=True,
                 )
-        for name, r in repos.iteritems():
+        for name, r in repos.items():
             cwd = os.path.join(dirs['abs_work_dir'], name)
             local_sha, remote_sha = self.check_existing_branch(new_branch, cwd)
             if local_sha and not remote_sha:
@@ -423,7 +423,7 @@ e.g. --branch-order v2.0,master"""
         dirs = self.query_abs_dirs()
         git = self.query_exe("git", return_type="list")
         new_branch = self.config['branch_name']
-        for name, r in repos.iteritems():
+        for name, r in repos.items():
             revision = r["revision"]
             cwd = os.path.join(dirs['abs_work_dir'], name)
             local_sha, remote_sha = self.check_existing_branch(new_branch, cwd)
@@ -491,7 +491,7 @@ e.g. --branch-order v2.0,master"""
                 # new_branch or not?  ('fetch' needs to match, since we have
                 # same-named repos with different urls =P )
                 if name in branch_repos and branch_repos[name]['fetch'] == fetch:
-                    orig_branch = branch_repos[name]['branch_revisions'].keys()[0]
+                    orig_branch = list(branch_repos[name]['branch_revisions'].keys())[0]
                     if manifest in branch_repos[name]['branch_revisions'][orig_branch]:
                         if current_revision != orig_branch:
                             self.fatal("I don't know how we got here, but %s in %s's revision %s is not the branching point %s." %
@@ -532,7 +532,7 @@ e.g. --branch-order v2.0,master"""
         git = self.query_exe("git", return_type="list")
         new_branch = self.config['branch_name']
         problem_repos = []
-        for name, r in repos.iteritems():
+        for name, r in repos.items():
             fetch = r["fetch"]
             fetch = fetch.replace("git://github.com/", "git@github.com:")
             cwd = os.path.join(dirs['abs_work_dir'], name)

@@ -8,7 +8,7 @@ import sys
 import threading
 import time
 import traceback
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import uuid
 from collections import defaultdict, OrderedDict
 from multiprocessing import Process, Event
@@ -44,11 +44,11 @@ fetch_tests_from_worker(new Worker("%s"));
 
 rewrites = [("GET", "/resources/WebIDLParser.js", "/resources/webidl2/lib/webidl2.js")]
 
-subdomains = [u"www",
-              u"www1",
-              u"www2",
-              u"天気の良い日",
-              u"élève"]
+subdomains = ["www",
+              "www1",
+              "www2",
+              "天気の良い日",
+              "élève"]
 
 class RoutesBuilder(object):
     def __init__(self):
@@ -72,7 +72,7 @@ class RoutesBuilder(object):
         # Using reversed here means that mount points that are added later
         # get higher priority. This makes sense since / is typically added
         # first.
-        for item in reversed(self.mountpoint_routes.values()):
+        for item in reversed(list(self.mountpoint_routes.values())):
             routes.extend(item)
         return routes
 
@@ -145,10 +145,10 @@ class ServerProc(object):
             self.daemon = init_func(host, port, paths, routes, bind_hostname, external_config,
                                     ssl_config, **kwargs)
         except socket.error:
-            print >> sys.stderr, "Socket error on port %s" % port
+            print("Socket error on port %s" % port, file=sys.stderr)
             raise
         except:
-            print >> sys.stderr, traceback.format_exc()
+            print(traceback.format_exc(), file=sys.stderr)
             raise
 
         if self.daemon:
@@ -159,7 +159,7 @@ class ServerProc(object):
                 except KeyboardInterrupt:
                     pass
             except:
-                print >> sys.stderr, traceback.format_exc()
+                print(traceback.format_exc(), file=sys.stderr)
                 raise
 
     def wait(self):
@@ -186,20 +186,20 @@ def check_subdomains(host, paths, bind_hostname, ssl_config):
     connected = False
     for i in range(10):
         try:
-            urllib2.urlopen("http://%s:%d/" % (host, port))
+            urllib.request.urlopen("http://%s:%d/" % (host, port))
             connected = True
             break
-        except urllib2.URLError:
+        except urllib.error.URLError:
             time.sleep(1)
 
     if not connected:
         logger.critical("Failed to connect to test server on http://%s:%s You may need to edit /etc/hosts or similar" % (host, port))
         sys.exit(1)
 
-    for subdomain, (punycode, host) in subdomains.iteritems():
+    for subdomain, (punycode, host) in subdomains.items():
         domain = "%s.%s" % (punycode, host)
         try:
-            urllib2.urlopen("http://%s:%d/" % (domain, port))
+            urllib.request.urlopen("http://%s:%d/" % (domain, port))
         except Exception as e:
             logger.critical("Failed probing domain %s. You may need to edit /etc/hosts or similar." % domain)
             sys.exit(1)
@@ -216,7 +216,7 @@ def get_subdomains(host):
 def start_servers(host, ports, paths, routes, bind_hostname, external_config, ssl_config,
                   **kwargs):
     servers = defaultdict(list)
-    for scheme, ports in ports.iteritems():
+    for scheme, ports in ports.items():
         assert len(ports) == {"http":2}.get(scheme, 1)
 
         for port in ports:
@@ -284,7 +284,7 @@ class WebSocketDaemon(object):
             elif pywebsocket._import_pyopenssl():
                 tls_module = pywebsocket._TLS_BY_PYOPENSSL
             else:
-                print "No SSL module available"
+                print("No SSL module available")
                 sys.exit(1)
 
             cmd_args += ["--tls",
@@ -355,7 +355,7 @@ def start_wss_server(host, port, paths, routes, bind_hostname, external_config, 
 
 def get_ports(config, ssl_environment):
     rv = defaultdict(list)
-    for scheme, ports in config["ports"].iteritems():
+    for scheme, ports in config["ports"].items():
         for i, port in enumerate(ports):
             if scheme in ["wss", "https"] and not ssl_environment.ssl_enabled:
                 port = None
@@ -372,16 +372,16 @@ def normalise_config(config, ports):
     host = config["external_host"] if config["external_host"] else config["host"]
     domains = get_subdomains(host)
     ports_ = {}
-    for scheme, ports_used in ports.iteritems():
+    for scheme, ports_used in ports.items():
         ports_[scheme] = ports_used
 
-    for key, value in domains.iteritems():
+    for key, value in domains.items():
         domains[key] = ".".join(value)
 
     domains[""] = host
 
     ports_ = {}
-    for scheme, ports_used in ports.iteritems():
+    for scheme, ports_used in ports.items():
         ports_[scheme] = ports_used
 
     return {"host": host,
@@ -406,7 +406,7 @@ def start(config, ssl_environment, routes, **kwargs):
 
     external_config = normalise_config(config, ports)
 
-    ssl_config = get_ssl_config(config, external_config["domains"].values(), ssl_environment)
+    ssl_config = get_ssl_config(config, list(external_config["domains"].values()), ssl_environment)
 
     if config["check_subdomains"]:
         check_subdomains(host, paths, bind_hostname, ssl_config)
@@ -418,7 +418,7 @@ def start(config, ssl_environment, routes, **kwargs):
 
 
 def iter_procs(servers):
-    for servers in servers.values():
+    for servers in list(servers.values()):
         for port, server in servers:
             yield server.proc
 
@@ -442,7 +442,7 @@ def set_computed_defaults(config):
 
 def merge_json(base_obj, override_obj):
     rv = {}
-    for key, value in base_obj.iteritems():
+    for key, value in base_obj.items():
         if key not in override_obj:
             rv[key] = value
         else:

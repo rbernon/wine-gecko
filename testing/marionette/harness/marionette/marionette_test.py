@@ -58,7 +58,7 @@ class _UnexpectedSuccess(Exception):
 def skip(reason):
     """Unconditionally skip a test."""
     def decorator(test_item):
-        if not isinstance(test_item, (type, types.ClassType)):
+        if not isinstance(test_item, type):
             @functools.wraps(test_item)
             def skip_wrapper(*args, **kwargs):
                 raise SkipTest(reason)
@@ -238,7 +238,7 @@ class MetaParameterized(type):
     """
     RE_ESCAPE_BAD_CHARS = re.compile(r'[\.\(\) -/]')
     def __new__(cls, name, bases, attrs):
-        for k, v in attrs.items():
+        for k, v in list(attrs.items()):
             if callable(v) and hasattr(v, 'metaparameters'):
                 for func_suffix, args, kwargs in v.metaparameters:
                     func_suffix = cls.RE_ESCAPE_BAD_CHARS.sub('_', func_suffix)
@@ -257,9 +257,8 @@ class JSTest:
     timeout_re = re.compile(r"MARIONETTE_TIMEOUT(\s*)=(\s*)(\d+);")
     inactivity_timeout_re = re.compile(r"MARIONETTE_INACTIVITY_TIMEOUT(\s*)=(\s*)(\d+);")
 
-class CommonTestCase(unittest.TestCase):
+class CommonTestCase(unittest.TestCase, metaclass=MetaParameterized):
 
-    __metaclass__ = MetaParameterized
     match_re = None
     failureException = AssertionError
     pydebugger = None
@@ -473,7 +472,7 @@ permissions.forEach(function (perm) {
         if hasattr(self, 'test_container') and self.test_container:
             self.switch_into_test_container()
         elif hasattr(self, 'test_container') and self.test_container is False:
-            if self.marionette.session_capabilities.has_key('b2g') \
+            if 'b2g' in self.marionette.session_capabilities \
             and self.marionette.session_capabilities['b2g'] == True:
                 self.close_test_container()
 
@@ -490,7 +489,7 @@ permissions.forEach(function (perm) {
             if self.marionette.session is not None:
                 try:
                     self.loglines.extend(self.marionette.get_logs())
-                except Exception, inst:
+                except Exception as inst:
                     self.loglines = [['Error getting log: %s' % inst]]
                 try:
                     self.marionette.delete_session()
@@ -588,7 +587,7 @@ setReq.onerror = function() {
             caller_file = sys._getframe(1).f_globals.get('__file__', '')
             caller_file = os.path.abspath(caller_file)
             filename = os.path.join(os.path.dirname(caller_file), filename)
-        self.assert_(os.path.exists(filename),
+        self.assertTrue(os.path.exists(filename),
                      'Script "%s" must exist' % filename)
         original_test_name = self.marionette.test_name
         self.marionette.test_name = os.path.basename(filename)
@@ -727,7 +726,7 @@ class MarionetteTestCase(CommonTestCase):
 
         for name in dir(test_mod):
             obj = getattr(test_mod, name)
-            if (isinstance(obj, (type, types.ClassType)) and
+            if (isinstance(obj, type) and
                 issubclass(obj, unittest.TestCase)):
                 testnames = testloader.getTestCaseNames(obj)
                 for testname in testnames:

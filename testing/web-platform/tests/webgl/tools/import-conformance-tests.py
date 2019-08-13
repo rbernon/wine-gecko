@@ -15,16 +15,16 @@ PATCHES = [
 ]
 
 def usage():
-    print("Usage: {} version destination [existing_webgl_repo]".format(sys.argv[0]))
+    print(("Usage: {} version destination [existing_webgl_repo]".format(sys.argv[0])))
     sys.exit(1)
 
 def get_tests(base_dir, file_name, tests_list):
     list_file = os.path.join(base_dir, file_name)
     if not os.path.isfile(list_file):
-        print("Test list ({}) not found".format(list_file))
+        print(("Test list ({}) not found".format(list_file)))
         sys.exit(1)
 
-    print("Processing: {}".format(list_file))
+    print(("Processing: {}".format(list_file)))
 
     with open(list_file, "r") as f:
         for line in f:
@@ -73,21 +73,21 @@ def main():
     version = args.version
     destination = args.destination
 
-    print("Trying to import WebGL conformance test suite {} into {}".format(version, destination))
+    print(("Trying to import WebGL conformance test suite {} into {}".format(version, destination)))
 
     if args.existing_repo:
         directory = args.existing_repo
-        print("Using existing WebGL repository: {}".format(directory))
+        print(("Using existing WebGL repository: {}".format(directory)))
     else:
         directory = tempfile.mkdtemp()
-        print("Cloning WebGL repository into temporary directory {}".format(directory))
+        print(("Cloning WebGL repository into temporary directory {}".format(directory)))
         subprocess.check_call(["git", "clone", KHRONOS_REPO_URL, directory])
 
     suite_dir = os.path.join(directory, "conformance-suites", version)
-    print("Test suite directory: {}".format(suite_dir))
+    print(("Test suite directory: {}".format(suite_dir)))
 
     if not os.path.isdir(suite_dir):
-        print("Test suite directory ({}) not found, aborting...".format(suite_dir))
+        print(("Test suite directory ({}) not found, aborting...".format(suite_dir)))
         sys.exit(1)
 
     # We recursively copy all the test suite to `destination`
@@ -100,7 +100,7 @@ def main():
 
     test_count = len(tests)
 
-    print("Found {} tests.".format(test_count))
+    print(("Found {} tests.".format(test_count)))
     print("Removing non-test html files")
 
     # To use binary search, which speeds things up a little
@@ -116,7 +116,7 @@ def main():
             f = os.path.join(dirpath, f)
             pos = bisect.bisect_left(tests, f)
             if pos == test_count or tests[pos] != f:
-                print("Removing: {}".format(f))
+                print(("Removing: {}".format(f)))
                 os.remove(f)
 
     # Insert our harness into the tests
@@ -131,8 +131,8 @@ def main():
             patch = os.path.join(this_dir, patch)
             subprocess.check_call(["patch", "-d", destination, file_name, patch])
         except subprocess.CalledProcessError:
-            print("Automatic patch failed for {}".format(file_name))
-            print("Please review the WPT integration and update {} accordingly".format(os.path.basename(patch)))
+            print(("Automatic patch failed for {}".format(file_name)))
+            print(("Please review the WPT integration and update {} accordingly".format(os.path.basename(patch))))
 
 if __name__ == '__main__':
     main()

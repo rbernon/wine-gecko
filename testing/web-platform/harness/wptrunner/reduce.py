@@ -4,11 +4,11 @@
 
 import sys
 import tempfile
-from cStringIO import StringIO
+from io import StringIO
 from collections import defaultdict
 
-import wptrunner
-import wpttest
+from . import wptrunner
+from . import wpttest
 
 from mozlog import commandline, reader
 
@@ -20,7 +20,7 @@ def setup_logging(args, defaults):
     logger = commandline.setup_logging("web-platform-tests-unstable", args, defaults)
     wptrunner.setup_stdlib_logger()
 
-    for name in args.keys():
+    for name in list(args.keys()):
         if name.startswith("log_"):
             args.pop(name)
 
@@ -172,7 +172,7 @@ class Reducer(object):
                 logger.debug(item)
             return None
 
-        return any(len(item) > 1 for item in statuses.itervalues())
+        return any(len(item) > 1 for item in statuses.values())
 
     def get_initial_tests(self):
         # Need to pass in arguments

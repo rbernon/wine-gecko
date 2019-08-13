@@ -1,7 +1,7 @@
 import difflib
 import logging
 import re
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 from util.commands import run_cmd, get_output
 from util.hg import get_repo_name, make_hg_url
 from subprocess import CalledProcessError
@@ -44,7 +44,7 @@ def get_buildbot_username_param():
 
 def sendchange(branch, revision, username, master, products):
     """Send the change to buildbot to kick off the release automation"""
-    if isinstance(products, basestring):
+    if isinstance(products, str):
         products = [products]
     cmd = [
         'buildbot',

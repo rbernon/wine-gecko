@@ -151,7 +151,7 @@ class AndroidEmulatorTest(BlobUploadMixin, TestingMixin, EmulatorMixin, VCSMixin
         else:
             dirs['abs_avds_dir'] = "/home/cltbld/.android"
 
-        for key in dirs.keys():
+        for key in list(dirs.keys()):
             if key not in abs_dirs:
                 abs_dirs[key] = dirs[key]
         self.abs_dirs = abs_dirs
@@ -275,7 +275,7 @@ class AndroidEmulatorTest(BlobUploadMixin, TestingMixin, EmulatorMixin, VCSMixin
                 telnet_ok = True
             else:
                 self.warning('Unable to connect to port %d' % port)
-        except socket.error, e:
+        except socket.error as e:
             self.info('Trying again after socket error: %s' % str(e))
             pass
         except EOFError:
@@ -306,7 +306,7 @@ class AndroidEmulatorTest(BlobUploadMixin, TestingMixin, EmulatorMixin, VCSMixin
                 tn.read_all()
             else:
                 self.warning('Unable to connect to port %d' % port)
-        except socket.error, e:
+        except socket.error as e:
             self.info('Trying again after socket error: %s' % str(e))
             pass
         except EOFError:
@@ -417,7 +417,7 @@ class AndroidEmulatorTest(BlobUploadMixin, TestingMixin, EmulatorMixin, VCSMixin
             os.close(tmpfd)
             self.info("Taking screenshot with %s; saving to %s" % (utility, filename))
             subprocess.call([utility, filename], env=self.query_env())
-        except OSError, err:
+        except OSError as err:
             self.warning("Failed to take screenshot: %s" % err.strerror)
 
     def _query_package_name(self):
@@ -648,7 +648,7 @@ class AndroidEmulatorTest(BlobUploadMixin, TestingMixin, EmulatorMixin, VCSMixin
             'enable_automation': True,
             'device_package_name': self._query_package_name()
         }
-        config = dict(config.items() + self.config.items())
+        config = dict(list(config.items()) + list(self.config.items()))
 
         self.sdk_level = self._run_with_timeout(30, [self.adb_path, '-s', self.emulator['device_id'],
             'shell', 'getprop', 'ro.build.version.sdk'])

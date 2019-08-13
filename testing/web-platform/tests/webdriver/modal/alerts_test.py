@@ -42,7 +42,7 @@ class AlertsTest(base_test.WebDriverBaseTest):
         alert = self.wait.until(lambda x: x.switch_to_alert())
         value = alert.text
         alert.accept()
-        self.assertEquals('cheese', value)
+        self.assertEqual('cheese', value)
 
     def test_setting_the_value_of_an_alert_throws(self):
         self.driver.find_element_by_css_selector('#alert').click()
@@ -83,7 +83,7 @@ class AlertsTest(base_test.WebDriverBaseTest):
         alert = self.wait.until(lambda x: x.switch_to_alert())
         value = alert.text
         alert.accept()
-        self.assertEquals('Enter something', value)
+        self.assertEqual('Enter something', value)
 
     def test_prompt_should_not_allow_additional_commands_if_dismissed(self):
         self.driver.find_element_by_css_selector('#prompt').click()
@@ -129,7 +129,7 @@ class AlertsTest(base_test.WebDriverBaseTest):
         alert = self.wait.until(lambda x: x.switch_to_alert())
         value = alert.text
         alert.accept()
-        self.assertEquals('cheese', value)
+        self.assertEqual('cheese', value)
 
     def test_confirm_should_not_allow_additional_commands_if_dismissed(self):
         self.driver.find_element_by_css_selector('#confirm').click()

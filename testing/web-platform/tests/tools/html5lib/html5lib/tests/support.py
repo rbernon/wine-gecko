@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, unicode_literals
+
 
 import os
 import sys
@@ -103,7 +103,7 @@ class TestData(object):
 
     def normaliseOutput(self, data):
         # Remove trailing newlines
-        for key, value in data.items():
+        for key, value in list(data.items()):
             if value.endswith("\n" if self.encoding else b"\n"):
                 data[key] = value[:-1]
         return data

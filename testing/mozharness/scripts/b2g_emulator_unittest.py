@@ -193,7 +193,7 @@ class B2GEmulatorTest(TestingMixin, VCSMixin, BaseScript, BlobUploadMixin):
             dirs['abs_test_install_dir'], 'cppunittest')
         dirs['abs_marionette_dir'] = os.path.join(
             dirs['abs_test_install_dir'], 'marionette', 'marionette')
-        for key in dirs.keys():
+        for key in list(dirs.keys()):
             if key not in abs_dirs:
                 abs_dirs[key] = dirs[key]
         self.abs_dirs = abs_dirs

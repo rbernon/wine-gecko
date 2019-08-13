@@ -142,13 +142,13 @@ class TbplFormatter(BaseFormatter):
         return "SUITE-END | took %is\n" % time
 
     def test_id(self, test_id):
-        if isinstance(test_id, (str, unicode)):
+        if isinstance(test_id, str):
             return test_id
         else:
             return tuple(test_id)
 
     def id_str(self, test_id):
-        if isinstance(test_id, (str, unicode)):
+        if isinstance(test_id, str):
             return test_id
         else:
             return " ".join(test_id)

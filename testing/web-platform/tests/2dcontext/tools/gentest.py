@@ -310,19 +310,19 @@ for i in range(len(tests)):
     test = tests[i]
 
     name = test['name']
-    print "\r(%s)" % name, " "*32, "\t",
+    print("\r(%s)" % name, " "*32, "\t", end=' ')
 
     if name in used_tests:
-        print "Test %s is defined twice" % name
+        print("Test %s is defined twice" % name)
     used_tests[name] = 1
 
     mapped_name = None
-    for mn in sorted(name_mapping.keys(), key=len, reverse=True):
+    for mn in sorted(list(name_mapping.keys()), key=len, reverse=True):
         if name.startswith(mn):
             mapped_name = "%s/%s" % (name_mapping[mn], name)
             break
     if not mapped_name:
-        print "LIKELY ERROR: %s has no defined target directory mapping" % name
+        print("LIKELY ERROR: %s has no defined target directory mapping" % name)
         mapped_name = name
     if 'manual' in test:
         mapped_name += "-manual"
@@ -336,14 +336,14 @@ for i in range(len(tests)):
 
     for ref in test.get('testing', []):
         if ref not in spec_ids:
-            print "Test %s uses nonexistent spec point %s" % (name, ref)
+            print("Test %s uses nonexistent spec point %s" % (name, ref))
         spec_refs.setdefault(ref, []).append(name)
     #if not (len(test.get('testing', [])) or 'mozilla' in test):
     if not test.get('testing', []):
-        print "Test %s doesn't refer to any spec points" % name
+        print("Test %s doesn't refer to any spec points" % name)
 
     if test.get('expected', '') == 'green' and re.search(r'@assert pixel .* 0,0,0,0;', test['code']):
-        print "Probable incorrect pixel test in %s" % name
+        print("Probable incorrect pixel test in %s" % name)
 
     code = expand_test_code(test['code'])
 
@@ -375,7 +375,7 @@ for i in range(len(tests)):
                 mochi_setup += templates['mochitest.%s' % f]
     else:
         if not W3CMODE:
-            print "Skipping mochitest for %s" % name
+            print("Skipping mochitest for %s" % name)
         mochi_name = ''
         mochi_desc = ''
         mochi_code = ''
@@ -393,7 +393,7 @@ for i in range(len(tests)):
             expected_img = make_flat_image('clear-100x50.png', 100, 50, 0,0,0,0)
             if W3CMODE: expected_img = "/images/" + expected_img
         else:
-            if ';' in expected: print "Found semicolon in %s" % name
+            if ';' in expected: print("Found semicolon in %s" % name)
             expected = re.sub(r'^size (\d+) (\d+)',
                 r'surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, \1, \2)\ncr = cairo.Context(surface)',
                               expected)
@@ -499,7 +499,7 @@ if not W3CMODE:
         shutil.copyfile("../../images/%s" % i, "%s/mochitests/image_%s" % (MISCOUTPUTDIR, i))
     write_mochitest_makefile()
 
-print
+print()
 
 def write_index():
     f = open('%s/index.html' % TESTOUTPUTDIR, 'w')
@@ -541,7 +541,7 @@ def write_results():
     f.write(templates['results'])
 
     if not os.path.exists('results.yaml'):
-        print "Can't find results.yaml"
+        print("Can't find results.yaml")
     else:
         for resultset in yaml.load(open('results.yaml').read()):
             #title = "%s (%s)" % (resultset['ua'], resultset['time'])
@@ -554,12 +554,12 @@ def write_results():
                 assert uastrings[title] == resultset['ua']
             for r in resultset['results']:
                 if r['id'] not in results:
-                    print 'Skipping results for removed test %s' % r['id']
+                    print('Skipping results for removed test %s' % r['id'])
                     continue
                 results[r['id']][title] = (
                         r['status'].lower(),
                         re.sub(r'%(..)', lambda m: chr(int(m.group(1), 16)),
-                        re.sub(r'%u(....)', lambda m: unichr(int(m.group(1), 16)),
+                        re.sub(r'%u(....)', lambda m: chr(int(m.group(1), 16)),
                             r['notes'])).encode('utf8')
                         )
 
@@ -590,7 +590,7 @@ def getNodeText(node):
 
     if node.nodeType == node.TEXT_NODE:
         val = node.nodeValue
-        val = val.replace(unichr(0xa0), ' ') # replace &nbsp;s
+        val = val.replace(chr(0xa0), ' ') # replace &nbsp;s
         t += val
         offsets += [ (node, len(node.nodeValue)) ]
     for n in node.childNodes:
@@ -629,7 +629,7 @@ def htmlSerializer(element):
         else:
             rv.append("<%s" % element.nodeName)
             if element.hasAttributes():
-                for name, value in element.attributes.items():
+                for name, value in list(element.attributes.items()):
                     rv.append(' %s="%s"' % (name, escapeHTML(value)))
             rv.append(">")
             if element.nodeName not in empty:
@@ -653,7 +653,7 @@ def write_annotated_spec():
     for a in spec_assertions:
         # Warn about problems
         if a['id'] not in spec_refs:
-            print "Unused spec statement %s" % a['id']
+            print("Unused spec statement %s" % a['id'])
 
         pattern_text = a['text']
 
@@ -718,11 +718,11 @@ def write_annotated_spec():
                         continue # discard this match
 
                 if id in matched_assertions:
-                    print "Spec statement %s matches multiple places" % id
+                    print("Spec statement %s matches multiple places" % id)
                 matched_assertions[id] = True
 
                 if m.lastindex != 1:
-                    print "Spec statement %s has incorrect number of match groups" % id
+                    print("Spec statement %s has incorrect number of match groups" % id)
 
                 end = m.end(1)
                 end_node = None
@@ -763,7 +763,7 @@ def write_annotated_spec():
 
     for s in spec_assertions:
         if s['id'] not in matched_assertions:
-            print "Annotation incomplete: Unmatched spec statement %s" % s['id']
+            print("Annotation incomplete: Unmatched spec statement %s" % s['id'])
 
     # Convert from XHTML back to HTML
     doc.documentElement.removeAttribute('xmlns')

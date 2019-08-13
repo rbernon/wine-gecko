@@ -100,7 +100,7 @@ class ReftestFormatter(TbplFormatter):
         return "INFO | Result summary:\n{}\n".format('\n'.join(lines))
 
     def id_str(self, test_id):
-        if isinstance(test_id, basestring):
+        if isinstance(test_id, str):
             return test_id
         return test_id[0]
 

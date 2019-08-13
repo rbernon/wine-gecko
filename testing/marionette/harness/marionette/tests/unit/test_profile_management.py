@@ -31,7 +31,7 @@ class TestLog(MarionetteTestCase):
     def test_clean_profile(self):
         self.marionette.restart(clean=True)
         self.marionette.set_context('chrome')
-        with self.assertRaisesRegexp(JavascriptException, "NS_ERROR_UNEXPECTED"):
+        with self.assertRaisesRegex(JavascriptException, "NS_ERROR_UNEXPECTED"):
             bool_value = self.marionette.execute_script("return Services.prefs.getBoolPref('marionette.test.bool');")
 
     def test_can_restart_the_browser(self):

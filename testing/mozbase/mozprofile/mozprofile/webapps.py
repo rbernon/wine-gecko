@@ -109,7 +109,7 @@ class WebappCollection(object):
         :param json_template: [optional] string template describing the webapp json format
         :param manifest_template: [optional] string template describing the webapp manifest format
         """
-        if not isinstance(profile, basestring):
+        if not isinstance(profile, str):
             raise TypeError("Must provide path to a profile, received '%s'" % type(profile))
         self.profile = profile
         self.webapps_dir = os.path.join(self.profile, 'webapps')
@@ -122,7 +122,7 @@ class WebappCollection(object):
                 apps = [apps]
 
             for app in apps:
-                if isinstance(app, basestring) and os.path.isfile(app):
+                if isinstance(app, str) and os.path.isfile(app):
                     self.extend(self.read_json(app))
                 else:
                     self.append(app)
@@ -264,7 +264,7 @@ class WebappCollection(object):
 
         apps = []
         if isinstance(app_json, dict):
-            for k, v in app_json.iteritems():
+            for k, v in app_json.items():
                 v['name'] = k
                 apps.append(v)
         else:

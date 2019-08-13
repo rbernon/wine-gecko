@@ -14,7 +14,7 @@ class ElementClearTest(base_test.WebDriverBaseTest):
         self.driver.get(self.webserver.where_is("user_input/res/element_clear_writable_input_page.html"))
         e = self.driver.find_element_by_css_selector("#writableTextInput")
         e.clear()
-        self.assertEquals("", e.get_attribute("value"))
+        self.assertEqual("", e.get_attribute("value"))
 
     def test_disabled_text_input_element_should_not_clear(self):
         self.driver.get(self.webserver.where_is("user_input/res/element_clear_disabled_input_page.html"))
@@ -30,7 +30,7 @@ class ElementClearTest(base_test.WebDriverBaseTest):
         self.driver.get(self.webserver.where_is("user_input/res/element_clear_writable_textarea_page.html"))
         e = self.driver.find_element_by_css_selector("#writableTextArea")
         e.clear()
-        self.assertEquals("", e.get_attribute("value"))
+        self.assertEqual("", e.get_attribute("value"))
 
     def test_disabled_text_area_element_should_not_clear(self):
         self.driver.get(self.webserver.where_is("user_input/res/element_clear_disabled_textarea_page.html"))
@@ -46,7 +46,7 @@ class ElementClearTest(base_test.WebDriverBaseTest):
         self.driver.get(self.webserver.where_is("user_input/res/element_clear_contenteditable_page.html"))
         e = self.driver.find_element_by_css_selector("#contentEditableElement")
         e.clear()
-        self.assertEquals("", e.text)
+        self.assertEqual("", e.text)
 
 
 if __name__ == "__main__":

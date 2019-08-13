@@ -15,11 +15,11 @@
 import os
 import sys
 import platform
-import results
+from . import results
 import subprocess
-import utils
+from . import utils
 import mozcrash
-import talosconfig
+from . import talosconfig
 import shutil
 import mozfile
 
@@ -194,7 +194,7 @@ class TTest(object):
                         if line.strip() == "":
                             continue
 
-                        print line
+                        print(line)
                         mainthread_error_count += 1
                     mozfile.remove(rawlog)
 
@@ -239,10 +239,10 @@ class TTest(object):
 
         # include global (cross-cycle) counters
         test_results.all_counter_results.extend(
-            [{key: value} for key, value in global_counters.items()]
+            [{key: value} for key, value in list(global_counters.items())]
         )
         for c in test_results.all_counter_results:
-            for key, value in c.items():
+            for key, value in list(c.items()):
                 LOG.debug("COUNTER %r: %s" % (key, value))
 
         # return results

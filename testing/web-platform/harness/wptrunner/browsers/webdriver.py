@@ -6,7 +6,7 @@ import errno
 import socket
 import time
 import traceback
-import urlparse
+import urllib.parse
 
 import mozprocess
 
@@ -46,7 +46,7 @@ class LocalServer(object):
 
         self.logger.debug(
             "Waiting for server to become accessible: %s" % self.url)
-        surl = urlparse.urlparse(self.url)
+        surl = urllib.parse.urlparse(self.url)
         addr = (surl.hostname, surl.port)
         try:
             wait_service(addr)

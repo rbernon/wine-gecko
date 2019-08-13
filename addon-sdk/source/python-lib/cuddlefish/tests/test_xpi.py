@@ -11,7 +11,7 @@ import shutil
 import simplejson as json
 from cuddlefish import xpi, packaging, manifest, buildJID
 from cuddlefish.tests import test_packaging
-from test_linker import up
+from .test_linker import up
 
 import xml.etree.ElementTree as ElementTree
 
@@ -86,13 +86,13 @@ class ExtraHarnessOptions(unittest.TestCase):
         self.xpi = zipfile.ZipFile(self.xpiname, 'r')
         options = self.xpi.read('harness-options.json')
         hopts = json.loads(options)
-        self.failUnless("builderVersion" in hopts)
-        self.failUnlessEqual(hopts["builderVersion"], "futuristic")
+        self.assertTrue("builderVersion" in hopts)
+        self.assertEqual(hopts["builderVersion"], "futuristic")
 
     def testBadOptionName(self):
         pkg_name = "extra-options"
         self.xpiname = "%s.xpi" % pkg_name
-        self.failUnlessRaises(xpi.HarnessOptionAlreadyDefinedError,
+        self.assertRaises(xpi.HarnessOptionAlreadyDefinedError,
                               create_xpi,
                               self.xpiname, pkg_name, "bug-669274-files",
                               extra_harness_options={"main": "already in use"})
@@ -154,8 +154,8 @@ class SmallXPI(unittest.TestCase):
 
         missing = set(expected) - set(used_files)
         extra = set(used_files) - set(expected)
-        self.failUnlessEqual(list(missing), [])
-        self.failUnlessEqual(list(extra), [])
+        self.assertEqual(list(missing), [])
+        self.assertEqual(list(extra), [])
         used_deps = m.get_used_packages()
 
         build = packaging.generate_build_for_target(pkg_cfg, target_cfg.name,
@@ -220,18 +220,18 @@ class SmallXPI(unittest.TestCase):
         # showing deltas makes failures easier to investigate
         missing = set(expected) - set(names)
         extra = set(names) - set(expected)
-        self.failUnlessEqual((list(missing), list(extra)), ([], []))
-        self.failUnlessEqual(sorted(names), sorted(expected))
+        self.assertEqual((list(missing), list(extra)), ([], []))
+        self.assertEqual(sorted(names), sorted(expected))
 
         # check locale files
         localedata = json.loads(x.read("locales.json"))
-        self.failUnlessEqual(sorted(localedata["locales"]), sorted(["fr-FR"]))
+        self.assertEqual(sorted(localedata["locales"]), sorted(["fr-FR"]))
         content = x.read("locale/fr-FR.json")
         locales = json.loads(content)
         # Locale files are merged into one.
         # Conflicts are silently resolved by taking last package translation,
         # so that we get "No" translation from three-c instead of three-b one.
-        self.failUnlessEqual(locales, json.loads(u'''
+        self.assertEqual(locales, json.loads('''
           {
             "No": "Nein",
             "one": "un",
@@ -276,7 +276,7 @@ def document_zip_file(path):
             contents = pprint.pformat(contents)
             lines = contents.splitlines()
         contents = "\n  ".join(lines)
-        print "%s:\n  %s" % (normpath(name), contents)
+        print("%s:\n  %s" % (normpath(name), contents))
     zip.close()
 
 def document_dir_files(path):
@@ -291,8 +291,8 @@ def document_dir_files(path):
             filename_contents_tuples.append((normpath(relfilename), contents))
     filename_contents_tuples.sort()
     for filename, contents in filename_contents_tuples:
-        print "%s:" % filename
-        print "  %s" % contents
+        print("%s:" % filename)
+        print("  %s" % contents)
 
 def create_xpi(xpiname, pkg_name='aardvark', dirname='static-files',
                extra_harness_options={}):

@@ -3,12 +3,12 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
-import urlparse
+import urllib.parse
 
-from wptmanifest.backends import static
-from wptmanifest.backends.static import ManifestItem
+from .wptmanifest.backends import static
+from .wptmanifest.backends.static import ManifestItem
 
-import expected
+from . import expected
 
 """Manifest structure used to store expected results of a test.
 
@@ -41,7 +41,7 @@ def tags(node):
     """Set of tags that have been applied to the test"""
     try:
         value = node.get("tags")
-        if isinstance(value, (str, unicode)):
+        if isinstance(value, str):
             return {value}
         return set(value)
     except KeyError:
@@ -50,14 +50,14 @@ def tags(node):
 
 def prefs(node):
     def value(ini_value):
-        if isinstance(ini_value, (str, unicode)):
+        if isinstance(ini_value, str):
             return tuple(ini_value.split(":", 1))
         else:
             return (ini_value, None)
 
     try:
         node_prefs = node.get("prefs")
-        if type(node_prefs) in (str, unicode):
+        if type(node_prefs) in (str, str):
             prefs = {value(node_prefs)}
         rv = dict(value(item) for item in node_prefs)
     except KeyError:
@@ -104,7 +104,7 @@ class ExpectedManifest(ManifestItem):
 
     @property
     def url(self):
-        return urlparse.urljoin(self.url_base,
+        return urllib.parse.urljoin(self.url_base,
                                 "/".join(self.test_path.split(os.path.sep)))
 
     @property
@@ -168,7 +168,7 @@ class TestNode(ManifestItem):
 
     @property
     def id(self):
-        return urlparse.urljoin(self.parent.url, self.name)
+        return urllib.parse.urljoin(self.parent.url, self.name)
 
     @property
     def disabled(self):

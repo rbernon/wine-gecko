@@ -12,7 +12,7 @@ from marionette.runtests import MarionetteHarness, cli as mn_cli
 import mozlog
 
 import external_media_tests
-from testcase import MediaTestCase
+from .testcase import MediaTestCase
 from external_media_tests.media_utils.video_puppeteer import debug_script
 
 

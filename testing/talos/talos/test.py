@@ -64,7 +64,7 @@ class Test(object):
 
     def __str__(self):
         """string form appropriate for YAML output"""
-        items = self.items()
+        items = list(self.items())
 
         key, value = items.pop(0)
         lines = ["- %s: %s" % (key, value)]

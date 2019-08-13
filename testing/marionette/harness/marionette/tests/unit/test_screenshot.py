@@ -5,7 +5,7 @@
 import base64
 import imghdr
 import struct
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 from unittest import skip
 
@@ -14,7 +14,7 @@ from marionette_driver.by import By
 
 
 def inline(doc, mime="text/html;charset=utf-8"):
-    return "data:%s,%s" % (mime, urllib.quote(doc))
+    return "data:%s,%s" % (mime, urllib.parse.quote(doc))
 
 
 ELEMENT = "iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAVklEQVRoge3PMQ0AMAzAsPJHVWYbjEWTj/zx7O75oXk9AAISD6QWSC2QWiC1QGqB1AKpBVILpBZILZBaILVAaoHUAqkFUgukFkgtkFogtUBqgdT6BnIBMKa1DtYxhPkAAAAASUVORK5CYII="
@@ -122,7 +122,7 @@ class Content(ScreenCaptureTestCase):
         self.marionette.set_context("content")
 
     def test_html_document_element(self):
-        self.marionette.navigate(long)
+        self.marionette.navigate(int)
         string = self.marionette.screenshot()
         self.assert_png(string)
         self.assertEqual(
@@ -144,7 +144,7 @@ class Content(ScreenCaptureTestCase):
             self.viewport_dimensions, self.get_image_dimensions(string))
 
     def test_viewport_after_scroll(self):
-        self.marionette.navigate(long)
+        self.marionette.navigate(int)
         before = self.marionette.screenshot()
         el = self.marionette.find_element(By.TAG_NAME, "p")
         self.marionette.execute_script(
@@ -164,7 +164,7 @@ class Content(ScreenCaptureTestCase):
 
     @skip("https://bugzilla.mozilla.org/show_bug.cgi?id=1213875")
     def test_element_scrolled_into_view(self):
-        self.marionette.navigate(long)
+        self.marionette.navigate(int)
         el = self.marionette.find_element(By.TAG_NAME, "p")
         string = self.marionette.screenshot(element=el)
         self.assert_png(string)

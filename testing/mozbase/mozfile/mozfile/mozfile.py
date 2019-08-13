@@ -6,7 +6,7 @@
 
 # We don't import all modules at the top for performance reasons. See Bug 1008943
 
-from __future__ import absolute_import
+
 
 from contextlib import contextmanager
 import errno
@@ -54,7 +54,7 @@ def extract_zip(src, dest):
         try:
             bundle = zipfile.ZipFile(src)
         except Exception:
-            print "src: %s" % src
+            print("src: %s" % src)
             raise
 
     namelist = bundle.namelist()
@@ -147,7 +147,7 @@ def _call_windows_retry(func, args=(), retry_max=5, retry_delay=0.5):
     while True:
         try:
             func(*args)
-        except OSError, e:
+        except OSError as e:
             # Error codes are defined in:
             # http://docs.python.org/2/library/errno.html#module-errno
             if e.errno not in (errno.EACCES, errno.ENOTEMPTY):
@@ -158,8 +158,8 @@ def _call_windows_retry(func, args=(), retry_max=5, retry_delay=0.5):
 
             retry_count += 1
 
-            print '%s() failed for "%s". Reason: %s (%s). Retrying...' % \
-                    (func.__name__, args, e.strerror, e.errno)
+            print('%s() failed for "%s". Reason: %s (%s). Retrying...' % \
+                    (func.__name__, args, e.strerror, e.errno))
             time.sleep(retry_delay)
         else:
             # If no exception has been thrown it should be done
@@ -189,7 +189,7 @@ def remove(path):
     def _call_with_windows_retry(*args, **kwargs):
         try:
             _call_windows_retry(*args, **kwargs)
-        except OSError, e:
+        except OSError as e:
             # The file or directory to be removed doesn't exist anymore
             if e.errno != errno.ENOENT:
                 raise
@@ -415,9 +415,9 @@ def is_url(thing):
     Return True if thing looks like a URL.
     """
 
-    import urlparse
+    import urllib.parse
 
-    parsed = urlparse.urlparse(thing)
+    parsed = urllib.parse.urlparse(thing)
     if 'scheme' in parsed:
         return len(parsed.scheme) >= 2
     else:
@@ -430,7 +430,7 @@ def load(resource):
     result of urllib2.urlopen()
     """
 
-    import urllib2
+    import urllib.request, urllib.error, urllib.parse
 
     # handle file URLs separately due to python stdlib limitations
     if resource.startswith('file://'):
@@ -440,5 +440,5 @@ def load(resource):
         # if no scheme is given, it is a file path
         return file(resource)
 
-    return urllib2.urlopen(resource)
+    return urllib.request.urlopen(resource)
 

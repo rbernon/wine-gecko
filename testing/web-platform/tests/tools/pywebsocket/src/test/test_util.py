@@ -38,7 +38,7 @@ import random
 import sys
 import unittest
 
-import set_sys_path  # Update sys.path to locate mod_pywebsocket module.
+from . import set_sys_path  # Update sys.path to locate mod_pywebsocket module.
 
 from mod_pywebsocket import util
 
@@ -55,8 +55,8 @@ class UtilTest(unittest.TestCase):
             a = 1 / 0  # Intentionally raise exception.
         except Exception:
             trace = util.get_stack_trace()
-            self.failUnless(trace.startswith('Traceback'))
-            self.failUnless(trace.find('ZeroDivisionError') != -1)
+            self.assertTrue(trace.startswith('Traceback'))
+            self.assertTrue(trace.find('ZeroDivisionError') != -1)
 
     def test_prepend_message_to_exception(self):
         exc = Exception('World')
@@ -109,10 +109,10 @@ class RepeatedXorMaskerTest(unittest.TestCase):
 
     def test_mask_large_data(self):
         masker = util.RepeatedXorMasker('mASk')
-        original = ''.join([chr(i % 256) for i in xrange(1000)])
+        original = ''.join([chr(i % 256) for i in range(1000)])
         result = masker.mask(original)
         expected = ''.join(
-                [chr((i % 256) ^ ord('mASk'[i % 4])) for i in xrange(1000)])
+                [chr((i % 256) ^ ord('mASk'[i % 4])) for i in range(1000)])
         self.assertEqual(expected, result)
 
         masker = util.RepeatedXorMasker('MaSk')
@@ -169,10 +169,10 @@ class InflaterDeflaterTest(unittest.TestCase):
     def test_random_section(self):
         random.seed(a=0)
         source = ''.join(
-            [chr(random.randint(0, 255)) for i in xrange(100 * 1024)])
+            [chr(random.randint(0, 255)) for i in range(100 * 1024)])
 
         chunked_input = get_random_section(source, 10)
-        print "Input chunk sizes: %r" % [len(c) for c in chunked_input]
+        print("Input chunk sizes: %r" % [len(c) for c in chunked_input])
 
         deflater = util._Deflater(15)
         compressed = []
@@ -181,8 +181,8 @@ class InflaterDeflaterTest(unittest.TestCase):
         compressed.append(deflater.compress_and_finish(''))
 
         chunked_expectation = get_random_section(source, 10)
-        print ("Expectation chunk sizes: %r" %
-               [len(c) for c in chunked_expectation])
+        print(("Expectation chunk sizes: %r" %
+               [len(c) for c in chunked_expectation]))
 
         inflater = util._Inflater(15)
         inflater.append(''.join(compressed))

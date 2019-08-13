@@ -78,7 +78,7 @@ class MochitestB2G(MochitestBase):
         for v in options.extraPrefs:
             thispref = v.split("=", 1)
             if len(thispref) < 2:
-                print "Error: syntax error in --setpref=" + v
+                print("Error: syntax error in --setpref=" + v)
                 sys.exit(1)
             prefs[thispref[0]] = thispref[1]
 
@@ -312,7 +312,7 @@ class MochitestB2G(MochitestBase):
                 os.remove(options.pidFile)
                 os.remove(options.pidFile + ".xpcshell.pid")
             except:
-                print "Warning: cleaning up pidfile '%s' was unsuccessful from the test harness" % options.pidFile
+                print("Warning: cleaning up pidfile '%s' was unsuccessful from the test harness" % options.pidFile)
 
         # stop and clean up the runner
         if getattr(self, 'runner', False):
@@ -378,7 +378,7 @@ def run_test_harness(options):
         marionette_args['port'] = int(port)
 
     if (options is None):
-        print "ERROR: Invalid options specified, use --help for a list of valid options"
+        print("ERROR: Invalid options specified, use --help for a list of valid options")
         sys.exit(1)
 
     mochitest = MochitestB2G(
@@ -396,7 +396,7 @@ def run_test_harness(options):
         mochitest.cleanup(None, options)
         retVal = mochitest.run_tests(options)
     except:
-        print "Automation Error: Exception caught while running tests"
+        print("Automation Error: Exception caught while running tests")
         traceback.print_exc()
         mochitest.stopServers()
         try:

@@ -13,8 +13,9 @@ import time
 
 from mozlog import get_default_logger
 import mozversion
-from xmlgen import html
-from xmlgen import raw
+from .xmlgen import html
+from .xmlgen import raw
+import imp
 
 
 class HTMLReportingTestRunnerMixin(object):
@@ -35,7 +36,7 @@ class HTMLReportingTestRunnerMixin(object):
     def html_run_tests(self, tests):
         if self.html_output:
             # change default encoding to avoid encoding problem for page source
-            reload(sys)
+            imp.reload(sys)
             sys.setdefaultencoding('utf-8')
             html_dir = os.path.dirname(os.path.abspath(self.html_output))
             if not os.path.exists(html_dir):
@@ -87,7 +88,7 @@ class HTMLReportingTestRunnerMixin(object):
                     additional_html.append(html.div(
                         html.a(html.img(src=screenshot), href="#"),
                         class_='screenshot'))
-                for name, content in debug.items():
+                for name, content in list(debug.items()):
                     try:
                         if 'screenshot' in name:
                             href = '#'
@@ -220,7 +221,7 @@ class HTMLReportingTestRunnerMixin(object):
                         html.th('Duration', class_='sortable numeric', col='duration'),
                         html.th('Links')]), id='results-table-head'),
                     html.tbody(test_logs, id='results-table-body')], id='results-table')))
-        return doc.unicode(indent=2)
+        return doc.str(indent=2)
 
 
 class HTMLReportingArguments(object):

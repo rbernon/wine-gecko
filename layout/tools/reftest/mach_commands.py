@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import, unicode_literals
+
 
 import os
 import re
@@ -147,7 +147,7 @@ class ReftestRunner(MozbuildObject):
         import runreftestmulet
 
         if self.substs.get('ENABLE_MARIONETTE') != '1':
-            print(MARIONETTE_DISABLED % self.mozconfig['path'])
+            print((MARIONETTE_DISABLED % self.mozconfig['path']))
             return 1
 
         if not kwargs["profile"]:
@@ -159,7 +159,7 @@ class ReftestRunner(MozbuildObject):
 
         if os.path.isfile(os.path.join(kwargs["profile"], 'extensions',
                                        'httpd@gaiamobile.org')):
-            print(GAIA_PROFILE_IS_DEBUG % kwargs["profile"])
+            print((GAIA_PROFILE_IS_DEBUG % kwargs["profile"]))
             return 1
 
         kwargs['app'] = self.get_binary_path()
@@ -217,7 +217,7 @@ class ReftestRunner(MozbuildObject):
 
         if kwargs["suite"] not in ('reftest', 'crashtest', 'jstestbrowser'):
             raise Exception('None or unrecognized reftest suite type.')
-        if "ipc" in kwargs.keys():
+        if "ipc" in list(kwargs.keys()):
             raise Exception('IPC tests not supported on Android.')
 
         default_manifest = {

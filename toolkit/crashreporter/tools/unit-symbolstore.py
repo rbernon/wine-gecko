@@ -158,7 +158,7 @@ class TestCopyDebug(HelperMixin, unittest.TestCase):
         stdout_iter = self.next_mock_stdout()
         def next_popen(*args, **kwargs):
             m = mock.MagicMock()
-            m.stdout = stdout_iter.next()
+            m.stdout = next(stdout_iter)
             m.wait.return_value = 0
             return m
         self.mock_popen.side_effect = next_popen
@@ -368,7 +368,7 @@ class TestInstallManifest(HelperMixin, unittest.TestCase):
         self.assertEqual(dest, self.objdir)
 
         file_mapping = symbolstore.make_file_mapping(ret)
-        for obj, src in self.canonical_mapping.iteritems():
+        for obj, src in self.canonical_mapping.items():
             self.assertTrue(obj in file_mapping)
             self.assertEqual(file_mapping[obj], src)
 
@@ -510,13 +510,13 @@ class TestFunctional(HelperMixin, unittest.TestCase):
                                           self.test_dir,
                                           self.target_bin],
                                          stderr=open(os.devnull, 'w'))
-        lines = filter(lambda x: x.strip(), output.splitlines())
+        lines = [x for x in output.splitlines() if x.strip()]
         self.assertEqual(1, len(lines),
                          'should have one filename in the output')
         symbol_file = os.path.join(self.test_dir, lines[0])
         self.assertTrue(os.path.isfile(symbol_file))
         symlines = open(symbol_file, 'r').readlines()
-        file_lines = filter(lambda x: x.startswith('FILE') and 'nsBrowserApp.cpp' in x, symlines)
+        file_lines = [x for x in symlines if x.startswith('FILE') and 'nsBrowserApp.cpp' in x]
         self.assertEqual(len(file_lines), 1,
                          'should have nsBrowserApp.cpp FILE line')
         filename = file_lines[0].split(None, 2)[2]

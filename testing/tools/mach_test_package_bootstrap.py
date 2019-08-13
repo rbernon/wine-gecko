@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import print_function, unicode_literals
+
 
 import os
 import platform
@@ -88,7 +88,7 @@ def bootstrap(test_package_root):
     mach = mach.main.Mach(os.getcwd())
     mach.populate_context_handler = populate_context
 
-    for category, meta in CATEGORIES.items():
+    for category, meta in list(CATEGORIES.items()):
         mach.define_category(category, meta['short'], meta['long'],
             meta['priority'])
 

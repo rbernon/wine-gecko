@@ -94,7 +94,7 @@ rtv_format_key = 'rtvFormat'
 
 def parse_json_into_switch_string(json_data):
     table_data = ''
-    for component_type in sorted(json_data.iteritems()):
+    for component_type in sorted(json_data.items()):
         type_str = component_type[0]
         table_data += '        case ' + type_str + ':\n'
         table_data += '        {\n'
@@ -102,7 +102,7 @@ def parse_json_into_switch_string(json_data):
         table_data += '            switch (' + max_bits_param + ')\n'
         table_data += '            {\n'
 
-        for max_width_item in sorted(json_data[type_str].iteritems()):
+        for max_width_item in sorted(json_data[type_str].items()):
             max_width = max_width_item[0]
             table_data += '                case ' + max_width + ':\n'
             table_data += '                {\n'

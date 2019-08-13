@@ -8,7 +8,7 @@ import copy
 import functools
 import re
 import shlex
-from try_test_parser import parse_test_opts
+from .try_test_parser import parse_test_opts
 
 TRY_DELIMITER = 'try:'
 TEST_CHUNK_SUFFIX = re.compile('(.*)-([0-9]+)$')
@@ -166,7 +166,7 @@ def parse_test_chunks(aliases, all_tests, tests):
                 results.append(test)
 
     # uniquify the results over the test names
-    results = {test['test']: test for test in results}.values()
+    results = list({test['test']: test for test in results}.values())
     return results
 
 def extract_tests_from_platform(test_jobs, build_platform, build_task, tests):

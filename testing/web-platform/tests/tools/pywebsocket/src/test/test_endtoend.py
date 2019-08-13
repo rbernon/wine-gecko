@@ -46,7 +46,7 @@ import sys
 import time
 import unittest
 
-import set_sys_path  # Update sys.path to locate mod_pywebsocket module.
+from . import set_sys_path  # Update sys.path to locate mod_pywebsocket module.
 
 from test import client_for_testing
 from test import mux_client_for_testing
@@ -304,9 +304,9 @@ class EndToEndHyBiTest(EndToEndTestBase):
             try:
                 client.connect()
                 self.fail('Could not catch HttpStatusException')
-            except client_for_testing.HttpStatusException, e:
+            except client_for_testing.HttpStatusException as e:
                 self.assertEqual(status, e.status)
-            except Exception, e:
+            except Exception as e:
                 self.fail('Catch unexpected exception')
             finally:
                 client.close_socket()
@@ -362,8 +362,8 @@ class EndToEndHyBiTest(EndToEndTestBase):
             client.assert_receive_close()
 
         def response_checker(parameter):
-            self.assertEquals('permessage-deflate', parameter.name())
-            self.assertEquals([], parameter.get_parameters())
+            self.assertEqual('permessage-deflate', parameter.name())
+            self.assertEqual([], parameter.get_parameters())
 
         self._run_permessage_deflate_test(
                 ['permessage-deflate'],
@@ -390,8 +390,8 @@ class EndToEndHyBiTest(EndToEndTestBase):
             client.assert_receive_close()
 
         def response_checker(parameter):
-            self.assertEquals('permessage-deflate', parameter.name())
-            self.assertEquals([], parameter.get_parameters())
+            self.assertEqual('permessage-deflate', parameter.name())
+            self.assertEqual([], parameter.get_parameters())
 
         self._run_permessage_deflate_test(
                 ['permessage-deflate'],
@@ -422,8 +422,8 @@ class EndToEndHyBiTest(EndToEndTestBase):
             client.assert_receive_close()
 
         def response_checker(parameter):
-            self.assertEquals('permessage-deflate', parameter.name())
-            self.assertEquals([], parameter.get_parameters())
+            self.assertEqual('permessage-deflate', parameter.name())
+            self.assertEqual([], parameter.get_parameters())
 
         self._run_permessage_deflate_test(
                 ['permessage-deflate'],
@@ -454,8 +454,8 @@ class EndToEndHyBiTest(EndToEndTestBase):
             client.assert_receive_close()
 
         def response_checker(parameter):
-            self.assertEquals('permessage-deflate', parameter.name())
-            self.assertEquals([('server_no_context_takeover', None)],
+            self.assertEqual('permessage-deflate', parameter.name())
+            self.assertEqual([('server_no_context_takeover', None)],
                               parameter.get_parameters())
 
         self._run_permessage_deflate_test(
@@ -480,8 +480,8 @@ class EndToEndHyBiTest(EndToEndTestBase):
             client.assert_receive_close()
 
         def response_checker(parameter):
-            self.assertEquals('permessage-deflate', parameter.name())
-            self.assertEquals([], parameter.get_parameters())
+            self.assertEqual('permessage-deflate', parameter.name())
+            self.assertEqual([], parameter.get_parameters())
 
         self._run_permessage_deflate_test(
                 ['permessage-deflate', 'deflate-frame'],
@@ -505,8 +505,8 @@ class EndToEndHyBiTest(EndToEndTestBase):
             client.assert_receive_close()
 
         def response_checker(parameter):
-            self.assertEquals('permessage-deflate', parameter.name())
-            self.assertEquals([('server_max_window_bits', '10'),
+            self.assertEqual('permessage-deflate', parameter.name())
+            self.assertEqual([('server_max_window_bits', '10'),
                                ('server_no_context_takeover', None)],
                               parameter.get_parameters())
 
@@ -710,7 +710,7 @@ class EndToEndTestWithEchoClient(EndToEndTestBase):
 
             # Expected output for the default messages.
             default_expectation = ('Send: Hello\n' 'Recv: Hello\n'
-                u'Send: \u65e5\u672c\n' u'Recv: \u65e5\u672c\n'
+                'Send: \u65e5\u672c\n' 'Recv: \u65e5\u672c\n'
                 'Send close\n' 'Recv ack\n')
 
             args = [client_command,

@@ -14,7 +14,7 @@ from .base import (Protocol,
                    RefTestImplementation,
                    TestharnessExecutor,
                    strip_server)
-import webdriver
+from . import webdriver
 from ..testrunner import Stop
 
 here = os.path.join(os.path.split(__file__)[0])
@@ -85,7 +85,7 @@ class ServoWebDriverProtocol(Protocol):
 
     def on_environment_change(self, old_environment, new_environment):
         #Unset all the old prefs
-        self.session.extension.reset_prefs(*old_environment.get("prefs", {}).keys())
+        self.session.extension.reset_prefs(*list(old_environment.get("prefs", {}).keys()))
         self.session.extension.set_prefs(new_environment.get("prefs", {}))
 
 

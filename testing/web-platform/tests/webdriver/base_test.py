@@ -1,4 +1,4 @@
-import ConfigParser
+import configparser
 import json
 import os
 import sys
@@ -30,7 +30,7 @@ class WebDriverBaseTest(unittest.TestCase):
 
 
 def create_driver():
-    config = ConfigParser.ConfigParser()
+    config = configparser.ConfigParser()
     config.read('webdriver.cfg')
     section = os.environ.get("WD_BROWSER", 'firefox')
     if config.has_option(section, 'url'):

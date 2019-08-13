@@ -58,9 +58,7 @@ class BrowserError(Exception):
     pass
 
 
-class Browser(object):
-    __metaclass__ = ABCMeta
-
+class Browser(object, metaclass=ABCMeta):
     process_cls = None
     init_timeout = 30
 
@@ -156,5 +154,5 @@ class ExecutorBrowser(object):
         but in some cases it may have more elaborate methods for setting
         up the browser from the runner process.
         """
-        for k, v in kwargs.iteritems():
+        for k, v in kwargs.items():
             setattr(self, k, v)

@@ -29,7 +29,7 @@ def create_stub():
             f.write(contents)
             f.close()
         return tempdir
-    except Exception, e:
+    except Exception as e:
         try:
             shutil.rmtree(tempdir)
         except:

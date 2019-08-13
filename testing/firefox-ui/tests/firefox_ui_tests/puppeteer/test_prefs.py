@@ -37,7 +37,7 @@ class testPreferences(FirefoxTestCase):
         self.assertTrue(isinstance(self.prefs.get_pref(self.int_pref),
                                    int))
         self.assertTrue(isinstance(self.prefs.get_pref(self.string_pref),
-                                   basestring))
+                                   str))
 
         # unknown
         self.assertIsNone(self.prefs.get_pref(self.unknown_pref))

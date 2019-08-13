@@ -134,7 +134,7 @@ class PandaTalosTest(TestingMixin, MercurialScript, BlobUploadMixin, MozpoolMixi
         try:
             self.info("*** Touching the shutdown file **")
             open(shutdown_file, 'w').close()
-        except Exception, e:
+        except Exception as e:
             self.warning("We failed to create the shutdown file: str(%s)" % str(e))
 
     def query_talos_json_config(self):
@@ -237,7 +237,7 @@ class PandaTalosTest(TestingMixin, MercurialScript, BlobUploadMixin, MozpoolMixi
                 # suites gets a dict of everything from all_suites where a key
                 # is also in specified_suites
                 suites = dict((key, all_suites.get(key)) for key in
-                              specified_suites if key in all_suites.keys())
+                              specified_suites if key in list(all_suites.keys()))
         else:
             if c.get('run_all_suites'):  # needed if you dont specify any suites
                 suites = all_suites
@@ -279,7 +279,7 @@ class PandaTalosTest(TestingMixin, MercurialScript, BlobUploadMixin, MozpoolMixi
         dirs['abs_talos_dir'] = dirs['abs_talosdatatalos_dir']
         dirs['abs_preflight_talos_dir'] = dirs['abs_talosdatatalos_dir']
         dirs['abs_blob_upload_dir'] = os.path.join(abs_dirs['abs_work_dir'], 'blobber_upload_dir')
-        for key in dirs.keys():
+        for key in list(dirs.keys()):
             if key not in abs_dirs:
                 abs_dirs[key] = dirs[key]
         self.abs_dirs = abs_dirs

@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, unicode_literals
+
 
 import json
 import warnings
@@ -25,7 +25,7 @@ class TokenizerTestParser(object):
             tokenizer.currentToken = {"type": "startTag",
                                       "name": self._lastStartTag}
 
-        types = dict((v, k) for k, v in constants.tokenTypes.items())
+        types = dict((v, k) for k, v in list(constants.tokenTypes.items()))
         for token in tokenizer:
             getattr(self, 'process%s' % types[token["type"]])(token)
 

@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this,
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import unicode_literals
+
 
 import difflib
 import errno
@@ -16,7 +16,7 @@ import subprocess
 from distutils.version import LooseVersion
 
 from configobj import ConfigObjError
-from StringIO import StringIO
+from io import StringIO
 
 from mozversioncontrol import get_hg_path, get_hg_version
 
@@ -321,25 +321,25 @@ class MercurialSetupWizard(object):
         try:
             c = MercurialConfig(config_path)
         except ConfigObjError as e:
-            print('Error importing existing Mercurial config: %s\n' % config_path)
+            print(('Error importing existing Mercurial config: %s\n' % config_path))
             for error in e.errors:
-                print(error.message)
+                print((error.message))
 
             return 1
         except ParseException as e:
-            print('Error importing existing Mercurial config: %s\n' % config_path)
-            print('Line %d: %s' % (e.line, e.message))
+            print(('Error importing existing Mercurial config: %s\n' % config_path))
+            print(('Line %d: %s' % (e.line, e.message)))
 
             return 1
 
         self.updater.update_all()
 
         print(INITIAL_MESSAGE)
-        raw_input()
+        input()
 
         hg_version = get_hg_version(hg)
         if hg_version < OLDEST_NON_LEGACY_VERSION:
-            print(LEGACY_MERCURIAL % hg_version)
+            print((LEGACY_MERCURIAL % hg_version))
             print('')
 
             if os.name == 'nt':
@@ -410,13 +410,13 @@ class MercurialSetupWizard(object):
                     c.activate_extension('hgwatchman', ext_path)
             except subprocess.CalledProcessError as e:
                 print('Error compiling hgwatchman; will not install hgwatchman')
-                print(e.output)
+                print((e.output))
 
         self.prompt_native_extension(c, 'mq', MQ_INFO)
 
         if 'reviewboard' not in c.extensions:
             if hg_version < REVIEWBOARD_MINIMUM_VERSION:
-                print(REVIEWBOARD_INCOMPATIBLE % REVIEWBOARD_MINIMUM_VERSION)
+                print((REVIEWBOARD_INCOMPATIBLE % REVIEWBOARD_MINIMUM_VERSION))
             else:
                 p = os.path.join(self.vcs_tools_dir, 'hgext', 'reviewboard',
                     'client.py')
@@ -504,7 +504,7 @@ class MercurialSetupWizard(object):
             if os.path.exists(path):
                 if self._prompt_yn('Would you like to remove the old and no '
                     'longer referenced repository at %s' % path):
-                    print('Cleaning up old repository: %s' % path)
+                    print(('Cleaning up old repository: %s' % path))
                     shutil.rmtree(path)
 
         # Python + Mercurial didn't have terrific TLS handling until Python
@@ -521,7 +521,7 @@ class MercurialSetupWizard(object):
         # version-control-tools, since various Mercurial extensions resolve
         # dependencies via __file__ and repos could reference another copy.
         seen_vct = set()
-        for k, v in c.config.get('extensions', {}).items():
+        for k, v in list(c.config.get('extensions', {}).items()):
             if 'version-control-tools' not in v:
                 continue
 
@@ -530,7 +530,7 @@ class MercurialSetupWizard(object):
             seen_vct.add(os.path.realpath(os.path.expanduser(vct)))
 
         if len(seen_vct) > 1:
-            print(MULTIPLE_VCT % c.config_path)
+            print((MULTIPLE_VCT % c.config_path))
 
         # At this point the config should be finalized.
 
@@ -559,7 +559,7 @@ class MercurialSetupWizard(object):
             if self._prompt_yn('Would you like me to update your hgrc file'):
                 with open(config_path, 'wt') as fh:
                     c.write(fh)
-                print('Wrote changes to %s.' % config_path)
+                print(('Wrote changes to %s.' % config_path))
             else:
                 print('hgrc changes not written to file. I would have '
                     'written the following:\n')
@@ -577,7 +577,7 @@ class MercurialSetupWizard(object):
                     # We don't care about sticky and set UID bits because
                     # this is a regular file.
                     mode = mode & stat.S_IRWXU
-                    print('Changing permissions of %s' % config_path)
+                    print(('Changing permissions of %s' % config_path))
                     os.chmod(config_path, mode)
 
         print(FINISHED)
@@ -589,7 +589,7 @@ class MercurialSetupWizard(object):
             return
         if self._prompt_yn(prompt_text):
             c.activate_extension(name)
-            print('Activated %s extension.\n' % name)
+            print(('Activated %s extension.\n' % name))
 
     def can_use_extension(self, c, name, path=None):
         # Load extension to hg and search stdout for printed exceptions
@@ -610,7 +610,7 @@ class MercurialSetupWizard(object):
             if not self.can_use_extension(c, name, path):
                 return
             print(name)
-            print('=' * len(name))
+            print(('=' * len(name)))
             print('')
             if not self._prompt_yn(prompt_text):
                 print('')
@@ -621,13 +621,13 @@ class MercurialSetupWizard(object):
             # directory
             path = os.path.join(self.vcs_tools_dir.replace(os.path.expanduser('~'), '~'), 'hgext', name)
         c.activate_extension(name, path)
-        print('Activated %s extension.\n' % name)
+        print(('Activated %s extension.\n' % name))
 
     def _prompt(self, msg, allow_empty=False):
         print(msg)
 
         while True:
-            response = raw_input().decode('utf-8')
+            response = input().decode('utf-8')
 
             if response:
                 return response
@@ -638,10 +638,10 @@ class MercurialSetupWizard(object):
             print('You must type something!')
 
     def _prompt_yn(self, msg):
-        print('%s? [Y/n]' % msg)
+        print(('%s? [Y/n]' % msg))
 
         while True:
-            choice = raw_input().lower().strip()
+            choice = input().lower().strip()
 
             if not choice:
                 return True

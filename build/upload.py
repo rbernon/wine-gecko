@@ -101,10 +101,10 @@ def DoSSHCommand(command, user, host, port=None, ssh_key=None):
         try:
             output = f(cmdline, stderr=STDOUT).strip()
         except CalledProcessError as e:
-            print "failed ssh command output:"
-            print '=' * 20
-            print e.output
-            print '=' * 20
+            print("failed ssh command output:")
+            print('=' * 20)
+            print(e.output)
+            print('=' * 20)
             raise
         return output
 
@@ -217,8 +217,8 @@ def UploadFiles(user, host, path, files, verbose=False, port=None, ssh_key=None,
     if not host or not user:
         return {}
     if (not path and not upload_to_temp_dir) or (path and upload_to_temp_dir):
-        print "One (and only one of UPLOAD_PATH or UPLOAD_TO_TEMP must be " + \
-                "defined."
+        print("One (and only one of UPLOAD_PATH or UPLOAD_TO_TEMP must be " + \
+                "defined.")
         sys.exit(1)
 
     if upload_to_temp_dir:
@@ -238,23 +238,23 @@ def UploadFiles(user, host, path, files, verbose=False, port=None, ssh_key=None,
             remote_path = GetBaseRelativePath(path, file, base_path)
             DoSSHCommand("mkdir -p " + remote_path, user, host, port=port, ssh_key=ssh_key)
             if verbose:
-                print "Uploading " + file
+                print("Uploading " + file)
             DoSCPFile(file, remote_path, user, host, port=port, ssh_key=ssh_key)
             remote_files.append(remote_path + '/' + os.path.basename(file))
         if post_upload_command is not None:
             if verbose:
-                print "Running post-upload command: " + post_upload_command
+                print("Running post-upload command: " + post_upload_command)
             file_list = '"' + '" "'.join(remote_files) + '"'
             output = DoSSHCommand('%s "%s" %s' % (post_upload_command, path, file_list), user, host, port=port, ssh_key=ssh_key)
             # We print since mozharness may parse URLs from the output stream.
-            print output
+            print(output)
             properties = GetUrlProperties(output, package)
     finally:
         if upload_to_temp_dir:
             DoSSHCommand("rm -rf %s" % path, user, host, port=port,
                          ssh_key=ssh_key)
     if verbose:
-        print "Upload complete"
+        print("Upload complete")
     return properties
 
 def CopyFilesLocally(path, files, verbose=False, base_path=None, package=None):
@@ -273,7 +273,7 @@ def CopyFilesLocally(path, files, verbose=False, base_path=None, package=None):
         if not os.path.exists(target_path):
             os.makedirs(target_path)
         if verbose:
-            print "Copying " + file + " to " + target_path
+            print("Copying " + file + " to " + target_path)
         shutil.copy(file, target_path)
 
 def WriteProperties(files, properties_file, url_properties, package):
@@ -315,20 +315,20 @@ if __name__ == '__main__':
                       help="Name of the main package.")
     (options, args) = parser.parse_args()
     if len(args) < 1:
-        print "You must specify at least one file to upload"
+        print("You must specify at least one file to upload")
         sys.exit(1)
     if not options.properties_file:
-        print "You must specify a --properties-file"
+        print("You must specify a --properties-file")
         sys.exit(1)
 
     if host == "localhost":
         if upload_to_temp_dir:
-            print "Cannot use UPLOAD_TO_TEMP with UPLOAD_HOST=localhost"
+            print("Cannot use UPLOAD_TO_TEMP with UPLOAD_HOST=localhost")
             sys.exit(1)
         if post_upload_command:
             # POST_UPLOAD_COMMAND is difficult to extract from the mozharness
             # scripts, so just ignore it until it's no longer used anywhere
-            print "Ignoring POST_UPLOAD_COMMAND with UPLOAD_HOST=localhost"
+            print("Ignoring POST_UPLOAD_COMMAND with UPLOAD_HOST=localhost")
 
     try:
         if host == "localhost":
@@ -344,6 +344,7 @@ if __name__ == '__main__':
                                          package=options.package, verbose=True)
 
             WriteProperties(args, options.properties_file, url_properties, options.package)
-    except IOError, (strerror):
-        print strerror
+    except IOError as xxx_todo_changeme:
+        (strerror) = xxx_todo_changeme
+        print(strerror)
         sys.exit(1)

@@ -3,24 +3,24 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import base64
-import ConfigParser
+import configparser
 import json
 import os
 import socket
-import StringIO
+import io
 import traceback
 import warnings
 
 from contextlib import contextmanager
 
-from decorators import do_crash_check
-from keys import Keys
+from .decorators import do_crash_check
+from .keys import Keys
 
 from mozrunner import B2GEmulatorRunner
 
-import geckoinstance
-import errors
-import transport
+from . import geckoinstance
+from . import errors
+from . import transport
 
 WEBELEMENT_KEY = "ELEMENT"
 W3C_WEBELEMENT_KEY = "element-6066-11e4-a52e-4f735466cecf"
@@ -579,15 +579,15 @@ class Marionette(object):
                     instance_class = geckoinstance.apps[app]
                 except KeyError:
                     msg = 'Application "%s" unknown (should be one of %s)'
-                    raise NotImplementedError(msg % (app, geckoinstance.apps.keys()))
+                    raise NotImplementedError(msg % (app, list(geckoinstance.apps.keys())))
             else:
                 try:
-                    config = ConfigParser.RawConfigParser()
+                    config = configparser.RawConfigParser()
                     config.read(os.path.join(os.path.dirname(bin), 'application.ini'))
                     app = config.get('App', 'Name')
                     instance_class = geckoinstance.apps[app.lower()]
-                except (ConfigParser.NoOptionError,
-                        ConfigParser.NoSectionError,
+                except (configparser.NoOptionError,
+                        configparser.NoSectionError,
                         KeyError):
                     instance_class = geckoinstance.GeckoInstance
             self.instance = instance_class(host=self.host, port=self.port,
@@ -785,7 +785,7 @@ class Marionette(object):
         if not isinstance(args, list) or not self.emulator:
             raise errors.MarionetteException(
                 "No emulator in this test to run shell command against")
-        buf = StringIO.StringIO()
+        buf = io.StringIO()
         self.emulator.dm.shell(args, buf)
         result = str(buf.getvalue()[0:-1]).rstrip().splitlines()
         buf.close()
@@ -839,8 +839,8 @@ class Marionette(object):
                     test_name=self.test_name):
                 crashed = True
         if returncode is not None:
-            print ('PROCESS-CRASH | %s | abnormal termination with exit code %d' %
-                (name, returncode))
+            print(('PROCESS-CRASH | %s | abnormal termination with exit code %d' %
+                (name, returncode)))
         return crashed
 
     @staticmethod
@@ -1025,7 +1025,7 @@ class Marionette(object):
           marionette.set_prefs({'browser.tabs.warnOnClose': True})
 
         '''
-        for pref, value in prefs.items():
+        for pref, value in list(prefs.items()):
             self.set_pref(pref, value)
 
     @contextmanager
@@ -1062,7 +1062,7 @@ class Marionette(object):
                                              "on gecko instances launched by Marionette")
         pref_exists = True
         self.set_context(self.CONTEXT_CHROME)
-        for pref, value in prefs.iteritems():
+        for pref, value in prefs.items():
             if type(value) is not str:
                 value = json.dumps(value)
             pref_exists = self.execute_script("""
@@ -1548,7 +1548,7 @@ class Marionette(object):
         elif type(args) == HTMLElement:
             wrapped = {W3C_WEBELEMENT_KEY: args.id,
                        WEBELEMENT_KEY: args.id}
-        elif (isinstance(args, bool) or isinstance(args, basestring) or
+        elif (isinstance(args, bool) or isinstance(args, str) or
               isinstance(args, int) or isinstance(args, float) or args is None):
             wrapped = args
         return wrapped

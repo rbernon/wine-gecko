@@ -8,7 +8,7 @@ import types
 
 
 def html_escape(item, escape_quote=False):
-    if isinstance(item, types.StringTypes):
+    if isinstance(item, (str,)):
         rv = escape(item)
         if escape_quote:
             rv = rv.replace('"', "&quot;")
@@ -23,7 +23,7 @@ class Raw(object):
         self.value = value
 
     def __unicode__(self):
-        return unicode(self.value)
+        return str(self.value)
 
 
 class Node(object):
@@ -40,17 +40,17 @@ class Node(object):
             attrs_unicode = " " + " ".join("%s=\"%s\"" % (html_escape(key),
                                                           html_escape(value,
                                                                       escape_quote=True))
-                                           for key, value in self.attrs.iteritems())
+                                           for key, value in self.attrs.items())
         else:
             attrs_unicode = ""
         return "<%s%s>%s</%s>\n" % (self.name,
                                     attrs_unicode,
-                                    "".join(unicode(html_escape(item))
+                                    "".join(str(html_escape(item))
                                             for item in self.children),
                                     self.name)
 
     def __str__(self):
-        return unicode(self).encode("utf8")
+        return str(self).encode("utf8")
 
 
 class RootNode(object):
@@ -59,10 +59,10 @@ class RootNode(object):
         self.children = ["<!DOCTYPE html>"] + list(children)
 
     def __unicode__(self):
-        return "".join(unicode(item) for item in self.children)
+        return "".join(str(item) for item in self.children)
 
     def __str__(self):
-        return unicode(self).encode("utf8")
+        return str(self).encode("utf8")
 
 
 def flatten(iterable):
@@ -72,7 +72,7 @@ def flatten(iterable):
     [1, "abc", "def", 2, [3]]"""
     rv = []
     for item in iterable:
-        if hasattr(item, "__iter__") and not isinstance(item, types.StringTypes):
+        if hasattr(item, "__iter__") and not isinstance(item, (str,)):
             rv.extend(item)
         else:
             rv.append(item)
@@ -96,7 +96,7 @@ class HTML(object):
     <!DOCTYPE html><html><head></head><body class="body-class"><h1>Hello World!</h1></body></html>"""
     def __getattr__(self, name):
         def make_html(self, *content, **attrs):
-            for attr_name in attrs.keys():
+            for attr_name in list(attrs.keys()):
                 if "_" in attr_name:
                     new_name = attr_name.replace("_", "-")
                     if new_name.endswith("-"):
@@ -131,7 +131,7 @@ class TestResult(object):
 def load_data(args):
     """Load data treating args as a list of UA name, filename pairs"""
     pairs = []
-    for i in xrange(0, len(args), 2):
+    for i in range(0, len(args), 2):
         pairs.append(args[i:i+2])
 
     rv = {}
@@ -153,7 +153,7 @@ def test_id(id):
 
 def all_tests(data):
     tests = defaultdict(set)
-    for UA, results in data.iteritems():
+    for UA, results in data.items():
         for result in results["results"]:
             id = test_id(result["test"])
             tests[id] |= set(subtest["name"] for subtest in result["subtests"])
@@ -171,7 +171,7 @@ def group_results(data):
     Message is None if the test didn't produce a message"""
     tests = all_tests(data)
 
-    UAs = data.keys()
+    UAs = list(data.keys())
 
     def result():
         return {
@@ -181,7 +181,7 @@ def group_results(data):
 
     results_by_test = defaultdict(result)
 
-    for UA, results in data.iteritems():
+    for UA, results in data.items():
         for test_data in results["results"]:
             id = test_id(test_data["test"])
             result = results_by_test[id]
@@ -212,7 +212,7 @@ def status_cell(status, message=None):
 
 def test_link(test_id, subtest=None):
     """Produce an <a> element linking to a test"""
-    if isinstance(test_id, types.StringTypes):
+    if isinstance(test_id, (str,)):
         rv = [h.a(test_id, href=test_id)]
     else:
         rv = [h.a(test_id[0], href=test_id[0]),
@@ -226,11 +226,11 @@ def test_link(test_id, subtest=None):
 def summary(UAs, results_by_test):
     """Render the implementation report summary"""
     not_passing = []
-    for test, results in results_by_test.iteritems():
-        if not any(item[0] in ("PASS", "OK") for item in results["harness"].values()):
+    for test, results in results_by_test.items():
+        if not any(item[0] in ("PASS", "OK") for item in list(results["harness"].values())):
             not_passing.append((test, None))
-        for subtest_name, subtest_results in results["subtests"].iteritems():
-            if not any(item[0] == "PASS" for item in subtest_results.values()):
+        for subtest_name, subtest_results in results["subtests"].items():
+            if not any(item[0] == "PASS" for item in list(subtest_results.values())):
                 not_passing.append((test, subtest_name))
     if not_passing:
         rv = [
@@ -256,7 +256,7 @@ def result_rows(UAs, test, result):
         class_="test"
     )
 
-    for name, subtest_result in sorted(result["subtests"].iteritems()):
+    for name, subtest_result in sorted(result["subtests"].items()):
         yield h.tr(
             h.td(name),
             [status_cell(status, message)
@@ -267,7 +267,7 @@ def result_rows(UAs, test, result):
 
 def result_bodies(UAs, results_by_test):
     return [h.tbody(result_rows(UAs, test, result))
-            for test, result in sorted(results_by_test.iteritems())]
+            for test, result in sorted(results_by_test.items())]
 
 
 def generate_html(UAs, results_by_test):
@@ -304,7 +304,7 @@ def main(filenames):
 
 if __name__ == "__main__":
     if not sys.argv[1:]:
-        print """Please supply a list of UA name, filename pairs e.g.
+        print("""Please supply a list of UA name, filename pairs e.g.
 
-python report.py Firefox firefox.json Chrome chrome.json IE internet_explorer.json"""
-    print main(sys.argv[1:])
+python report.py Firefox firefox.json Chrome chrome.json IE internet_explorer.json""")
+    print(main(sys.argv[1:]))

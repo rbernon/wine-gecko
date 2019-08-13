@@ -32,8 +32,8 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = u"six"
-copyright = u"2010-2014, Benjamin Peterson"
+project = "six"
+copyright = "2010-2014, Benjamin Peterson"
 
 sys.path.append(os.path.abspath(os.path.join(".", "..")))
 from six import __version__ as six_version
@@ -174,8 +174,8 @@ htmlhelp_basename = 'sixdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ("index", "six.tex", u"six Documentation",
-   u"Benjamin Peterson", "manual"),
+  ("index", "six.tex", "six Documentation",
+   "Benjamin Peterson", "manual"),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -207,8 +207,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ("index", "six", u"six Documentation",
-     [u"Benjamin Peterson"], 1)
+    ("index", "six", "six Documentation",
+     ["Benjamin Peterson"], 1)
 ]
 
 # -- Intersphinx ---------------------------------------------------------------

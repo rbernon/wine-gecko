@@ -82,12 +82,12 @@ class ReftestThread(threading.Thread):
 
     def run(self):
         with printLock:
-            print "Starting thread with", self.cmdargs
+            print("Starting thread with", self.cmdargs)
             sys.stdout.flush()
         process = subprocess.Popen(self.cmdargs, stdout=subprocess.PIPE)
         for chunk in self.chunkForMergedOutput(process.stdout):
             with printLock:
-                print chunk,
+                print(chunk, end=' ')
                 sys.stdout.flush()
         self.retcode = process.wait()
 
@@ -191,7 +191,7 @@ class ReftestResolver(object):
                     manifests[manifest] = set()
                 manifests[manifest].add(filter_str)
 
-        for key in manifests.iterkeys():
+        for key in manifests.keys():
             if None in manifests[key]:
                 manifests[key] = None
             else:
@@ -299,7 +299,7 @@ class RefTest(object):
         for v in options.extraPrefs:
             thispref = v.split('=')
             if len(thispref) < 2:
-                print "Error: syntax error in --setpref=" + v
+                print("Error: syntax error in --setpref=" + v)
                 sys.exit(1)
             prefs[thispref[0]] = thispref[1].strip()
 
@@ -358,7 +358,7 @@ class RefTest(object):
         for v in options.environment:
             ix = v.find("=")
             if ix <= 0:
-                print "Error: syntax error in --setenv=" + v
+                print("Error: syntax error in --setenv=" + v)
                 return None
             browserEnv[v[:ix]] = v[ix + 1:]
 
@@ -491,11 +491,11 @@ class RefTest(object):
                     threadMatches.group('total') if threadMatches else 0)
                 summaryObj['total'] += amount
 
-        print 'REFTEST INFO | Result summary:'
+        print('REFTEST INFO | Result summary:')
         for (summaryObj, (text, categories)) in zip(summaryObjects, summaryLines):
             details = ', '.join(["%d %s" % (summaryObj[attribute], description) for (
                 attribute, description) in categories])
-            print 'REFTEST INFO | ' + text + ': ' + str(summaryObj['total']) + ' (' + details + ')'
+            print('REFTEST INFO | ' + text + ': ' + str(summaryObj['total']) + ' (' + details + ')')
 
         return int(any(t.retcode != 0 for t in threads))
 

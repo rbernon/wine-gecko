@@ -1,5 +1,5 @@
 import gzip as gzip_module
-from cStringIO import StringIO
+from io import StringIO
 
 def main(request, response):
     if "content" in request.GET:

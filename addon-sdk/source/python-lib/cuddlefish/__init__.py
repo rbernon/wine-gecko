@@ -375,44 +375,44 @@ def test_all(env_root, defaults):
     starttime = time.time()
 
     if not defaults['filter']:
-        print >>sys.stderr, "Testing cfx..."
+        print("Testing cfx...", file=sys.stderr)
         sys.stderr.flush()
         result = test_cfx(env_root, defaults['verbose'])
         if result.failures or result.errors:
             fail = True
 
     if not fail or not defaults.get("stopOnError"):
-        print >>sys.stderr, "Testing all examples..."
+        print("Testing all examples...", file=sys.stderr)
         sys.stderr.flush()
 
         try:
             test_all_examples(env_root, defaults)
-        except SystemExit, e:
+        except SystemExit as e:
             fail = (e.code != 0) or fail
 
     if not fail or not defaults.get("stopOnError"):
-        print >>sys.stderr, "Testing all unit-test addons..."
+        print("Testing all unit-test addons...", file=sys.stderr)
         sys.stderr.flush()
 
         try:
             test_all_testaddons(env_root, defaults)
-        except SystemExit, e:
+        except SystemExit as e:
             fail = (e.code != 0) or fail
 
     if not fail or not defaults.get("stopOnError"):
-        print >>sys.stderr, "Testing all packages..."
+        print("Testing all packages...", file=sys.stderr)
         sys.stderr.flush()
         try:
             test_all_packages(env_root, defaults)
-        except SystemExit, e:
+        except SystemExit as e:
             fail = (e.code != 0) or fail
 
-    print >>sys.stderr, "Total time for all tests: %f seconds" % (time.time() - starttime)
+    print("Total time for all tests: %f seconds" % (time.time() - starttime), file=sys.stderr)
 
     if fail:
-        print >>sys.stderr, "Some tests were unsuccessful."
+        print("Some tests were unsuccessful.", file=sys.stderr)
         sys.exit(1)
-    print >>sys.stderr, "All tests were successful. Ship it!"
+    print("All tests were successful. Ship it!", file=sys.stderr)
     sys.exit(0)
 
 def test_cfx(env_root, verbose):
@@ -439,7 +439,7 @@ def test_all_testaddons(env_root, defaults):
         if (not defaults['filter'].split(":")[0] in dirname):
             continue
 
-        print >>sys.stderr, "Testing %s..." % dirname
+        print("Testing %s..." % dirname, file=sys.stderr)
         sys.stderr.flush()
         try:
             run(arguments=["testrun",
@@ -447,13 +447,13 @@ def test_all_testaddons(env_root, defaults):
                            os.path.join(addons_dir, dirname)],
                 defaults=defaults,
                 env_root=env_root)
-        except SystemExit, e:
+        except SystemExit as e:
             fail = (e.code != 0) or fail
         if fail and defaults.get("stopOnError"):
             break
 
     if fail:
-        print >>sys.stderr, "Some test addons tests were unsuccessful."
+        print("Some test addons tests were unsuccessful.", file=sys.stderr)
         sys.exit(-1)
 
 def test_all_examples(env_root, defaults):
@@ -466,7 +466,7 @@ def test_all_examples(env_root, defaults):
         if (not defaults['filter'].split(":")[0] in dirname):
             continue
 
-        print >>sys.stderr, "Testing %s..." % dirname
+        print("Testing %s..." % dirname, file=sys.stderr)
         sys.stderr.flush()
         try:
             run(arguments=["test",
@@ -474,13 +474,13 @@ def test_all_examples(env_root, defaults):
                            os.path.join(examples_dir, dirname)],
                 defaults=defaults,
                 env_root=env_root)
-        except SystemExit, e:
+        except SystemExit as e:
             fail = (e.code != 0) or fail
         if fail and defaults.get("stopOnError"):
             break
 
     if fail:
-        print >>sys.stderr, "Some examples tests were unsuccessful."
+        print("Some examples tests were unsuccessful.", file=sys.stderr)
         sys.exit(-1)
 
 def test_all_packages(env_root, defaults):
@@ -492,11 +492,11 @@ def test_all_packages(env_root, defaults):
       packages = []
     packages.append(env_root)
     packages.sort()
-    print >>sys.stderr, "Testing all available packages: %s." % (", ".join(packages))
+    print("Testing all available packages: %s." % (", ".join(packages)), file=sys.stderr)
     sys.stderr.flush()
     fail = False
     for dirname in packages:
-        print >>sys.stderr, "Testing %s..." % dirname
+        print("Testing %s..." % dirname, file=sys.stderr)
         sys.stderr.flush()
         try:
             run(arguments=["test",
@@ -504,12 +504,12 @@ def test_all_packages(env_root, defaults):
                            os.path.join(packages_dir, dirname)],
                 defaults=defaults,
                 env_root=env_root)
-        except SystemExit, e:
+        except SystemExit as e:
             fail = (e.code != 0) or fail
         if fail and defaults.get('stopOnError'):
             break
     if fail:
-        print >>sys.stderr, "Some package tests were unsuccessful."
+        print("Some package tests were unsuccessful.", file=sys.stderr)
         sys.exit(-1)
 
 def get_config_args(name, env_root):
@@ -519,64 +519,64 @@ def get_config_args(name, env_root):
         if name == "default":
             return []
         else:
-            print >>sys.stderr, "File does not exist: %s" % local_json
+            print("File does not exist: %s" % local_json, file=sys.stderr)
             sys.exit(1)
     local_json = packaging.load_json_file(local_json)
     if 'configs' not in local_json:
-        print >>sys.stderr, "'configs' key not found in local.json."
+        print("'configs' key not found in local.json.", file=sys.stderr)
         sys.exit(1)
     if name not in local_json.configs:
         if name == "default":
             return []
         else:
-            print >>sys.stderr, "No config found for '%s'." % name
+            print("No config found for '%s'." % name, file=sys.stderr)
             sys.exit(1)
     config = local_json.configs[name]
     if type(config) != list:
-        print >>sys.stderr, "Config for '%s' must be a list of strings." % name
+        print("Config for '%s' must be a list of strings." % name, file=sys.stderr)
         sys.exit(1)
     return config
 
 def initializer(env_root, args, out=sys.stdout, err=sys.stderr):
-    from templates import PACKAGE_JSON, TEST_MAIN_JS
-    from preflight import create_jid
+    from .templates import PACKAGE_JSON, TEST_MAIN_JS
+    from .preflight import create_jid
     path = os.getcwd()
     addon = os.path.basename(path)
     # if more than two arguments
     if len(args) > 2:
-        print >>err, 'Too many arguments.'
+        print('Too many arguments.', file=err)
         return {"result":1}
     if len(args) == 2:
         path = os.path.join(path,args[1])
         try:
             os.mkdir(path)
-            print >>out, '*', args[1], 'package directory created'
+            print('*', args[1], 'package directory created', file=out)
         except OSError:
-            print >>out, '*', args[1], 'already exists, testing if directory is empty'
+            print('*', args[1], 'already exists, testing if directory is empty', file=out)
     # avoid clobbering existing files, but we tolerate things like .git
     existing = [fn for fn in os.listdir(path) if not fn.startswith(".")]
     if existing:
-        print >>err, 'This command must be run in an empty directory.'
+        print('This command must be run in an empty directory.', file=err)
         return {"result":1}
     for d in ['lib','data','test']:
         os.mkdir(os.path.join(path,d))
-        print >>out, '*', d, 'directory created'
+        print('*', d, 'directory created', file=out)
     jid = create_jid()
-    print >>out, '* generated jID automatically:', jid
+    print('* generated jID automatically:', jid, file=out)
     open(os.path.join(path,'package.json'),'w').write(PACKAGE_JSON % {'name':addon.lower(),
                                                    'title':addon,
                                                    'id':jid })
-    print >>out, '* package.json written'
+    print('* package.json written', file=out)
     open(os.path.join(path,'test','test-main.js'),'w').write(TEST_MAIN_JS)
-    print >>out, '* test/test-main.js written'
+    print('* test/test-main.js written', file=out)
     open(os.path.join(path,'lib','main.js'),'w').write('')
-    print >>out, '* lib/main.js written'
+    print('* lib/main.js written', file=out)
     if len(args) == 1:
-        print >>out, '\nYour sample add-on is now ready.'
-        print >>out, 'Do "cfx test" to test it and "cfx run" to try it.  Have fun!'
+        print('\nYour sample add-on is now ready.', file=out)
+        print('Do "cfx test" to test it and "cfx run" to try it.  Have fun!', file=out)
     else:
-        print >>out, '\nYour sample add-on is now ready in the \'' + args[1] +  '\' directory.'
-        print >>out, 'Change to that directory, then do "cfx test" to test it, \nand "cfx run" to try it.  Have fun!'
+        print('\nYour sample add-on is now ready in the \'' + args[1] +  '\' directory.', file=out)
+        print('Change to that directory, then do "cfx test" to test it, \nand "cfx run" to try it.  Have fun!', file=out)
     return {"result":0, "jid":jid}
 
 def buildJID(target_cfg):
@@ -630,13 +630,13 @@ def run(arguments=sys.argv[1:], target_cfg=None, pkg_cfg=None,
         return
     elif command == "testcfx":
         if options.filter:
-            print >>sys.stderr, "The filter option is not valid with the testcfx command"
+            print("The filter option is not valid with the testcfx command", file=sys.stderr)
             return
         test_cfx(env_root, options.verbose)
         return
     elif command not in ["xpi", "test", "run", "testrun"]:
-        print >>sys.stderr, "Unknown command: %s" % command
-        print >>sys.stderr, "Try using '--help' for assistance."
+        print("Unknown command: %s" % command, file=sys.stderr)
+        print("Try using '--help' for assistance.", file=sys.stderr)
         sys.exit(1)
 
     target_cfg_json = None
@@ -644,14 +644,14 @@ def run(arguments=sys.argv[1:], target_cfg=None, pkg_cfg=None,
         if not options.pkgdir:
             options.pkgdir = find_parent_package(os.getcwd())
             if not options.pkgdir:
-                print >>sys.stderr, ("cannot find 'package.json' in the"
-                                     " current directory or any parent.")
+                print(("cannot find 'package.json' in the"
+                                     " current directory or any parent."), file=sys.stderr)
                 sys.exit(1)
         else:
             options.pkgdir = os.path.abspath(options.pkgdir)
         if not os.path.exists(os.path.join(options.pkgdir, 'package.json')):
-            print >>sys.stderr, ("cannot find 'package.json' in"
-                                 " %s." % options.pkgdir)
+            print(("cannot find 'package.json' in"
+                                 " %s." % options.pkgdir), file=sys.stderr)
             sys.exit(1)
 
         target_cfg_json = os.path.join(options.pkgdir, 'package.json')
@@ -685,7 +685,7 @@ def run(arguments=sys.argv[1:], target_cfg=None, pkg_cfg=None,
         # If the user supplies a template dir, then the main
         # program may be contained in the template.
         if not options.templatedir:
-            print >>sys.stderr, "package.json does not have a 'main' entry."
+            print("package.json does not have a 'main' entry.", file=sys.stderr)
             sys.exit(1)
 
     if not pkg_cfg:
@@ -705,12 +705,12 @@ def run(arguments=sys.argv[1:], target_cfg=None, pkg_cfg=None,
                 if modified:
                     # we need to re-read package.json . The safest approach
                     # is to re-run the "cfx xpi"/"cfx run" command.
-                    print >>sys.stderr, ("package.json modified: please re-run"
-                                         " 'cfx %s'" % command)
+                    print(("package.json modified: please re-run"
+                                         " 'cfx %s'" % command), file=sys.stderr)
                 else:
-                    print >>sys.stderr, ("package.json needs modification:"
+                    print(("package.json needs modification:"
                                          " please update it and then re-run"
-                                         " 'cfx %s'" % command)
+                                         " 'cfx %s'" % command), file=sys.stderr)
                 sys.exit(1)
         # if we make it this far, we have a JID
     else:
@@ -756,10 +756,10 @@ def run(arguments=sys.argv[1:], target_cfg=None, pkg_cfg=None,
         manifest = build_manifest(target_cfg, pkg_cfg, deps, scan_tests,
                                   None, loader_modules,
                                   abort_on_missing=options.abort_on_missing)
-    except ModuleNotFoundError, e:
-        print str(e)
+    except ModuleNotFoundError as e:
+        print(str(e))
         sys.exit(1)
-    except BadChromeMarkerError, e:
+    except BadChromeMarkerError as e:
         # An error had already been displayed on stderr in manifest code
         sys.exit(1)
     used_deps = manifest.get_used_packages()
@@ -836,12 +836,12 @@ def run(arguments=sys.argv[1:], target_cfg=None, pkg_cfg=None,
 
     if options.force_use_bundled_sdk:
         if not harness_options['is-sdk-bundled']:
-            print >>sys.stderr, ("--force-use-bundled-sdk "
-                                 "can't be used if sdk isn't bundled.")
+            print(("--force-use-bundled-sdk "
+                                 "can't be used if sdk isn't bundled."), file=sys.stderr)
             sys.exit(1)
         if options.overload_modules:
-            print >>sys.stderr, ("--force-use-bundled-sdk and --overload-modules "
-                                 "can't be used at the same time.")
+            print(("--force-use-bundled-sdk and --overload-modules "
+                                 "can't be used at the same time."), file=sys.stderr)
             sys.exit(1)
         # Pass a flag in order to force using sdk modules shipped in the xpi
         harness_options['force-use-bundled-sdk'] = True
@@ -859,7 +859,7 @@ def run(arguments=sys.argv[1:], target_cfg=None, pkg_cfg=None,
         if not options.update_link.startswith("https"):
             raise optparse.OptionValueError("--update-link must start with 'https': %s" % options.update_link)
         rdf_name = UPDATE_RDF_FILENAME % target_cfg.name
-        print >>stdout, "Exporting update description to %s." % rdf_name
+        print("Exporting update description to %s." % rdf_name, file=stdout)
         update = RDFUpdate()
         update.add(manifest_rdf, options.update_link)
         open(rdf_name, "w").write(str(update))
@@ -888,7 +888,7 @@ def run(arguments=sys.argv[1:], target_cfg=None, pkg_cfg=None,
         else:
           xpi_path = XPI_FILENAME % target_cfg.name
 
-        print >>stdout, "Exporting extension to %s." % xpi_path
+        print("Exporting extension to %s." % xpi_path, file=stdout)
         build_xpi(template_root_dir=app_extension_dir,
                   manifest=manifest_rdf,
                   xpi_path=xpi_path,
@@ -945,14 +945,14 @@ def run(arguments=sys.argv[1:], target_cfg=None, pkg_cfg=None,
                              pkgdir=options.pkgdir,
                              enable_e10s=enable_e10s,
                              no_connections=no_connections)
-        except ValueError, e:
-            print ""
-            print "A given cfx option has an inappropriate value:"
-            print >>sys.stderr, "  " + "  \n  ".join(str(e).split("\n"))
+        except ValueError as e:
+            print("")
+            print("A given cfx option has an inappropriate value:")
+            print("  " + "  \n  ".join(str(e).split("\n")), file=sys.stderr)
             retval = -1
-        except Exception, e:
+        except Exception as e:
             if str(e).startswith(MOZRUNNER_BIN_NOT_FOUND):
-                print >>sys.stderr, MOZRUNNER_BIN_NOT_FOUND_HELP.strip()
+                print(MOZRUNNER_BIN_NOT_FOUND_HELP.strip(), file=sys.stderr)
                 retval = -1
             else:
                 raise

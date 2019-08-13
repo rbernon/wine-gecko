@@ -94,7 +94,7 @@ class TestSafeBrowsingNotificationBar(FirefoxTestCase):
 
         Wait(self.marionette, timeout=self.browser.timeout_page_load).until(
             expected.element_present(By.ID, 'main-feature'))
-        self.assertEquals(self.marionette.get_url(), self.browser.get_final_url(unsafe_page))
+        self.assertEqual(self.marionette.get_url(), self.browser.get_final_url(unsafe_page))
 
         # Clean up here since the permission gets set in this function
         self.utils.remove_perms('https://www.itisatrap.org', 'safe-browsing')

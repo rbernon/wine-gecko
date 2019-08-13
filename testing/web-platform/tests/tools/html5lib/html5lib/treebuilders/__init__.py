@@ -26,7 +26,7 @@ returns a string containing Node and its children serialized according
 to the format used in the unittests
 """
 
-from __future__ import absolute_import, division, unicode_literals
+
 
 from ..utils import default_etree
 

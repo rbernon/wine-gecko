@@ -15,13 +15,13 @@ class TestWriteConfig(unittest.TestCase):
     def test_writeConfigFile(self):
         obj = dict(some=123, thing='456', other=789)
 
-        self.assertEquals(
+        self.assertEqual(
             json.loads(talosconfig.writeConfigFile(obj, ('some', 'thing'))),
             dict(some=123, thing='456')
         )
 
         # test without keys
-        self.assertEquals(
+        self.assertEqual(
             json.loads(talosconfig.writeConfigFile(obj, None)),
             obj
         )
@@ -37,7 +37,7 @@ class TalosConfigUnitTest(unittest.TestCase):
         if var1 == var2:
             return 1
         else:
-            print "input '%s' != expected '%s'"%(var1,var2)
+            print("input '%s' != expected '%s'"%(var1,var2))
 
     def test_talosconfig(self):
         # This function stimulates a call to generateTalosConfig in talosconfig.py . It is then tested whether the output generated is correct or not.
@@ -58,7 +58,7 @@ class TalosConfigUnitTest(unittest.TestCase):
         self.validate(content['browser_path'],"test/path/to/firefox")
         self.validate(content['error_filename'],"pathtoerrorfile")
         self.validate(content['xperf_path'],"C:/Program Files/Microsoft Windows Performance Toolkit/xperf.exe")
-        self.validate(content['buildid'],20131205075310L)
+        self.validate(content['buildid'],20131205075310)
         self.validate(content['sourcestamp'],"39faf812aaec")
         self.validate(content['repository'],"http://hg.mozilla.org/releases/mozilla-release")
         self.validate(content['title'],"qm-pxp01")

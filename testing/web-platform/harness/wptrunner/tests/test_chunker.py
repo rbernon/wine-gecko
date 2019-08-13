@@ -32,9 +32,9 @@ class TestEqualTimeChunker(unittest.TestCase):
         chunk_2 = list(wptrunner.EqualTimeChunker(3, 2)(tests))
         chunk_3 = list(wptrunner.EqualTimeChunker(3, 3)(tests))
 
-        self.assertEquals(tests[:10], chunk_1)
-        self.assertEquals(tests[10:20], chunk_2)
-        self.assertEquals(tests[20:], chunk_3)
+        self.assertEqual(tests[:10], chunk_1)
+        self.assertEqual(tests[10:20], chunk_2)
+        self.assertEqual(tests[20:], chunk_3)
 
     def test_include_all_1(self):
         tests = make_mock_manifest(("a", 5), ("a/b", 5), ("c", 10), ("d", 10))
@@ -43,9 +43,9 @@ class TestEqualTimeChunker(unittest.TestCase):
         chunk_2 = list(wptrunner.EqualTimeChunker(3, 2)(tests))
         chunk_3 = list(wptrunner.EqualTimeChunker(3, 3)(tests))
 
-        self.assertEquals(tests[:10], chunk_1)
-        self.assertEquals(tests[10:20], chunk_2)
-        self.assertEquals(tests[20:], chunk_3)
+        self.assertEqual(tests[:10], chunk_1)
+        self.assertEqual(tests[10:20], chunk_2)
+        self.assertEqual(tests[20:], chunk_3)
 
     def test_long(self):
         tests = make_mock_manifest(("a", 100), ("a/b", 1), ("c", 1))
@@ -54,9 +54,9 @@ class TestEqualTimeChunker(unittest.TestCase):
         chunk_2 = list(wptrunner.EqualTimeChunker(3, 2)(tests))
         chunk_3 = list(wptrunner.EqualTimeChunker(3, 3)(tests))
 
-        self.assertEquals(tests[:100], chunk_1)
-        self.assertEquals(tests[100:101], chunk_2)
-        self.assertEquals(tests[101:102], chunk_3)
+        self.assertEqual(tests[:100], chunk_1)
+        self.assertEqual(tests[100:101], chunk_2)
+        self.assertEqual(tests[101:102], chunk_3)
 
     def test_long_1(self):
         tests = make_mock_manifest(("a", 1), ("a/b", 100), ("c", 1))
@@ -65,9 +65,9 @@ class TestEqualTimeChunker(unittest.TestCase):
         chunk_2 = list(wptrunner.EqualTimeChunker(3, 2)(tests))
         chunk_3 = list(wptrunner.EqualTimeChunker(3, 3)(tests))
 
-        self.assertEquals(tests[:1], chunk_1)
-        self.assertEquals(tests[1:101], chunk_2)
-        self.assertEquals(tests[101:102], chunk_3)
+        self.assertEqual(tests[:1], chunk_1)
+        self.assertEqual(tests[1:101], chunk_2)
+        self.assertEqual(tests[101:102], chunk_3)
 
     def test_too_few_dirs(self):
         with self.assertRaises(ValueError):

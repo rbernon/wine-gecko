@@ -32,7 +32,7 @@
 """
 
 
-import Queue
+import queue
 import threading
 
 from mod_pywebsocket import common
@@ -113,7 +113,7 @@ class MockBlockingConn(_MockConnBase):
 
     def __init__(self):
         _MockConnBase.__init__(self)
-        self._queue = Queue.Queue()
+        self._queue = queue.Queue()
 
     def readline(self):
         """Override mod_python.apache.mp_conn.readline."""
@@ -152,7 +152,7 @@ class MockTable(dict):
 
     def __init__(self, copy_from={}):
         if isinstance(copy_from, dict):
-            copy_from = copy_from.items()
+            copy_from = list(copy_from.items())
         for key, value in copy_from:
             self.__setitem__(key, value)
 

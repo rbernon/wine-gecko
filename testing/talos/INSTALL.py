@@ -10,7 +10,7 @@ installation script for talos. This script:
 import os
 import subprocess
 import sys
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 try:
     from subprocess import check_call as call
 except:
@@ -41,7 +41,7 @@ def main(args=sys.argv[1:]):
         call([virtualenv, '--system-site-packages', here])
     else:
         process = subprocess.Popen([sys.executable, '-', '--system-site-packages', here], stdin=subprocess.PIPE)
-        stdout, stderr = process.communicate(input=urllib2.urlopen(VIRTUALENV).read())
+        stdout, stderr = process.communicate(input=urllib.request.urlopen(VIRTUALENV).read())
 
     # find the virtualenv's python
     for i in ('bin', 'Scripts'):

@@ -36,7 +36,7 @@
 # mismatched alloc/free checking.
 #----------------------------------------------------------------------------
 
-from __future__ import print_function
+
 
 import argparse
 import re

@@ -239,7 +239,7 @@ def WriteWrappers(testWebPathList):
             'TEST_PATH': testWebPath,
         }
 
-        print('Writing \'' + wrapperFilePath + '\'')
+        print(('Writing \'' + wrapperFilePath + '\''))
         OutputFilledTemplate(templateShell, templateDict,
                              wrapperFilePath)
 
@@ -251,7 +251,7 @@ def WriteWrappers(testWebPathList):
 
 
 def PathFromManifestDir(path):
-    print('path: ' + path)
+    print(('path: ' + path))
     ret = os.path.join(FILE_PATH_PREFIX, path)
     return ret.replace(os.sep, '/')
 

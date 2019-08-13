@@ -68,10 +68,10 @@ class Licenses(unittest.TestCase):
             self.scan_file(from_sdk_top(fn))
 
         if self.missing:
-            print
-            print "The following files are missing an MPL2 header:"
+            print()
+            print("The following files are missing an MPL2 header:")
             for fn in sorted(self.missing):
-                print " "+fn
+                print(" "+fn)
             self.fail("%d files are missing an MPL2 header" % len(self.missing))
 
     def scan(self, start, extensions=[], skipdirs=[]):

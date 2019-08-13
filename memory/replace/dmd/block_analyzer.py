@@ -120,7 +120,7 @@ def print_trace_segment(args, stacks, block):
 
     for l in traceTable[block.alloc_stack]:
         # The 5: is to remove the bogus leading "#00: " from the stack frame.
-        print ' ', frameTable[l][5:args.max_stack_frame_length]
+        print(' ', frameTable[l][5:args.max_stack_frame_length])
 
 
 def show_referrers(args, blocks, stacks, block):
@@ -131,7 +131,7 @@ def show_referrers(args, blocks, stacks, block):
     while True:
         referrers = {}
 
-        for b, data in blocks.iteritems():
+        for b, data in blocks.items():
             which_edge = 0
             for e in data.contents:
                 if e == block:
@@ -145,9 +145,9 @@ def show_referrers(args, blocks, stacks, block):
             sys.stdout.write('0x{} size = {} bytes'.format(blocks[r].addr, blocks[r].req_size))
             plural = 's' if len(referrers[r]) > 1 else ''
             sys.stdout.write(' at byte offset' + plural + ' ' + (', '.join(str(x) for x in referrers[r])))
-            print
+            print()
             print_trace_segment(args, stacks, blocks[r])
-            print
+            print()
 
         if args.chain_reports:
             if len(referrers) == 0:
@@ -168,7 +168,7 @@ def show_referrers(args, blocks, stacks, block):
             break
 
     if not anyFound:
-        print 'No referrers found.'
+        print('No referrers found.')
 
 
 def show_block_info(args, blocks, stacks, block):
@@ -190,11 +190,11 @@ def cleanupTraceTable(args, frameTable, traceTable):
     # Remove allocation functions at the start of traces.
     if args.ignore_alloc_fns:
         # Build a regexp that matches every function in allocatorFns.
-        escapedAllocatorFns = map(re.escape, allocatorFns)
+        escapedAllocatorFns = list(map(re.escape, allocatorFns))
         fn_re = re.compile('|'.join(escapedAllocatorFns))
 
         # Remove allocator fns from each stack trace.
-        for traceKey, frameKeys in traceTable.items():
+        for traceKey, frameKeys in list(traceTable.items()):
             numSkippedFrames = 0
             for frameKey in frameKeys:
                 frameDesc = frameTable[frameKey]
@@ -206,7 +206,7 @@ def cleanupTraceTable(args, frameTable, traceTable):
                 traceTable[traceKey] = frameKeys[numSkippedFrames:]
 
     # Trim the number of frames.
-    for traceKey, frameKeys in traceTable.items():
+    for traceKey, frameKeys in list(traceTable.items()):
         if len(frameKeys) > args.max_frames:
             traceTable[traceKey] = frameKeys[:args.max_frames]
 
@@ -250,8 +250,8 @@ def analyzeLogs():
     block = int(options.block, 16)
 
     if not block in blocks:
-        print 'Object', block, 'not found in traces.'
-        print 'It could still be the target of some nodes.'
+        print('Object', block, 'not found in traces.')
+        print('It could still be the target of some nodes.')
         return
 
     if options.info:

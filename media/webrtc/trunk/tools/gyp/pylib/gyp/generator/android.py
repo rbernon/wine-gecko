@@ -259,8 +259,8 @@ class AndroidMkWriter(object):
       dirs = set()
       for out in outputs:
         if not out.startswith('$'):
-          print ('WARNING: Action for target "%s" writes output to local path '
-                 '"%s".' % (self.target, out))
+          print(('WARNING: Action for target "%s" writes output to local path '
+                 '"%s".' % (self.target, out)))
         dir = os.path.split(out)[0]
         if dir:
           dirs.add(dir)
@@ -352,8 +352,8 @@ class AndroidMkWriter(object):
         dirs = set()
         for out in outputs:
           if not out.startswith('$'):
-            print ('WARNING: Rule for target %s writes output to local path %s'
-                   % (self.target, out))
+            print(('WARNING: Rule for target %s writes output to local path %s'
+                   % (self.target, out)))
           dir = os.path.dirname(out)
           if dir:
             dirs.add(dir)
@@ -378,7 +378,7 @@ class AndroidMkWriter(object):
 
         # We set up a rule to build the first output, and then set up
         # a rule for each additional output to depend on the first.
-        outputs = map(self.LocalPathify, outputs)
+        outputs = list(map(self.LocalPathify, outputs))
         main_output = outputs[0]
         self.WriteLn('%s: gyp_local_path := $(LOCAL_PATH)' % main_output)
         self.WriteLn('%s: gyp_intermediate_dir := '
@@ -425,8 +425,8 @@ class AndroidMkWriter(object):
         # $(gyp_shared_intermediate_dir). Note that we can't use an assertion
         # because some of the gyp tests depend on this.
         if not copy['destination'].startswith('$'):
-          print ('WARNING: Copy rule for target %s writes output to '
-                 'local path %s' % (self.target, copy['destination']))
+          print(('WARNING: Copy rule for target %s writes output to '
+                 'local path %s' % (self.target, copy['destination'])))
 
         # LocalPathify() calls normpath, stripping trailing slashes.
         path = Sourceify(self.LocalPathify(path))
@@ -482,7 +482,7 @@ class AndroidMkWriter(object):
     self.WriteLn('\n# Include paths placed before CFLAGS/CPPFLAGS')
     includes = list(config.get('include_dirs', []))
     includes.extend(extracted_includes)
-    includes = map(Sourceify, map(self.LocalPathify, includes))
+    includes = list(map(Sourceify, list(map(self.LocalPathify, includes))))
     includes = self.NormalizeIncludePaths(includes)
     self.WriteList(includes, 'LOCAL_C_INCLUDES')
     self.WriteLn('LOCAL_C_INCLUDES := $(GYP_COPIED_SOURCE_ORIGIN_DIRS) '
@@ -504,9 +504,9 @@ class AndroidMkWriter(object):
       spec, configs: input from gyp.
       extra_sources: Sources generated from Actions or Rules.
     """
-    sources = filter(make.Compilable, spec.get('sources', []))
+    sources = list(filter(make.Compilable, spec.get('sources', [])))
     generated_not_sources = [x for x in extra_sources if not make.Compilable(x)]
-    extra_sources = filter(make.Compilable, extra_sources)
+    extra_sources = list(filter(make.Compilable, extra_sources))
 
     # Determine and output the C++ extension used by these sources.
     # We simply find the first C++ file and use that extension.
@@ -568,7 +568,7 @@ class AndroidMkWriter(object):
     self.WriteList(final_generated_sources, 'LOCAL_GENERATED_SOURCES')
 
     origin_src_dirs = gyp.common.uniquer(origin_src_dirs)
-    origin_src_dirs = map(Sourceify, map(self.LocalPathify, origin_src_dirs))
+    origin_src_dirs = list(map(Sourceify, list(map(self.LocalPathify, origin_src_dirs))))
     self.WriteList(origin_src_dirs, 'GYP_COPIED_SOURCE_ORIGIN_DIRS')
 
     self.WriteList(local_files, 'LOCAL_SRC_FILES')
@@ -632,8 +632,8 @@ class AndroidMkWriter(object):
     elif self.type == 'none':
       target_ext = '.stamp'
     elif self.type != 'executable':
-      print ("ERROR: What output file should be generated?",
-             "type", self.type, "target", target)
+      print(("ERROR: What output file should be generated?",
+             "type", self.type, "target", target))
 
     if self.type != 'static_library' and self.type != 'shared_library':
       target_prefix = spec.get('product_prefix', target_prefix)
@@ -1062,10 +1062,10 @@ def GenerateOutput(target_list, target_dicts, data, params):
     android_module = writer.Write(qualified_target, base_path, output_file,
                                   spec, configs, part_of_all=part_of_all)
     if android_module in android_modules:
-      print ('ERROR: Android module names must be unique. The following '
+      print(('ERROR: Android module names must be unique. The following '
              'targets both generate Android module name %s.\n  %s\n  %s' %
              (android_module, android_modules[android_module],
-              qualified_target))
+              qualified_target)))
       return
     android_modules[android_module] = qualified_target
 

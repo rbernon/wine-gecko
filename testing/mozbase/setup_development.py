@@ -38,7 +38,7 @@ extra_packages = [ "sphinx" # documentation: https://wiki.mozilla.org/Auto-tools
 def cycle_check(order, dependencies):
     """ensure no cyclic dependencies"""
     order_dict = dict([(j, i) for i, j in enumerate(order)])
-    for package, deps in dependencies.items():
+    for package, deps in list(dependencies.items()):
         index = order_dict[package]
         for d in deps:
             assert index > order_dict[d], "Cyclic dependencies detected"
@@ -52,7 +52,7 @@ def info(directory):
     try:
         call([sys.executable, 'setup.py', 'egg_info'], cwd=directory, stdout=PIPE)
     except subprocess.CalledProcessError:
-        print "Error running setup.py in %s" % directory
+        print("Error running setup.py in %s" % directory)
         raise
 
     # get the .egg-info directory
@@ -129,7 +129,7 @@ def unroll_dependencies(dependencies):
 
     # flatten all
     packages = set(dependencies.keys())
-    for deps in dependencies.values():
+    for deps in list(dependencies.values()):
         packages.update(deps)
 
     while len(order) != len(packages):
@@ -170,7 +170,7 @@ def main(args=sys.argv[1:]):
     if options.list_dependencies:
         # list the package dependencies
         for package in packages:
-            print '%s: %s' % get_dependencies(os.path.join(here, package))
+            print('%s: %s' % get_dependencies(os.path.join(here, package)))
         parser.exit()
 
     # gather dependencies
@@ -192,7 +192,7 @@ def main(args=sys.argv[1:]):
     flag = True
     while flag:
         flag = False
-        for value in deps.values():
+        for value in list(deps.values()):
             for dep in value:
                 if dep in mozbase_packages and dep not in deps:
                     key, value = get_dependencies(os.path.join(here, dep))
@@ -217,7 +217,7 @@ def main(args=sys.argv[1:]):
     unrolled = unroll_dependencies(deps)
 
     # make a reverse mapping: package name -> subdirectory
-    reverse_mapping = dict([(j,i) for i, j in mapping.items()])
+    reverse_mapping = dict([(j,i) for i, j in list(mapping.items())])
 
     # we only care about dependencies in mozbase
     unrolled = [package for package in unrolled if package in reverse_mapping]
@@ -225,7 +225,7 @@ def main(args=sys.argv[1:]):
     if options.list:
         # list what will be installed
         for package in unrolled:
-            print package
+            print(package)
         parser.exit()
 
     # set up the packages for development
@@ -244,9 +244,9 @@ def main(args=sys.argv[1:]):
     # these need to be installed separately and the --no-deps flag
     # subsequently used due to a bug in setuptools; see
     # https://bugzilla.mozilla.org/show_bug.cgi?id=759836
-    pypi_deps = dict([(i, j) for i,j in alldeps.items()
+    pypi_deps = dict([(i, j) for i,j in list(alldeps.items())
                       if i not in unrolled])
-    for package, version in pypi_deps.items():
+    for package, version in list(pypi_deps.items()):
         # easy_install should be available since we rely on setuptools
         call(['easy_install', version])
 

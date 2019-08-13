@@ -17,7 +17,7 @@ class tabbingTest(base_test.WebDriverBaseTest):
         self.driver.get(self.webserver.where_is("windows/res/win1.html"))
         self.driver.find_element_by_tag_name("div").click()
         h = self.driver.window_handles
-        self.assertEquals(2, len(h))
+        self.assertEqual(2, len(h))
         self.driver.switch_to.window(h[1])
         try:
             self.driver.switch_to.window("does not exist")

@@ -175,7 +175,7 @@ class UnsupportedOperationException(MarionetteException):
     status = "unsupported operation"
 
 
-es_ = [e for e in locals().values() if type(e) == type and issubclass(e, MarionetteException)]
+es_ = [e for e in list(locals().values()) if type(e) == type and issubclass(e, MarionetteException)]
 by_string = {e.status: e for e in es_}
 by_number = {c: e for e in es_ for c in e.code}
 

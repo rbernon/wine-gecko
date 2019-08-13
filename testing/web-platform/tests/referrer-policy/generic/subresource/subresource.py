@@ -1,4 +1,4 @@
-import os, sys, json, urlparse, urllib
+import os, sys, json, urllib.parse, urllib.request, urllib.parse, urllib.error
 
 def get_template(template_basename):
     script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -19,12 +19,12 @@ def get_swapped_origin_netloc(netloc, subdomain_prefix = "www1."):
         return subdomain_prefix + netloc
 
 def create_redirect_url(request, cross_origin = False):
-    parsed = urlparse.urlsplit(request.url)
+    parsed = urllib.parse.urlsplit(request.url)
     destination_netloc = parsed.netloc
     if cross_origin:
         destination_netloc = get_swapped_origin_netloc(parsed.netloc)
 
-    destination_url = urlparse.urlunsplit(urlparse.SplitResult(
+    destination_url = urllib.parse.urlunsplit(urllib.parse.SplitResult(
         scheme = parsed.scheme,
         netloc = destination_netloc,
         path = parsed.path,

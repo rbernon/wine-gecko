@@ -13,7 +13,7 @@ https://hg.mozilla.org/build/tools/file/cf265ea8fb5e/lib/python/util/hg.py .
 import os
 import re
 import subprocess
-from urlparse import urlsplit
+from urllib.parse import urlsplit
 
 import sys
 sys.path.insert(1, os.path.dirname(os.path.dirname(os.path.dirname(sys.path[0]))))
@@ -280,7 +280,7 @@ class MercurialVCS(ScriptMixin, LogMixin, object):
                         branch = "default"
                     revs.append((rev, branch))
                 return revs
-            except subprocess.CalledProcessError, inst:
+            except subprocess.CalledProcessError as inst:
                 # In some situations, some versions of Mercurial return "1"
                 # if no changes are found, so we need to ignore this return
                 # code
@@ -495,7 +495,7 @@ class MercurialVCS(ScriptMixin, LogMixin, object):
                           ssh_username=ssh_username,
                           ssh_key=ssh_key)
                 return
-            except VCSException, e:
+            except VCSException as e:
                 self.debug("Hit error when trying to push: %s" % str(e))
                 if n == max_attempts:
                     self.debug("Tried %d times, giving up" % max_attempts)
@@ -511,7 +511,7 @@ class MercurialVCS(ScriptMixin, LogMixin, object):
                     self.run_command(self.hg + ['rebase'], cwd=localrepo,
                                      error_list=HgErrorList,
                                      throw_exception=True)
-                except subprocess.CalledProcessError, e:
+                except subprocess.CalledProcessError as e:
                     self.debug("Failed to rebase: %s" % str(e))
                     # clean up any hanging rebase. ignore errors if we aren't
                     # in the middle of a rebase.

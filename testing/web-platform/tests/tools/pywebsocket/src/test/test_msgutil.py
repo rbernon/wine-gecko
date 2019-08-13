@@ -34,13 +34,13 @@
 
 
 import array
-import Queue
+import queue
 import random
 import struct
 import unittest
 import zlib
 
-import set_sys_path  # Update sys.path to locate mod_pywebsocket module.
+from . import set_sys_path  # Update sys.path to locate mod_pywebsocket module.
 
 from mod_pywebsocket import common
 from mod_pywebsocket.extensions import DeflateFrameExtensionProcessor
@@ -60,12 +60,12 @@ _MASKING_NONCE = 'ABCD'
 
 
 def _mask_hybi(frame):
-    frame_key = map(ord, _MASKING_NONCE)
+    frame_key = list(map(ord, _MASKING_NONCE))
     frame_key_len = len(frame_key)
     result = array.array('B')
     result.fromstring(frame)
     count = 0
-    for i in xrange(len(result)):
+    for i in range(len(result)):
         result[i] ^= frame_key[count]
         count = (count + 1) % frame_key_len
     return _MASKING_NONCE + result.tostring()
@@ -181,7 +181,7 @@ class BasicMessageTest(unittest.TestCase):
 
     def test_send_message_unicode(self):
         request = _create_request()
-        msgutil.send_message(request, u'\u65e5')
+        msgutil.send_message(request, '\u65e5')
         # U+65e5 is encoded as e6,97,a5 in UTF-8
         self.assertEqual('\x81\x03\xe6\x97\xa5',
                          request.connection.written_data())
@@ -240,7 +240,7 @@ class BasicMessageTest(unittest.TestCase):
     def test_receive_message_unicode(self):
         request = _create_request(('\x81\x83', '\xe6\x9c\xac'))
         # U+672c is encoded as e6,9c,ac in UTF-8
-        self.assertEqual(u'\u672c', msgutil.receive_message(request))
+        self.assertEqual('\u672c', msgutil.receive_message(request))
 
     def test_receive_message_erroneous_unicode(self):
         # \x80 and \x81 are invalid as UTF-8.
@@ -264,7 +264,7 @@ class BasicMessageTest(unittest.TestCase):
             ('\x01\x82', '\xe6\xbc'),
             ('\x00\x82', '\xa2\xe5'),
             ('\x80\x82', '\xad\x97'))
-        self.assertEqual(u'\u6f22\u5b57', msgutil.receive_message(request))
+        self.assertEqual('\u6f22\u5b57', msgutil.receive_message(request))
 
     def test_receive_fragments_immediate_zero_termination(self):
         request = _create_request(
@@ -465,7 +465,7 @@ class DeflateFrameTest(unittest.TestCase):
         extension = common.ExtensionParameter(common.DEFLATE_FRAME_EXTENSION)
         request = _create_request_from_rawdata(
             '', deflate_frame_request=extension)
-        self.assertEquals(1, len(request.ws_extension_processors))
+        self.assertEqual(1, len(request.ws_extension_processors))
         deflate_frame_processor = request.ws_extension_processors[0]
         deflate_frame_processor.set_bfinal(True)
         msgutil.send_message(request, 'Hello')
@@ -498,7 +498,7 @@ class DeflateFrameTest(unittest.TestCase):
         extension = common.ExtensionParameter(common.DEFLATE_FRAME_EXTENSION)
         request = _create_request_from_rawdata(
             '', deflate_frame_request=extension)
-        self.assertEquals(1, len(request.ws_extension_processors))
+        self.assertEqual(1, len(request.ws_extension_processors))
         deflate_frame_processor = request.ws_extension_processors[0]
         msgutil.send_message(request, 'Hello')
         deflate_frame_processor.disable_outgoing_compression()
@@ -532,7 +532,7 @@ class DeflateFrameTest(unittest.TestCase):
         extension.add_parameter('no_context_takeover', None)
         request = _create_request_from_rawdata(
             '', deflate_frame_request=extension)
-        for i in xrange(3):
+        for i in range(3):
             msgutil.send_message(request, 'Hello')
 
         compressed_message = compress.compress('Hello')
@@ -686,7 +686,7 @@ class DeflateFrameTest(unittest.TestCase):
         extension = common.ExtensionParameter(common.DEFLATE_FRAME_EXTENSION)
         request = _create_request_from_rawdata(
             data, deflate_frame_request=extension)
-        for i in xrange(3):
+        for i in range(3):
             self.assertEqual('Hello', msgutil.receive_message(request))
 
     def test_receive_message_various_btype(self):
@@ -866,7 +866,7 @@ class PerMessageDeflateTest(unittest.TestCase):
         compressed_empty = compressed_empty[:-4]
         expected += '\x80%c' % len(compressed_empty)
         expected += compressed_empty
-        print '%r' % expected
+        print('%r' % expected)
         self.assertEqual(expected, request.connection.written_data())
 
     def test_send_message_fragmented_empty_last_frame(self):
@@ -927,7 +927,7 @@ class PerMessageDeflateTest(unittest.TestCase):
         extension.add_parameter('server_no_context_takeover', None)
         request = _create_request_from_rawdata(
                 '', permessage_deflate_request=extension)
-        for i in xrange(3):
+        for i in range(3):
             msgutil.send_message(request, 'Hello', end=False)
             msgutil.send_message(request, 'Hello', end=True)
 
@@ -953,7 +953,7 @@ class PerMessageDeflateTest(unittest.TestCase):
                 common.PERMESSAGE_DEFLATE_EXTENSION)
         request = _create_request_from_rawdata(
                 '', permessage_deflate_request=extension)
-        self.assertEquals(1, len(request.ws_extension_processors))
+        self.assertEqual(1, len(request.ws_extension_processors))
         request.ws_extension_processors[0].set_bfinal(True)
         msgutil.send_message(request, 'Hello', end=False)
         msgutil.send_message(request, 'World', end=True)
@@ -1006,7 +1006,7 @@ class PerMessageDeflateTest(unittest.TestCase):
 
         random.seed(a=0)
         payload = ''.join(
-            [chr(random.randint(0, 255)) for i in xrange(1000)])
+            [chr(random.randint(0, 255)) for i in range(1000)])
 
         compress = zlib.compressobj(
             zlib.Z_DEFAULT_COMPRESSION, zlib.DEFLATED, -zlib.MAX_WBITS)
@@ -1046,7 +1046,7 @@ class PerMessageDeflateTest(unittest.TestCase):
 
             frame_count += 1
 
-        print "Chunk sizes: %r" % chunk_sizes
+        print("Chunk sizes: %r" % chunk_sizes)
         self.assertTrue(len(chunk_sizes) > 10)
 
         # Close frame
@@ -1104,7 +1104,7 @@ class PerMessageDeflateTest(unittest.TestCase):
 
         random.seed(a=0)
         payload = ''.join(
-            [chr(random.randint(0, 255)) for i in xrange(1000)])
+            [chr(random.randint(0, 255)) for i in range(1000)])
 
         compress = None
 
@@ -1149,9 +1149,9 @@ class PerMessageDeflateTest(unittest.TestCase):
                     compress = None
                     finish_used = True
 
-        print "Chunk sizes: %r" % chunk_sizes
+        print("Chunk sizes: %r" % chunk_sizes)
         self.assertTrue(len(chunk_sizes) > 10)
-        print "Methods: %r" % methods
+        print("Methods: %r" % methods)
         self.assertTrue(sync_used)
         self.assertTrue(finish_used)
 
@@ -1210,7 +1210,7 @@ class MessageTestHixie75(unittest.TestCase):
 
     def test_send_message_unicode(self):
         request = _create_request_hixie75()
-        msgutil.send_message(request, u'\u65e5')
+        msgutil.send_message(request, '\u65e5')
         # U+65e5 is encoded as e6,97,a5 in UTF-8
         self.assertEqual('\x00\xe6\x97\xa5\xff',
                          request.connection.written_data())
@@ -1223,14 +1223,14 @@ class MessageTestHixie75(unittest.TestCase):
     def test_receive_message_unicode(self):
         request = _create_request_hixie75('\x00\xe6\x9c\xac\xff')
         # U+672c is encoded as e6,9c,ac in UTF-8
-        self.assertEqual(u'\u672c', msgutil.receive_message(request))
+        self.assertEqual('\u672c', msgutil.receive_message(request))
 
     def test_receive_message_erroneous_unicode(self):
         # \x80 and \x81 are invalid as UTF-8.
         request = _create_request_hixie75('\x00\x80\x81\xff')
         # Invalid characters should be replaced with
         # U+fffd REPLACEMENT CHARACTER
-        self.assertEqual(u'\ufffd\ufffd', msgutil.receive_message(request))
+        self.assertEqual('\ufffd\ufffd', msgutil.receive_message(request))
 
     def test_receive_message_discard(self):
         request = _create_request_hixie75('\x80\x06IGNORE\x00Hello\xff'
@@ -1252,7 +1252,7 @@ class MessageReceiverTest(unittest.TestCase):
         self.assertEqual('Hello!', receiver.receive())
 
     def test_onmessage(self):
-        onmessage_queue = Queue.Queue()
+        onmessage_queue = queue.Queue()
 
         def onmessage_handler(message):
             onmessage_queue.put(message)
@@ -1277,7 +1277,7 @@ class MessageReceiverHixie75Test(unittest.TestCase):
         self.assertEqual('Hello!', receiver.receive())
 
     def test_onmessage(self):
-        onmessage_queue = Queue.Queue()
+        onmessage_queue = queue.Queue()
 
         def onmessage_handler(message):
             onmessage_queue.put(message)
@@ -1303,7 +1303,7 @@ class MessageSenderTest(unittest.TestCase):
         # Use a queue to check the bytes written by MessageSender.
         # request.connection.written_data() cannot be used here because
         # MessageSender runs in a separate thread.
-        send_queue = Queue.Queue()
+        send_queue = queue.Queue()
 
         def write(bytes):
             send_queue.put(bytes)
@@ -1333,7 +1333,7 @@ class MessageSenderHixie75Test(unittest.TestCase):
         # Use a queue to check the bytes written by MessageSender.
         # request.connection.written_data() cannot be used here because
         # MessageSender runs in a separate thread.
-        send_queue = Queue.Queue()
+        send_queue = queue.Queue()
 
         def write(bytes):
             send_queue.put(bytes)

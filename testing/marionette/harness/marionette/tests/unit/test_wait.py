@@ -169,7 +169,7 @@ class FormalWaitTest(MarionetteTestCase):
 class PredicatesTest(MarionetteTestCase):
     def test_until(self):
         c = wait.SystemClock()
-        self.assertFalse(wait.until_pred(c, sys.maxint))
+        self.assertFalse(wait.until_pred(c, sys.maxsize))
         self.assertTrue(wait.until_pred(c, 0))
 
 class WaitUntilTest(MarionetteTestCase):
@@ -256,13 +256,13 @@ class WaitUntilTest(MarionetteTestCase):
         self.assertEqual(self.clock.ticks, 2)
 
     def test_timeout_elapsed_duration(self):
-        with self.assertRaisesRegexp(errors.TimeoutException,
+        with self.assertRaisesRegex(errors.TimeoutException,
                                      "Timed out after 2.0 seconds"):
             self.wt.until(lambda x: x.true(wait=4), is_true=at_third_attempt)
 
     def test_timeout_elapsed_rounding(self):
         wt = Wait(self.m, clock=SequenceClock([1, 0.01, 1]), timeout=0)
-        with self.assertRaisesRegexp(errors.TimeoutException,
+        with self.assertRaisesRegex(errors.TimeoutException,
                                      "Timed out after 1.0 seconds"):
             wt.until(lambda x: x.true(), is_true=now)
 

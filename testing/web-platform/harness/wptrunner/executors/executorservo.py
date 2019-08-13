@@ -9,7 +9,7 @@ import os
 import subprocess
 import tempfile
 import threading
-import urlparse
+import urllib.parse
 import uuid
 from collections import defaultdict
 
@@ -144,7 +144,7 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
             self.result_flag.set()
         else:
             if self.interactive:
-                print line
+                print(line)
             else:
                 self.logger.process_output(self.proc.pid,
                                            line,
@@ -261,7 +261,7 @@ class ServoRefTestExecutor(ProcessTestExecutor):
     def on_output(self, line):
         line = line.decode("utf8", "replace")
         if self.interactive:
-            print line
+            print(line)
         else:
             self.logger.process_output(self.proc.pid,
                                        line,

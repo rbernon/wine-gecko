@@ -10,8 +10,8 @@ URGENT_PRIORITY = 3
 
 class Visitor:
     def defaultVisit(self, node):
-        raise Exception, "INTERNAL ERROR: no visitor for node type `%s'"% (
-            node.__class__.__name__)
+        raise Exception("INTERNAL ERROR: no visitor for node type `%s'"% (
+            node.__class__.__name__))
 
     def visitTranslationUnit(self, tu):
         for cxxInc in tu.cxxIncludes:

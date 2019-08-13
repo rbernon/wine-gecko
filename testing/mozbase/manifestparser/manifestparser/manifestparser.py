@@ -4,7 +4,7 @@
 
 __all__ = ['ManifestParser', 'TestManifest', 'convert']
 
-from StringIO import StringIO
+from io import StringIO
 import json
 import fnmatch
 import os
@@ -21,7 +21,7 @@ from .filters import (
 )
 
 relpath = os.path.relpath
-string = (basestring,)
+string = (str,)
 
 
 ### path normalization
@@ -175,7 +175,7 @@ class ManifestParser(object):
 
             # otherwise an item
             # apply ancestor defaults, while maintaining current file priority
-            data = dict(self._ancestor_defaults.items() + data.items())
+            data = dict(list(self._ancestor_defaults.items()) + list(data.items()))
 
             test = data
             test['name'] = section
@@ -304,16 +304,16 @@ class ManifestParser(object):
 
         # make some check functions
         if inverse:
-            has_tags = lambda test: not tags.intersection(test.keys())
+            has_tags = lambda test: not tags.intersection(list(test.keys()))
             def dict_query(test):
-                for key, value in kwargs.items():
+                for key, value in list(kwargs.items()):
                     if test.get(key) == value:
                         return False
                 return True
         else:
-            has_tags = lambda test: tags.issubset(test.keys())
+            has_tags = lambda test: tags.issubset(list(test.keys()))
             def dict_query(test):
-                for key, value in kwargs.items():
+                for key, value in list(kwargs.items()):
                     if test.get(key) != value:
                         return False
                 return True
@@ -335,7 +335,7 @@ class ManifestParser(object):
         """
         if tests is None:
             # Make sure to return all the manifests, even ones without tests.
-            return self.manifest_defaults.keys()
+            return list(self.manifest_defaults.keys())
 
         manifests = []
         for test in tests:
@@ -369,8 +369,8 @@ class ManifestParser(object):
                 raise IOError("Strict mode enabled, test paths must exist. "
                               "The following test(s) are missing: %s" %
                               json.dumps(missing_paths, indent=2))
-            print >> sys.stderr, "Warning: The following test(s) are missing: %s" % \
-                                  json.dumps(missing_paths, indent=2)
+            print("Warning: The following test(s) are missing: %s" % \
+                                  json.dumps(missing_paths, indent=2), file=sys.stderr)
         return missing
 
     def verifyDirectory(self, directories, pattern=None, extensions=None):
@@ -381,7 +381,7 @@ class ManifestParser(object):
         """
 
         files = set([])
-        if isinstance(directories, basestring):
+        if isinstance(directories, str):
             directories = [directories]
 
         # get files in directories
@@ -446,12 +446,12 @@ class ManifestParser(object):
 
         # print the .ini manifest
         if global_tags or global_kwargs:
-            print >> fp, '[DEFAULT]'
+            print('[DEFAULT]', file=fp)
             for tag in global_tags:
-                print >> fp, '%s =' % tag
-            for key, value in global_kwargs.items():
-                print >> fp, '%s = %s' % (key, value)
-            print >> fp
+                print('%s =' % tag, file=fp)
+            for key, value in list(global_kwargs.items()):
+                print('%s = %s' % (key, value), file=fp)
+            print(file=fp)
 
         for test in tests:
             test = test.copy() # don't overwrite
@@ -462,7 +462,7 @@ class ManifestParser(object):
                 if self.rootdir:
                     path = relpath(test['path'], self.rootdir)
                 path = denormalize_path(path)
-            print >> fp, '[%s]' % path
+            print('[%s]' % path, file=fp)
 
             # reserved keywords:
             reserved = ['path', 'name', 'here', 'manifest', 'relpath', 'ancestor-manifest']
@@ -473,8 +473,8 @@ class ManifestParser(object):
                     continue
                 if key in global_tags and not test[key]:
                     continue
-                print >> fp, '%s = %s' % (key, test[key])
-            print >> fp
+                print('%s = %s' % (key, test[key]), file=fp)
+            print(file=fp)
 
         if close:
             # close the created file
@@ -562,7 +562,7 @@ class ManifestParser(object):
                     message = "Missing test: '%s' does not exist!"
                     if self.strict:
                         raise IOError(message)
-                    print >> sys.stderr, message + " Skipping."
+                    print(message + " Skipping.", file=sys.stderr)
                     continue
                 destination = os.path.join(rootdir, _relpath)
                 shutil.copy(source, destination)
@@ -575,7 +575,7 @@ class ManifestParser(object):
         internal function to import directories
         """
 
-        if isinstance(pattern, basestring):
+        if isinstance(pattern, str):
             patterns = [pattern]
         else:
             patterns = pattern
@@ -664,9 +664,9 @@ class ManifestParser(object):
             if (dirnames or filenames) and not (os.path.exists(manifest_path) and overwrite):
                 with file(manifest_path, 'w') as manifest:
                     for dirname in dirnames:
-                        print >> manifest, '[include:%s]' % os.path.join(dirname, filename)
+                        print('[include:%s]' % os.path.join(dirname, filename), file=manifest)
                     for _filename in filenames:
-                        print >> manifest, '[%s]' % _filename
+                        print('[%s]' % _filename, file=manifest)
 
                 # add to list of manifests
                 manifest_dict.setdefault(directory, manifest_path)
@@ -717,8 +717,8 @@ class ManifestParser(object):
                              for filename in filenames]
 
             # write to manifest
-            print >> write, '\n'.join(['[%s]' % denormalize_path(filename)
-                                               for filename in filenames])
+            print('\n'.join(['[%s]' % denormalize_path(filename)
+                                               for filename in filenames]), file=write)
 
 
         cls._walk_directories(directories, callback, pattern=pattern, ignore=ignore)

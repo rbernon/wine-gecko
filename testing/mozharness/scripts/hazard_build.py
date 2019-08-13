@@ -17,7 +17,7 @@ from mozharness.mozilla.building.buildb2gbase import B2GBuildBaseScript, B2GMake
 from mozharness.mozilla.purge import PurgeMixin
 from mozharness.mozilla.building.hazards import HazardAnalysis, HazardError
 
-SUCCESS, WARNINGS, FAILURE, EXCEPTION, RETRY = xrange(5)
+SUCCESS, WARNINGS, FAILURE, EXCEPTION, RETRY = range(5)
 
 nuisance_env_vars = ['TERMCAP', 'LS_COLORS', 'PWD', '_']
 
@@ -104,7 +104,7 @@ class B2GHazardBuild(PurgeMixin, B2GBuildBaseScript, BlobUploadMixin):
 
         dirs = self.query_abs_dirs()
         replacements = self.config['env_replacements'].copy()
-        for k, v in replacements.items():
+        for k, v in list(replacements.items()):
             replacements[k] = v % dirs
 
         self.env = self.query_env(replace_dict=replacements,

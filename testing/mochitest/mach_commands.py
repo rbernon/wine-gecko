@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import, unicode_literals
+
 
 from argparse import Namespace
 from collections import defaultdict
@@ -144,8 +144,8 @@ ALL_FLAVORS = {
 }
 
 SUPPORTED_APPS = ['firefox', 'b2g', 'android', 'mulet']
-SUPPORTED_FLAVORS = list(chain.from_iterable([f['aliases'] for f in ALL_FLAVORS.values()]))
-CANONICAL_FLAVORS = sorted([f['aliases'][0] for f in ALL_FLAVORS.values()])
+SUPPORTED_FLAVORS = list(chain.from_iterable([f['aliases'] for f in list(ALL_FLAVORS.values())]))
+CANONICAL_FLAVORS = sorted([f['aliases'][0] for f in list(ALL_FLAVORS.values())])
 
 
 class MochitestRunner(MozbuildObject):
@@ -224,7 +224,7 @@ class MochitestRunner(MozbuildObject):
             host_webapps_dir = os.path.join(context.target_out, 'data', 'local', 'webapps')
             if not os.path.isdir(os.path.join(
                     host_webapps_dir, 'test-container.gaiamobile.org')):
-                print(ENG_BUILD_REQUIRED.format(host_webapps_dir))
+                print((ENG_BUILD_REQUIRED.format(host_webapps_dir)))
                 sys.exit(1)
 
         # TODO without os.chdir, chained imports fail below
@@ -438,14 +438,14 @@ class MachCommands(MachCommandBase):
 
         flavors = None
         if flavor:
-            for fname, fobj in ALL_FLAVORS.iteritems():
+            for fname, fobj in ALL_FLAVORS.items():
                 if flavor in fobj['aliases']:
                     if buildapp not in fobj['enabled_apps']:
                         continue
                     flavors = [fname]
                     break
         else:
-            flavors = [f for f, v in ALL_FLAVORS.iteritems() if buildapp in v['enabled_apps']]
+            flavors = [f for f, v in ALL_FLAVORS.items() if buildapp in v['enabled_apps']]
 
         from mozbuild.controller.building import BuildDriver
         self._ensure_state_subdir_exists('.')
@@ -513,8 +513,8 @@ class MachCommands(MachCommandBase):
         if not suites:
             # Make it very clear why no tests were found
             if not unsupported:
-                print(TESTS_NOT_FOUND.format('\n'.join(
-                    sorted(list(test_paths or test_objects)))))
+                print((TESTS_NOT_FOUND.format('\n'.join(
+                    sorted(list(test_paths or test_objects))))))
                 return 1
 
             msg = []
@@ -530,8 +530,8 @@ class MachCommands(MachCommandBase):
                 else:
                     reason = 'excluded by the command line'
                 msg.append('    mochitest -f {} ({})'.format(name, reason))
-            print(SUPPORTED_TESTS_NOT_FOUND.format(
-                buildapp, '\n'.join(sorted(msg))))
+            print((SUPPORTED_TESTS_NOT_FOUND.format(
+                buildapp, '\n'.join(sorted(msg)))))
             return 1
 
         if buildapp in ('b2g',):
@@ -549,7 +549,7 @@ class MachCommands(MachCommandBase):
             msg = fobj['aliases'][0]
             if subsuite:
                 msg = '{} with subsuite {}'.format(msg, subsuite)
-            print(NOW_RUNNING.format(msg))
+            print((NOW_RUNNING.format(msg)))
 
             harness_args = kwargs.copy()
             harness_args['subsuite'] = subsuite
@@ -606,8 +606,8 @@ class RobocopCommands(MachCommandBase):
                                             flavor='instrumentation', subsuite='robocop'))
 
         if len(tests) < 1:
-            print(ROBOCOP_TESTS_NOT_FOUND.format('\n'.join(
-                sorted(list(test_paths)))))
+            print((ROBOCOP_TESTS_NOT_FOUND.format('\n'.join(
+                sorted(list(test_paths))))))
             return 1
 
         from mozrunner.devices.android_device import grant_runtime_permissions

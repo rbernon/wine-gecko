@@ -8,7 +8,7 @@
 # NS_FormatCodeAddress(), which on TBPL builds often lack a file name and a
 # line number (and on Linux even the symbol is often bad).
 
-from __future__ import with_statement
+
 
 import sys
 import os
@@ -157,4 +157,4 @@ def fixSymbols(line, symbolsDir):
 if __name__ == "__main__":
   symbolsDir = sys.argv[1]
   for line in iter(sys.stdin.readline, ''):
-    print fixSymbols(line, symbolsDir),
+    print(fixSymbols(line, symbolsDir), end=' ')

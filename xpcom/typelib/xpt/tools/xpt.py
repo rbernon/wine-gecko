@@ -65,7 +65,7 @@ InterfaceType()        - construct a new object representing a type that
 
 """
 
-from __future__ import with_statement
+
 import os
 import sys
 import struct
@@ -94,9 +94,7 @@ def M_add_class_attribs(attribs):
 
 
 def enum(*names):
-    class Foo(object):
-        __metaclass__ = M_add_class_attribs(enumerate(names))
-
+    class Foo(object, metaclass=M_add_class_attribs(enumerate(names))):
         def __setattr__(self, name, value):  # this makes it read-only
             raise NotImplementedError
     return Foo()
@@ -1192,7 +1190,7 @@ class Typelib(object):
         filename = ""
         data = None
         expected_size = None
-        if isinstance(input_file, basestring):
+        if isinstance(input_file, str):
             filename = input_file
             with open(input_file, "rb") as f:
                 st = os.fstat(f.fileno())
@@ -1309,7 +1307,7 @@ class Typelib(object):
 
         """
         self._sanityCheck()
-        if isinstance(output_file, basestring):
+        if isinstance(output_file, str):
             with open(output_file, "wb") as f:
                 self.writefd(f)
         else:
@@ -1392,7 +1390,7 @@ def xpt_link(inputs):
         return Typelib.read(i)
 
     if not inputs:
-        print >>sys.stderr, "Usage: xpt_link <destination file> <input files>"
+        print("Usage: xpt_link <destination file> <input files>", file=sys.stderr)
         return None
     # This is the aggregate list of interfaces.
     interfaces = []
@@ -1532,7 +1530,7 @@ def xpt_link(inputs):
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:
-        print >>sys.stderr, "xpt <dump|link> <files>"
+        print("xpt <dump|link> <files>", file=sys.stderr)
         sys.exit(1)
     if sys.argv[1] == 'dump':
         xpt_dump(sys.argv[2])

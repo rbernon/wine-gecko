@@ -63,7 +63,7 @@ def findInPath(fileName, path=os.environ['PATH']):
 
 if __name__ == '__main__':
     for i in sys.argv[1:]:
-        print findInPath(i)
+        print(findInPath(i))
 
 
 def _find_marionette_in_args(*args, **kwargs):
@@ -219,7 +219,7 @@ def test_environment(xrePath, env=None, crashreporter=True, debugger=False,
             if len(asanOptions):
                 env['ASAN_OPTIONS'] = ':'.join(asanOptions)
 
-        except OSError, err:
+        except OSError as err:
             log.info("Failed determine available memory, disabling ASan"
                      " low-memory configuration: %s" % err.strerror)
         except:

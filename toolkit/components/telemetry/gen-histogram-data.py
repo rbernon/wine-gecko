@@ -5,7 +5,7 @@
 # Write out histogram information for C++.  The histograms are defined
 # in a file provided as a command-line argument.
 
-from __future__ import print_function
+
 
 import sys
 import histogram_tools
@@ -34,7 +34,7 @@ class StringTable:
             return result
 
     def writeDefinition(self, f, name):
-        entries = self.table.items()
+        entries = list(self.table.items())
         entries.sort(key=lambda x:x[1])
         # Avoid null-in-string warnings with GCC and potentially
         # overlong string constants; write everything out the long way.
@@ -172,7 +172,7 @@ def write_debug_histogram_ranges(output, histograms):
     print("struct bounds { int offset; int length; };", file=output)
     print("const struct bounds gBucketLowerBoundIndex[] = {", file=output)
     offset = 0
-    for (histogram, range_length) in itertools.izip(histograms, ranges_lengths):
+    for (histogram, range_length) in zip(histograms, ranges_lengths):
         cpp_guard = histogram.cpp_guard()
         # We do test cpp_guard here, so that histogram IDs are valid
         # indexes into this array.

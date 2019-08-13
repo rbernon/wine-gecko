@@ -3,16 +3,16 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
-import urlparse
+import urllib.parse
 from collections import namedtuple, defaultdict
 
-from wptmanifest.node import (DataNode, ConditionalNode, BinaryExpressionNode,
+from .wptmanifest.node import (DataNode, ConditionalNode, BinaryExpressionNode,
                               BinaryOperatorNode, VariableNode, StringNode, NumberNode,
                               UnaryExpressionNode, UnaryOperatorNode, KeyValueNode)
-from wptmanifest.backends import conditional
-from wptmanifest.backends.conditional import ManifestItem
+from .wptmanifest.backends import conditional
+from .wptmanifest.backends.conditional import ManifestItem
 
-import expected
+from . import expected
 
 """Manifest structure used to update the expected results of a test
 
@@ -76,7 +76,7 @@ class ExpectedManifest(ManifestItem):
     def append(self, child):
         ManifestItem.append(self, child)
         if child.id in self.child_map:
-            print "Warning: Duplicate heading %s" % child.id
+            print("Warning: Duplicate heading %s" % child.id)
         self.child_map[child.id] = child
 
     def _remove_child(self, child):
@@ -100,7 +100,7 @@ class ExpectedManifest(ManifestItem):
 
     @property
     def url(self):
-        return urlparse.urljoin(self.url_base,
+        return urllib.parse.urljoin(self.url_base,
                                 "/".join(self.test_path.split(os.path.sep)))
 
 class TestNode(ManifestItem):
@@ -148,7 +148,7 @@ class TestNode(ManifestItem):
     @property
     def id(self):
         """The id of the test represented by this TestNode"""
-        return urlparse.urljoin(self.parent.url, self.name)
+        return urllib.parse.urljoin(self.parent.url, self.name)
 
     def disabled(self, run_info):
         """Boolean indicating whether this test is disabled when run in an
@@ -278,7 +278,7 @@ class TestNode(ManifestItem):
                     del self._data["expected"]
                     break
 
-        for subtest in self.subtests.itervalues():
+        for subtest in self.subtests.values():
             subtest.clear_expected()
 
     def append(self, node):
@@ -331,7 +331,7 @@ def group_conditionals(values, property_order=None, boolean_properties=None):
 
     by_property = defaultdict(set)
     for run_info, status in values:
-        for prop_name, prop_value in run_info.iteritems():
+        for prop_name, prop_value in run_info.items():
             by_property[(prop_name, prop_value)].add(status)
 
     if property_order is None:
@@ -345,11 +345,11 @@ def group_conditionals(values, property_order=None, boolean_properties=None):
     # If we have more than one value, remove any properties that are common
     # for all the values
     if len(values) > 1:
-        for key, statuses in by_property.copy().iteritems():
+        for key, statuses in by_property.copy().items():
             if len(statuses) == len(values):
                 del by_property[key]
 
-    properties = set(item[0] for item in by_property.iterkeys())
+    properties = set(item[0] for item in by_property.keys())
     include_props = []
 
     for prop in property_order:
@@ -366,7 +366,7 @@ def group_conditionals(values, property_order=None, boolean_properties=None):
         expr = make_expr(prop_set, status, boolean_properties=boolean_properties)
         conditions[prop_set] = (expr, status)
 
-    return conditions.values()
+    return list(conditions.values())
 
 
 def make_expr(prop_set, status, boolean_properties=None):
@@ -385,7 +385,7 @@ def make_expr(prop_set, status, boolean_properties=None):
 
     expressions = []
     for prop, value in prop_set:
-        number_types = (int, float, long)
+        number_types = (int, float, int)
         value_cls = (NumberNode
                      if type(value) in number_types
                      else StringNode)
@@ -394,7 +394,7 @@ def make_expr(prop_set, status, boolean_properties=None):
                 BinaryExpressionNode(
                     BinaryOperatorNode("=="),
                     VariableNode(prop),
-                    value_cls(unicode(value))
+                    value_cls(str(value))
                 ))
         else:
             if value:

@@ -190,7 +190,7 @@ def main(argv=None):
 
   if opts.list:
     for test in tests:
-      print test
+      print(test)
     sys.exit(0)
 
   CommandRunner.verbose = not opts.quiet

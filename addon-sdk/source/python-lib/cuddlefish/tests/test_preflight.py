@@ -9,7 +9,7 @@ import unittest
 import hashlib
 import base64
 from cuddlefish import preflight
-from StringIO import StringIO
+from io import StringIO
 
 class Util(unittest.TestCase):
     def get_basedir(self):
@@ -28,7 +28,7 @@ class Util(unittest.TestCase):
             h = hashlib.sha1(str(i)).digest()
             s1 = base64.b64encode(h, "AB").strip("=")
             s2 = base64.b64encode(h).strip("=").replace("+","A").replace("/","B")
-            self.failUnlessEqual(s1, s2)
+            self.assertEqual(s1, s2)
 
     def write(self, config):
         basedir = self.get_basedir()
@@ -69,16 +69,16 @@ class Util(unittest.TestCase):
         cfg = self.get_cfg()
         config_was_ok, modified = preflight.preflight_config(cfg, fn,
                                                              stderr=out)
-        self.failUnlessEqual(config_was_ok, False)
-        self.failUnlessEqual(modified, True)
+        self.assertEqual(config_was_ok, False)
+        self.assertEqual(modified, True)
         backup_fn = os.path.join(basedir, "package.json.backup")
         config_backup = open(backup_fn,"r").read()
-        self.failUnlessEqual(config_backup, config_orig)
+        self.assertEqual(config_backup, config_orig)
         config = json.loads(self.read())
-        self.failIf("name" in config)
-        self.failUnless("id" in config)
-        self.failUnless(config["id"].startswith("jid1-"), config["id"])
-        self.failUnlessEqual(out.getvalue().strip(),
+        self.assertFalse("name" in config)
+        self.assertTrue("id" in config)
+        self.assertTrue(config["id"].startswith("jid1-"), config["id"])
+        self.assertEqual(out.getvalue().strip(),
                              "No 'id' in package.json: creating a new ID for you.")
         os.unlink(backup_fn)
 
@@ -89,17 +89,17 @@ class Util(unittest.TestCase):
         cfg = self.get_cfg()
         config_was_ok, modified = preflight.preflight_config(cfg, fn,
                                                              stderr=out)
-        self.failUnlessEqual(config_was_ok, False)
-        self.failUnlessEqual(modified, True)
+        self.assertEqual(config_was_ok, False)
+        self.assertEqual(modified, True)
         backup_fn = os.path.join(basedir, "package.json.backup")
         config_backup = open(backup_fn,"r").read()
-        self.failUnlessEqual(config_backup, config_orig)
+        self.assertEqual(config_backup, config_orig)
         config = json.loads(self.read())
-        self.failUnlessEqual(config["name"], "my-awesome-package")
-        self.failUnless("id" in config)
-        self.failUnless(config["id"].startswith("jid1-"), config["id"])
+        self.assertEqual(config["name"], "my-awesome-package")
+        self.assertTrue("id" in config)
+        self.assertTrue(config["id"].startswith("jid1-"), config["id"])
         jid = str(config["id"])
-        self.failUnlessEqual(out.getvalue().strip(),
+        self.assertEqual(out.getvalue().strip(),
                              "No 'id' in package.json: creating a new ID for you.")
         os.unlink(backup_fn)
 
@@ -110,11 +110,11 @@ class Util(unittest.TestCase):
         cfg = self.get_cfg()
         config_was_ok, modified = preflight.preflight_config(cfg, fn,
                                                              stderr=out)
-        self.failUnlessEqual(config_was_ok, True)
-        self.failUnlessEqual(modified, False)
+        self.assertEqual(config_was_ok, True)
+        self.assertEqual(modified, False)
         config2a = self.read()
-        self.failUnlessEqual(config2a, config2)
-        self.failUnlessEqual(out.getvalue().strip(), "")
+        self.assertEqual(config2a, config2)
+        self.assertEqual(out.getvalue().strip(), "")
 
         # name and anonymous ID? without asking to see its papers, ship it
         config3 = '{"name": "my-old-skool-package", "id": "anonid0-deadbeef"}'
@@ -123,11 +123,11 @@ class Util(unittest.TestCase):
         cfg = self.get_cfg()
         config_was_ok, modified = preflight.preflight_config(cfg, fn,
                                                              stderr=out)
-        self.failUnlessEqual(config_was_ok, True)
-        self.failUnlessEqual(modified, False)
+        self.assertEqual(config_was_ok, True)
+        self.assertEqual(modified, False)
         config3a = self.read()
-        self.failUnlessEqual(config3a, config3)
-        self.failUnlessEqual(out.getvalue().strip(), "")
+        self.assertEqual(config3a, config3)
+        self.assertEqual(out.getvalue().strip(), "")
 
         # name and old-style ID? with nostalgic trepidation, ship it
         config4 = '{"name": "my-old-skool-package", "id": "foo@bar.baz"}'
@@ -136,11 +136,11 @@ class Util(unittest.TestCase):
         cfg = self.get_cfg()
         config_was_ok, modified = preflight.preflight_config(cfg, fn,
                                                              stderr=out)
-        self.failUnlessEqual(config_was_ok, True)
-        self.failUnlessEqual(modified, False)
+        self.assertEqual(config_was_ok, True)
+        self.assertEqual(modified, False)
         config4a = self.read()
-        self.failUnlessEqual(config4a, config4)
-        self.failUnlessEqual(out.getvalue().strip(), "")
+        self.assertEqual(config4a, config4)
+        self.assertEqual(out.getvalue().strip(), "")
 
 
 if __name__ == '__main__':

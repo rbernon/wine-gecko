@@ -133,7 +133,7 @@ non_errors = {
     "global-date-and-time-timezone-without-colon": "2011-11-12T06:54:39-0800",
 }
 
-for key in errors.keys():
+for key in list(errors.keys()):
     error = errors[key]
     template_ins = template
     template_del = template
@@ -148,7 +148,7 @@ for key in errors.keys():
     del_file.write(template_del)
     del_file.close()
 
-for key in warnings.keys():
+for key in list(warnings.keys()):
     non_error = warnings[key]
     template_ins = template
     template_del = template
@@ -167,7 +167,7 @@ ins_file = open(os.path.join(ccdir, "html/elements/ins/datetime-isvalid.html"), 
 del_file = open(os.path.join(ccdir, "html/elements/del/datetime-isvalid.html"), 'wb')
 ins_file.write(template + '<title>valid datetime</title>\n')
 del_file.write(template + '<title>valid datetime</title>\n')
-for key in non_errors.keys():
+for key in list(non_errors.keys()):
     non_error = non_errors[key]
     ins_file.write('<ins datetime="%s"></ins> <!-- %s -->\n' % (non_errors[key], key))
     del_file.write('<del datetime="%s"></del> <!-- %s -->\n' % (non_errors[key], key))

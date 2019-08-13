@@ -110,14 +110,14 @@ class TestImportScriptContent(MarionetteTestCase):
         self.marionette.find_element(By.LINK_TEXT, "Open new window").click()
 
         windows = set(self.marionette.window_handles)
-        print "windows=%s" % windows
+        print("windows=%s" % windows)
         new_window = windows.difference([original_window]).pop()
         self.marionette.switch_to_window(new_window)
 
         self.marionette.import_script(self.script_file)
         self.marionette.close()
 
-        print "switching to original window: %s" % original_window
+        print("switching to original window: %s" % original_window)
         self.marionette.switch_to_window(original_window)
         self.assert_defined("testFunc")
 

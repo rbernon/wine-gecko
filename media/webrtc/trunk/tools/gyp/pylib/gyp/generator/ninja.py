@@ -346,7 +346,7 @@ class NinjaWriter:
 
     Uses a stamp file if necessary."""
 
-    assert targets == filter(None, targets), targets
+    assert targets == [_f for _f in targets if _f], targets
     if len(targets) == 0:
       return None
     if len(targets) > 1:
@@ -396,8 +396,8 @@ class NinjaWriter:
           target = self.target_outputs[dep]
           actions_depends.append(target.PreActionInput(self.flavor))
           compile_depends.append(target.PreCompileInput())
-      actions_depends = filter(None, actions_depends)
-      compile_depends = filter(None, compile_depends)
+      actions_depends = [_f for _f in actions_depends if _f]
+      compile_depends = [_f for _f in compile_depends if _f]
       actions_depends = self.WriteCollapsedDependencies('actions_depends',
                                                         actions_depends)
       compile_depends = self.WriteCollapsedDependencies('compile_depends',
@@ -489,7 +489,7 @@ class NinjaWriter:
     if self.msvs_settings.HasExplicitIdlRules(spec):
       return []
     outputs = []
-    for source in filter(lambda x: x.endswith('.idl'), spec['sources']):
+    for source in [x for x in spec['sources'] if x.endswith('.idl')]:
       self._WinIdlRule(source, prebuild, outputs)
     return outputs
 
@@ -681,7 +681,7 @@ class NinjaWriter:
     """Writes ninja edges for 'mac_bundle_resources'."""
     for output, res in gyp.xcode_emulation.GetMacBundleResources(
         self.ExpandSpecial(generator_default_variables['PRODUCT_DIR']),
-        self.xcode_settings, map(self.GypPathToNinja, resources)):
+        self.xcode_settings, list(map(self.GypPathToNinja, resources))):
       self.ninja.build(output, 'mac_tool', res,
                        variables=[('mactool_cmd', 'copy-bundle-resource')])
       bundle_depends.append(output)
@@ -766,14 +766,14 @@ class NinjaWriter:
       self.WriteVariableList('cflags_pch_objcc',
                              [precompiled_header.GetInclude('mm')])
 
-    self.WriteVariableList('cflags', map(self.ExpandSpecial, cflags))
-    self.WriteVariableList('cflags_c', map(self.ExpandSpecial, cflags_c))
-    self.WriteVariableList('cflags_cc', map(self.ExpandSpecial, cflags_cc))
+    self.WriteVariableList('cflags', list(map(self.ExpandSpecial, cflags)))
+    self.WriteVariableList('cflags_c', list(map(self.ExpandSpecial, cflags_c)))
+    self.WriteVariableList('cflags_cc', list(map(self.ExpandSpecial, cflags_cc)))
     if self.flavor == 'mac':
-      self.WriteVariableList('cflags_objc', map(self.ExpandSpecial,
-                                                cflags_objc))
-      self.WriteVariableList('cflags_objcc', map(self.ExpandSpecial,
-                                                 cflags_objcc))
+      self.WriteVariableList('cflags_objc', list(map(self.ExpandSpecial,
+                                                cflags_objc)))
+      self.WriteVariableList('cflags_objcc', list(map(self.ExpandSpecial,
+                                                 cflags_objcc)))
     self.ninja.newline()
     outputs = []
     for source in sources:
@@ -897,7 +897,7 @@ class NinjaWriter:
       libflags = self.msvs_settings.GetLibFlags(config_name,
                                                 self.GypPathToNinja)
       self.WriteVariableList(
-          'libflags', gyp.common.uniquer(map(self.ExpandSpecial, libflags)))
+          'libflags', gyp.common.uniquer(list(map(self.ExpandSpecial, libflags))))
       is_executable = spec['type'] == 'executable'
       manifest_name = self.GypPathToUniqueOutput(
           self.ComputeOutputFileName(spec))
@@ -907,11 +907,11 @@ class NinjaWriter:
     else:
       ldflags = config.get('ldflags', [])
     self.WriteVariableList('ldflags',
-                           gyp.common.uniquer(map(self.ExpandSpecial,
-                                                  ldflags)))
+                           gyp.common.uniquer(list(map(self.ExpandSpecial,
+                                                  ldflags))))
 
-    libraries = gyp.common.uniquer(map(self.ExpandSpecial,
-                                       spec.get('libraries', [])))
+    libraries = gyp.common.uniquer(list(map(self.ExpandSpecial,
+                                       spec.get('libraries', []))))
     if self.flavor == 'mac':
       libraries = self.xcode_settings.AdjustLibraries(libraries)
     elif self.flavor == 'win':
@@ -1745,7 +1745,7 @@ def PerformBuild(data, configurations, params):
   for config in configurations:
     builddir = os.path.join(options.toplevel_dir, 'out', config)
     arguments = ['ninja', '-C', builddir]
-    print 'Building [%s]: %s' % (config, arguments)
+    print('Building [%s]: %s' % (config, arguments))
     subprocess.check_call(arguments)
 
 
@@ -1764,7 +1764,7 @@ def GenerateOutput(target_list, target_dicts, data, params):
     GenerateOutputForConfig(target_list, target_dicts, data, params,
                             user_config)
   else:
-    config_names = target_dicts[target_list[0]]['configurations'].keys()
+    config_names = list(target_dicts[target_list[0]]['configurations'].keys())
     if params['parallel']:
       try:
         pool = multiprocessing.Pool(len(config_names))
@@ -1773,7 +1773,7 @@ def GenerateOutput(target_list, target_dicts, data, params):
           arglists.append(
               (target_list, target_dicts, data, params, config_name))
           pool.map(CallGenerateOutputForConfig, arglists)
-      except KeyboardInterrupt, e:
+      except KeyboardInterrupt as e:
         pool.terminate()
         raise e
     else:

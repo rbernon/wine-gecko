@@ -61,7 +61,7 @@ if __name__ == "__main__":
     here = os.path.abspath(os.path.dirname(__file__))
     doc_root = os.path.join(os.path.dirname(here), "www")
     httpd = FixtureServer(doc_root, port=2829)
-    print "Started fixture server on http://%s:%d/" % (httpd.host, httpd.port)
+    print("Started fixture server on http://%s:%d/" % (httpd.host, httpd.port))
     try:
         httpd.start(True)
     except KeyboardInterrupt:

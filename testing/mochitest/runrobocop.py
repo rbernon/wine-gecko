@@ -317,9 +317,9 @@ class RobocopTestRunner(MochitestDesktop):
            (logging via self.log does not work here).
         """
         print("0 INFO TEST-START | Shutdown")
-        print("1 INFO Passed: %s" % (self.passed))
-        print("2 INFO Failed: %s" % (self.failed))
-        print("3 INFO Todo: %s" % (self.todo))
+        print(("1 INFO Passed: %s" % (self.passed)))
+        print(("2 INFO Failed: %s" % (self.failed)))
+        print(("3 INFO Todo: %s" % (self.todo)))
         print("4 INFO SimpleTest FINISHED")
         if self.failed > 0:
             return 1
@@ -370,7 +370,7 @@ class RobocopTestRunner(MochitestDesktop):
         if browserEnv:
             envstr = ""
             delim = ""
-            for key, value in browserEnv.items():
+            for key, value in list(browserEnv.items()):
                 try:
                     value.index(',')
                     self.log.error(
@@ -434,7 +434,7 @@ class RobocopTestRunner(MochitestDesktop):
             browserArgs = ["start",
                            "-n", "org.mozilla.roboexample.test/org.mozilla.gecko.LaunchFennecWithConfigurationActivity",
                            "&&", "cat"]
-            self.dm.default_timeout = sys.maxint  # Forever.
+            self.dm.default_timeout = sys.maxsize  # Forever.
             self.log.info("")
             self.log.info("Serving mochi.test Robocop root at http://%s:%s/tests/robocop/" %
                           (self.options.remoteWebServer, self.options.httpPort))
@@ -510,9 +510,9 @@ class RobocopTestRunner(MochitestDesktop):
                 "No tests run. Did you pass an invalid TEST_PATH?")
             worstTestResult = 1
         else:
-            print "INFO | runtests.py | Test summary: start."
+            print("INFO | runtests.py | Test summary: start.")
             logResult = self.logTestSummary()
-            print "INFO | runtests.py | Test summary: end."
+            print("INFO | runtests.py | Test summary: end.")
             if worstTestResult == 0:
                 worstTestResult = logResult
         return worstTestResult

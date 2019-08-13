@@ -1,11 +1,11 @@
 from marionette import MarionetteTestCase
 from marionette_driver.errors import NoSuchElementException
 import threading
-import SimpleHTTPServer
-import SocketServer
-import BaseHTTPServer
-import urllib
-import urlparse
+import http.server
+import socketserver
+import http.server
+import urllib.request, urllib.parse, urllib.error
+import urllib.parse
 import os
 
 DEBUG = True
@@ -18,12 +18,12 @@ DEBUG = True
 # need to consider whether this code wants to be shared with WebDriver tests
 # for other browsers, though.
 
-class ThreadingSimpleServer(SocketServer.ThreadingMixIn,
-                            BaseHTTPServer.HTTPServer):
+class ThreadingSimpleServer(socketserver.ThreadingMixIn,
+                            http.server.HTTPServer):
     pass
 
 
-class QuietHttpRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
+class QuietHttpRequestHandler(http.server.SimpleHTTPRequestHandler):
     def log_message(self, format, *args, **kwargs):
         pass
 
@@ -35,7 +35,7 @@ class BaseTestFrontendUnits(MarionetteTestCase):
         super(BaseTestFrontendUnits, cls).setUpClass()
 
         if DEBUG:
-            handler = SimpleHTTPServer.SimpleHTTPRequestHandler
+            handler = http.server.SimpleHTTPRequestHandler
         else:
             handler = QuietHttpRequestHandler
 
@@ -89,20 +89,20 @@ class BaseTestFrontendUnits(MarionetteTestCase):
         # Now get the relative path between the two
         self.relPath = os.path.relpath(os.path.dirname(__file__), commonPath)
 
-        self.relPath = urllib.pathname2url(os.path.join(self.relPath, srcdir_path))
+        self.relPath = urllib.request.pathname2url(os.path.join(self.relPath, srcdir_path))
 
-        print "http://localhost:" + str(self.port),self.relPath
+        print("http://localhost:" + str(self.port),self.relPath)
         # Finally join the relative path with the given src path
-        self.server_prefix = urlparse.urljoin("http://localhost:" + str(self.port),
+        self.server_prefix = urllib.parse.urljoin("http://localhost:" + str(self.port),
                                               self.relPath)
 
     def check_page(self, page):
 
-        self.marionette.navigate(urlparse.urljoin(self.server_prefix, page))
+        self.marionette.navigate(urllib.parse.urljoin(self.server_prefix, page))
         try:
             self.marionette.find_element("id", 'complete')
         except NoSuchElementException:
-            fullPageUrl = urlparse.urljoin(self.relPath, page)
+            fullPageUrl = urllib.parse.urljoin(self.relPath, page)
 
             details = "%s: 1 failure encountered\n%s" % \
                       (fullPageUrl,
@@ -135,7 +135,7 @@ class BaseTestFrontendUnits(MarionetteTestCase):
     def get_failure_details(self, page):
         fail_nodes = self.marionette.find_elements("css selector",
                                                    '.test.fail')
-        fullPageUrl = urlparse.urljoin(self.relPath, page)
+        fullPageUrl = urllib.parse.urljoin(self.relPath, page)
 
         details = ["%s: %d failure(s) encountered:" % (fullPageUrl, len(fail_nodes))]
 

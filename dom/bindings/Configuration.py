@@ -18,7 +18,7 @@ class Configuration:
 
         # Read the configuration file.
         glbl = {}
-        execfile(filename, glbl)
+        exec(compile(open(filename, "rb").read(), filename, 'exec'), glbl)
         config = glbl['DOMInterfaces']
 
         # Build descriptors for all the interfaces we have in the parse data.
@@ -173,8 +173,7 @@ class Configuration:
                                 # unions for the file where we previously found
                                 # them.
                                 unionsForFilename = self.unionsPerFilename[f]
-                                unionsForFilename = filter(lambda u: u[0].name != t.name,
-                                                           unionsForFilename)
+                                unionsForFilename = [u for u in unionsForFilename if u[0].name != t.name]
                                 if len(unionsForFilename) == 0:
                                     del self.unionsPerFilename[f]
                                 else:
@@ -202,7 +201,7 @@ class Configuration:
         # Collect up our filters, because we may have a webIDLFile filter that
         # we always want to apply first.
         tofilter = []
-        for key, val in filters.iteritems():
+        for key, val in filters.items():
             if key == 'webIDLFile':
                 # Special-case this part to make it fast, since most of our
                 # getDescriptors calls are conditioned on a webIDLFile.  We may
@@ -240,23 +239,23 @@ class Configuration:
                 getter = (lambda attrName: lambda x: getattr(x, attrName))(key)
             tofilter.append((getter, val))
         for f in tofilter:
-            curr = filter(lambda x: f[0](x) == f[1], curr)
+            curr = [x for x in curr if f[0](x) == f[1]]
         return curr
 
     def getEnums(self, webIDLFile):
-        return filter(lambda e: e.filename() == webIDLFile, self.enums)
+        return [e for e in self.enums if e.filename() == webIDLFile]
 
     @staticmethod
     def _filterForFileAndWorkers(items, filters):
         """Gets the items that match the given filters."""
-        for key, val in filters.iteritems():
+        for key, val in filters.items():
             if key == 'webIDLFile':
-                items = filter(lambda x: x.filename() == val, items)
+                items = [x for x in items if x.filename() == val]
             elif key == 'workers':
                 if val:
-                    items = filter(lambda x: x.getUserData("workers", False), items)
+                    items = [x for x in items if x.getUserData("workers", False)]
                 else:
-                    items = filter(lambda x: x.getUserData("mainThread", False), items)
+                    items = [x for x in items if x.getUserData("mainThread", False)]
             else:
                 assert(0)  # Unknown key
         return items
@@ -574,7 +573,7 @@ class Descriptor(DescriptorProvider):
                 if config == '*':
                     iface = self.interface
                     while iface:
-                        add('all', map(lambda m: m.name, iface.members), attribute)
+                        add('all', [m.name for m in iface.members], attribute)
                         iface = iface.parent
                 else:
                     add('all', [config], attribute)
@@ -675,7 +674,7 @@ class Descriptor(DescriptorProvider):
 
     @property
     def prototypeNameChain(self):
-        return map(lambda p: self.getDescriptor(p).name, self.prototypeChain)
+        return [self.getDescriptor(p).name for p in self.prototypeChain]
 
     @property
     def parentPrototypeName(self):

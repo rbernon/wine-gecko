@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
+
 import os
 import os.path
 import json
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import sys
 import re
 import subprocess
@@ -13,7 +13,7 @@ repo_matcher = re.compile(r'[a-z]+://(hg|git)\.mozilla\.org')
 image_matcher = re.compile(r'^https:\/\/queue\.taskcluster\.net\/v1\/task\/.+\/artifacts\/private\/build\/flame-kk\.zip$')
 
 def get_task(taskid):
-    return json.load(urllib2.urlopen('https://queue.taskcluster.net/v1/task/' + taskid))
+    return json.load(urllib.request.urlopen('https://queue.taskcluster.net/v1/task/' + taskid))
 
 def check_task(task):
     payload = task['payload']
@@ -57,7 +57,7 @@ def check_task(task):
         artifacts = payload['artifacts']
         # If any of the artifacts makes reference to 'public',
         # abort the task
-        if any(map(lambda a: 'public' in a, artifacts)):
+        if any(['public' in a for a in artifacts]):
             print('Cannot upload to public', file=sys.stderr)
             return -1
 

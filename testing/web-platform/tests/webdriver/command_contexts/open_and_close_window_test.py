@@ -27,7 +27,7 @@ class OpenAndCloseWindowTest(base_test.WebDriverBaseTest):
     def test_open_new_window(self):
         handles = self.driver.get_window_handles()
         self.driver.find_element_by_id("open_new_window").click()
-        self.assertEquals(len(handles) + 1, len(self.driver.get_window_handles()))
+        self.assertEqual(len(handles) + 1, len(self.driver.get_window_handles()))
 
     def test_get_window_handles_returns_the_windows_that_have_been_opened(self):
         self.driver.find_element_by_id("open_new_window").click()
@@ -38,9 +38,9 @@ class OpenAndCloseWindowTest(base_test.WebDriverBaseTest):
         url2 = self.driver.get_current_url()
 
         if url1 == self.webserver.where_is("controlling_windows/res/other-page.html"):
-            self.assertEquals(url2, self.webserver.where_is("controlling_windows/res/first-page.html"))
+            self.assertEqual(url2, self.webserver.where_is("controlling_windows/res/first-page.html"))
         elif url1 == self.webserver.where_is("controlling_windows/res/first-page.html"):
-            self.assertEquals(url2, self.webserver.where_is("controlling_windows/res/other-page.html"))
+            self.assertEqual(url2, self.webserver.where_is("controlling_windows/res/other-page.html"))
         else:
             self.fail("The wrong set of URLs were returned")
 
@@ -48,10 +48,10 @@ class OpenAndCloseWindowTest(base_test.WebDriverBaseTest):
         open_windows = len(self.driver.get_window_handles())
 
         self.driver.find_element_by_id("open_new_window").click()
-        self.assertEquals(1 + open_windows, len(self.driver.get_window_handles()))
+        self.assertEqual(1 + open_windows, len(self.driver.get_window_handles()))
 
         self.driver.close()
-        self.assertEquals(open_windows, len(self.driver.get_window_handles()))
+        self.assertEqual(open_windows, len(self.driver.get_window_handles()))
 
     def test_command_sent_to_closed_window_returns_no_such_window_exception(self):
         self.driver.find_element_by_id("open_new_window").click()

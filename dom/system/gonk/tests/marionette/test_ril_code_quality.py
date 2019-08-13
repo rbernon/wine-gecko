@@ -233,7 +233,7 @@ class JSHintEngine:
         => line 1, col 6, Missing semicolon.
 
         """
-        LINE, COL, REASON = u'line', u'character', u'reason'
+        LINE, COL, REASON = 'line', 'character', 'reason'
         return ["%s: line %s, col %s, %s" %
                 (filename, error[LINE], error[COL], error[REASON])
                 for error in errors if error]

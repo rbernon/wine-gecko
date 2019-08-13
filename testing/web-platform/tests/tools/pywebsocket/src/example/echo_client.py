@@ -526,7 +526,7 @@ class ClientHandshakeProcessor(ClientHandshakeBase):
         # Validate
         try:
             binary_accept = base64.b64decode(accept)
-        except TypeError, e:
+        except TypeError as e:
             raise HandshakeError(
                 'Illegal value for header %s: %r' %
                 (common.SEC_WEBSOCKET_ACCEPT_HEADER, accept))
@@ -798,15 +798,15 @@ class ClientHandshakeProcessorHybi00(ClientHandshakeBase):
         # 4.1 21. insert between one and twelve random characters from the
         # range U+0021 to U+002F and U+003A to U+007E into /key_n/ at random
         # positions.
-        available_chars = range(0x21, 0x2f + 1) + range(0x3a, 0x7e + 1)
+        available_chars = list(range(0x21, 0x2f + 1)) + list(range(0x3a, 0x7e + 1))
         n = random.randint(1, 12)
-        for _ in xrange(n):
+        for _ in range(n):
             ch = random.choice(available_chars)
             pos = random.randint(0, len(key))
             key = key[0:pos] + chr(ch) + key[pos:]
         # 4.1 22. insert /spaces_n/ U+0020 SPACE characters into /key_n/ at
         # random positions other than start or end of the string.
-        for _ in xrange(spaces):
+        for _ in range(spaces):
             pos = random.randint(1, len(key) - 1)
             key = key[0:pos] + ' ' + key[pos:]
         return number, key
@@ -814,7 +814,7 @@ class ClientHandshakeProcessorHybi00(ClientHandshakeBase):
     def _generate_key3(self):
         # 4.1 26. let /key3/ be a string consisting of eight random bytes (or
         # equivalently, a random 64 bit integer encoded in a big-endian order).
-        return ''.join([chr(random.randint(0, 255)) for _ in xrange(8)])
+        return ''.join([chr(random.randint(0, 255)) for _ in range(8)])
 
 
 class ClientConnection(object):
@@ -940,15 +940,15 @@ class EchoClient(object):
             for line in self._options.message.split(','):
                 self._stream.send_message(line)
                 if self._options.verbose:
-                    print 'Send: %s' % line
+                    print('Send: %s' % line)
                 try:
                     received = self._stream.receive_message()
 
                     if self._options.verbose:
-                        print 'Recv: %s' % received
-                except Exception, e:
+                        print('Recv: %s' % received)
+                except Exception as e:
                     if self._options.verbose:
-                        print 'Error: %s' % e
+                        print('Error: %s' % e)
                     raise
 
             self._do_closing_handshake()
@@ -964,15 +964,15 @@ class EchoClient(object):
             self._logger.info('Wait for server-initiated closing handshake')
             message = self._stream.receive_message()
             if message is None:
-                print 'Recv close'
-                print 'Send ack'
+                print('Recv close')
+                print('Send ack')
                 self._logger.info(
                     'Received closing handshake and sent ack')
                 return
-        print 'Send close'
+        print('Send close')
         self._stream.close_connection()
         self._logger.info('Sent closing handshake')
-        print 'Recv ack'
+        print('Recv ack')
         self._logger.info('Received ack')
 
 
@@ -1116,7 +1116,7 @@ def main():
     # optparse doesn't seem to handle non-ascii default values.
     # Set default message here.
     if not options.message:
-        options.message = u'Hello,\u65e5\u672c'   # "Japan" in Japanese
+        options.message = 'Hello,\u65e5\u672c'   # "Japan" in Japanese
 
     EchoClient(options).run()
 

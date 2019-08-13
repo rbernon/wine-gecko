@@ -169,7 +169,7 @@ class TestWindowHandles(MarionetteTestCase):
         # Return to our original tab and close it.
         self.marionette.switch_to_window(start_tab)
         self.marionette.close()
-        self.assertEquals(len(self.marionette.window_handles), 2)
+        self.assertEqual(len(self.marionette.window_handles), 2)
 
         # Close the opened window and carry on in our new tab.
         self.marionette.switch_to_window(new_window)

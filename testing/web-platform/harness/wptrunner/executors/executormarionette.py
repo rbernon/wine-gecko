@@ -9,7 +9,7 @@ import sys
 import threading
 import time
 import traceback
-import urlparse
+import urllib.parse
 import uuid
 from collections import defaultdict
 
@@ -118,7 +118,7 @@ class MarionetteProtocol(Protocol):
     def load_runner(self, protocol):
         # Check if we previously had a test window open, and if we did make sure it's closed
         self.marionette.execute_script("if (window.wrappedJSObject.win) {window.wrappedJSObject.win.close()}")
-        url = urlparse.urljoin(self.executor.server_url(protocol), "/testharness_runner.html")
+        url = urllib.parse.urljoin(self.executor.server_url(protocol), "/testharness_runner.html")
         self.logger.debug("Loading %s" % url)
         try:
             self.marionette.navigate(url)
@@ -145,14 +145,14 @@ class MarionetteProtocol(Protocol):
 
     def on_environment_change(self, old_environment, new_environment):
         #Unset all the old prefs
-        for name in old_environment.get("prefs", {}).iterkeys():
+        for name in old_environment.get("prefs", {}).keys():
             value = self.executor.original_pref_values[name]
             if value is None:
                 self.clear_user_pref(name)
             else:
                 self.set_pref(name, value)
 
-        for name, value in new_environment.get("prefs", {}).iteritems():
+        for name, value in new_environment.get("prefs", {}).items():
             self.executor.original_pref_values[name] = self.get_pref(name)
             self.set_pref(name, value)
 

@@ -2,15 +2,15 @@ import cgi
 import json
 import os
 import traceback
-import urllib
-import urlparse
+import urllib.request, urllib.parse, urllib.error
+import urllib.parse
 
-from constants import content_types
-from pipes import Pipeline, template
-from ranges import RangeParser
-from request import Authentication
-from response import MultipartContent
-from utils import HTTPException
+from .constants import content_types
+from .pipes import Pipeline, template
+from .ranges import RangeParser
+from .request import Authentication
+from .response import MultipartContent
+from .utils import HTTPException
 
 __all__ = ["file_handler", "python_script_handler",
            "FunctionHandler", "handler", "json_handler",
@@ -30,7 +30,7 @@ def filesystem_path(base_path, request, url_base="/"):
     if base_path is None:
         base_path = request.doc_root
 
-    path = urllib.unquote(request.url_parts.path)
+    path = urllib.parse.unquote(request.url_parts.path)
 
     if path.startswith(url_base):
         path = path[len(url_base):]
@@ -85,11 +85,11 @@ class DirectoryHandler(object):
         if not base_path.endswith("/"):
             base_path += "/"
         if base_path != "/":
-            link = urlparse.urljoin(base_path, "..")
+            link = urllib.parse.urljoin(base_path, "..")
             yield ("""<li class="dir"><a href="%(link)s">%(name)s</a></li>""" %
                    {"link": link, "name": ".."})
         for item in sorted(os.listdir(path)):
-            link = cgi.escape(urllib.quote(item))
+            link = cgi.escape(urllib.parse.quote(item))
             if os.path.isdir(os.path.join(path, item)):
                 link += "/"
                 class_ = "dir"
@@ -131,7 +131,7 @@ class FileHandler(object):
                 byte_ranges = None
             data = self.get_data(response, path, byte_ranges)
             response.content = data
-            query = urlparse.parse_qs(request.url_parts.query)
+            query = urllib.parse.parse_qs(request.url_parts.query)
 
             pipeline = None
             if "pipe" in query:
@@ -226,7 +226,7 @@ class PythonScriptHandler(object):
 
         try:
             environ = {"__file__": path}
-            execfile(path, environ, environ)
+            exec(compile(open(path, "rb").read(), path, 'exec'), environ, environ)
             if "main" in environ:
                 handler = FunctionHandler(environ["main"])
                 handler(request, response)
@@ -357,7 +357,7 @@ class StaticHandler(object):
             self.data = f.read() % format_args
 
         self.resp_headers = [("Content-Type", content_type)]
-        for k, v in headers.iteritems():
+        for k, v in headers.items():
             resp_headers.append((k.replace("_", "-"), v))
 
         self.handler = handler(self.handle_request)

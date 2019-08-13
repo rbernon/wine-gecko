@@ -80,7 +80,7 @@ def main(args=sys.argv[1:]):
 
     if options.list_tests:
         # print test paths
-        print '\n'.join(tests)
+        print('\n'.join(tests))
         sys.exit(0)
 
     # create unittests

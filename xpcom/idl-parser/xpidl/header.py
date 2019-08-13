@@ -10,7 +10,7 @@
 import sys
 import os.path
 import re
-import xpidl
+from . import xpidl
 import itertools
 import glob
 
@@ -389,7 +389,7 @@ def write_interface(iface, fd):
 
     names = uuid_decoder.match(iface.attributes.uuid).groupdict()
     m3str = names['m3'] + names['m4']
-    names['m3joined'] = ", ".join(["0x%s" % m3str[i:i+2] for i in xrange(0, 16, 2)])
+    names['m3joined'] = ", ".join(["0x%s" % m3str[i:i+2] for i in range(0, 16, 2)])
 
     if iface.name[2] == 'I':
         implclass = iface.name[:2] + iface.name[3:]
@@ -550,7 +550,7 @@ def main():
     # The only thing special about a regen is that there are no input files.
     if options.regen:
         if options.cachedir is None:
-            print >>sys.stderr, "--regen useless without --cachedir"
+            print("--regen useless without --cachedir", file=sys.stderr)
         # Delete the lex/yacc files.  Ply is too stupid to regenerate them
         # properly
         for fileglobs in [os.path.join(options.cachedir, f) for f in ["xpidllex.py*", "xpidlyacc.py*"]]:
@@ -564,7 +564,7 @@ def main():
         sys.exit(0)
 
     if options.depfile is not None and options.outfile is None:
-        print >>sys.stderr, "-d requires -o"
+        print("-d requires -o", file=sys.stderr)
         sys.exit(1)
 
     if options.outfile is not None:
@@ -591,9 +591,9 @@ def main():
         depfd = open(options.depfile, 'w')
         deps = [dep.replace('\\', '/') for dep in idl.deps]
 
-        print >>depfd, "%s: %s" % (options.outfile, " ".join(deps))
+        print("%s: %s" % (options.outfile, " ".join(deps)), file=depfd)
         for dep in deps:
-            print >>depfd, "%s:" % dep
+            print("%s:" % dep, file=depfd)
 
 if __name__ == '__main__':
     main()

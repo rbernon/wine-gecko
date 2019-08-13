@@ -150,7 +150,7 @@ class AndroidEmulatorTest(BlobUploadMixin, TestingMixin, EmulatorMixin, VCSMixin
         else:
             dirs['abs_avds_dir'] = "/home/cltbld/.android"
 
-        for key in dirs.keys():
+        for key in list(dirs.keys()):
             if key not in abs_dirs:
                 abs_dirs[key] = dirs[key]
         self.abs_dirs = abs_dirs
@@ -189,7 +189,7 @@ class AndroidEmulatorTest(BlobUploadMixin, TestingMixin, EmulatorMixin, VCSMixin
             try:
                 tn = telnetlib.Telnet('localhost', emuport, 300)
                 break
-            except socket.error, e:
+            except socket.error as e:
                 self.info("Trying again after exception: %s" % str(e))
                 pass
 
@@ -268,7 +268,7 @@ class AndroidEmulatorTest(BlobUploadMixin, TestingMixin, EmulatorMixin, VCSMixin
                         tn.read_all()
                     else:
                         self.warning('Unable to connect to the SUT agent on port %d' % emulator["sut_port1"])
-                except socket.error, e:
+                except socket.error as e:
                     self.info('Trying again after socket error: %s' % str(e))
                     pass
                 except EOFError:
@@ -315,7 +315,7 @@ class AndroidEmulatorTest(BlobUploadMixin, TestingMixin, EmulatorMixin, VCSMixin
                     break
                 else:
                     self.warning('Unable to connect to the emulator on port %d' % emulator["emulator_port"])
-            except socket.error, e:
+            except socket.error as e:
                 self.info('Trying again after socket error: %s' % str(e))
                 pass
             except EOFError:
@@ -694,7 +694,7 @@ class AndroidEmulatorTest(BlobUploadMixin, TestingMixin, EmulatorMixin, VCSMixin
                 'enable_automation': True,
                 'device_package_name': self._query_package_name()
             }
-            config = dict(config.items() + self.config.items())
+            config = dict(list(config.items()) + list(self.config.items()))
 
             # Wait for Android to finish booting
             completed = None

@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import print_function
+
 
 import datetime
 import re
@@ -59,7 +59,7 @@ class DeviceRunner(BaseRunner):
         if self.app_ctx.dm._deviceSerial:
             cmd.extend(['-s', self.app_ctx.dm._deviceSerial])
         cmd.append('shell')
-        for k, v in self._device_env.iteritems():
+        for k, v in self._device_env.items():
             cmd.append('%s=%s' % (k, v))
         cmd.append(self.app_ctx.remote_binary)
         return cmd

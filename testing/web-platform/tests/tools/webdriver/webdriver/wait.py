@@ -15,8 +15,8 @@
 """Waiting functionality."""
 
 import time
-from exceptions import NoSuchElementException
-from exceptions import TimeoutException
+from .exceptions import NoSuchElementException
+from .exceptions import TimeoutException
 
 POLL_FREQUENCY = 0.5  # How long to sleep inbetween calls to the method
 IGNORED_EXCEPTIONS = [NoSuchElementException]  # list of exceptions ignored during calls to the method

@@ -77,7 +77,7 @@ class TestPageInfoWindow(FirefoxTestCase):
                 continue
 
             page_info = self.browser.open_page_info_window(trigger=trigger)
-            self.assertEquals(page_info, self.windows.current)
+            self.assertEqual(page_info, self.windows.current)
             page_info.close()
 
     def test_close_window(self):

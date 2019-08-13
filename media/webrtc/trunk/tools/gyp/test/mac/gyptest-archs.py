@@ -21,7 +21,7 @@ if sys.platform == 'darwin':
     o = proc.communicate()[0].strip()
     assert not proc.returncode
     if o != expected:
-      print 'File: Expected %s, got %s' % (expected, o)
+      print('File: Expected %s, got %s' % (expected, o))
       test.fail_test()
 
   test.run_gyp('test-no-archs.gyp', chdir='archs')

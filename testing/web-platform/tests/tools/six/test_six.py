@@ -84,7 +84,7 @@ else:
 
 have_gdbm = True
 try:
-    import gdbm
+    import dbm.gnu
 except ImportError:
     try:
         import dbm.gnu
@@ -195,31 +195,31 @@ def test_from_imports():
 
 def test_filter():
     from six.moves import filter
-    f = filter(lambda x: x % 2, range(10))
+    f = [x for x in range(10) if x % 2]
     assert six.advance_iterator(f) == 1
 
 
 def test_filter_false():
     from six.moves import filterfalse
-    f = filterfalse(lambda x: x % 3, range(10))
+    f = filterfalse(lambda x: x % 3, list(range(10)))
     assert six.advance_iterator(f) == 0
     assert six.advance_iterator(f) == 3
     assert six.advance_iterator(f) == 6
 
 def test_map():
     from six.moves import map
-    assert six.advance_iterator(map(lambda x: x + 1, range(2))) == 1
+    assert six.advance_iterator([x + 1 for x in range(2)]) == 1
 
 
 def test_zip():
     from six.moves import zip
-    assert six.advance_iterator(zip(range(2), range(2))) == (0, 0)
+    assert six.advance_iterator(list(zip(list(range(2)), list(range(2))))) == (0, 0)
 
 
 @py.test.mark.skipif("sys.version_info < (2, 6)")
 def test_zip_longest():
     from six.moves import zip_longest
-    it = zip_longest(range(2), range(1))
+    it = zip_longest(list(range(2)), list(range(1)))
 
     assert six.advance_iterator(it) == (0, 0)
     assert six.advance_iterator(it) == (1, None)
@@ -371,7 +371,7 @@ def test_dictionary_iterators(monkeypatch):
     del MyDict.iterlists
     setattr(MyDict, stock_method_name('lists'), f)
 
-    d = MyDict(zip(range(10), reversed(range(10))))
+    d = MyDict(list(zip(list(range(10)), reversed(list(range(10))))))
     for name in "keys", "values", "items", "lists":
         meth = getattr(six, "iter" + name)
         it = meth(d)
@@ -400,7 +400,7 @@ def test_dictionary_views():
             return viewwhat
         return 'view' + viewwhat
 
-    d = dict(zip(range(10), (range(11, 20))))
+    d = dict(list(zip(list(range(10)), (list(range(11, 20))))))
     for name in "keys", "values", "items":
         meth = getattr(six, "view" + name)
         view = meth(d)
@@ -408,13 +408,13 @@ def test_dictionary_views():
 
 
 def test_advance_iterator():
-    assert six.next is six.advance_iterator
+    assert six.__next__ is six.advance_iterator
     l = [1, 2]
     it = iter(l)
     assert six.next(it) == 1
     assert six.next(it) == 2
-    py.test.raises(StopIteration, six.next, it)
-    py.test.raises(StopIteration, six.next, it)
+    py.test.raises(StopIteration, six.__next__, it)
+    py.test.raises(StopIteration, six.__next__, it)
 
 
 def test_iterator():
@@ -465,9 +465,9 @@ if six.PY3:
 
 
     def test_u():
-        s = six.u("hi \u0439 \U00000439 \\ \\\\ \n")
+        s = six.u("hi \\u0439 \\U00000439 \\ \\\\ \n")
         assert isinstance(s, str)
-        assert s == "hi \u0439 \U00000439 \\ \\\\ \n"
+        assert s == "hi \\u0439 \\U00000439 \\ \\\\ \n"
 
 else:
 
@@ -479,19 +479,19 @@ else:
 
 
     def test_u():
-        s = six.u("hi \u0439 \U00000439 \\ \\\\ \n")
-        assert isinstance(s, unicode)
+        s = six.u("hi \\u0439 \\U00000439 \\ \\\\ \n")
+        assert isinstance(s, str)
         assert s == "hi \xd0\xb9 \xd0\xb9 \\ \\\\ \n".decode("utf8")
 
 
 def test_u_escapes():
-    s = six.u("\u1234")
+    s = six.u("\\u1234")
     assert len(s) == 1
 
 
 def test_unichr():
-    assert six.u("\u1234") == six.unichr(0x1234)
-    assert type(six.u("\u1234")) is type(six.unichr(0x1234))
+    assert six.u("\\u1234") == six.chr(0x1234)
+    assert type(six.u("\\u1234")) is type(six.chr(0x1234))
 
 
 def test_int2byte():
@@ -513,7 +513,7 @@ def test_bytesiter():
     it = six.iterbytes(six.b("hi"))
     assert six.next(it) == ord("h")
     assert six.next(it) == ord("i")
-    py.test.raises(StopIteration, six.next, it)
+    py.test.raises(StopIteration, six.__next__, it)
 
 
 def test_StringIO():
@@ -644,14 +644,14 @@ def test_print_encoding(monkeypatch):
     out = six.BytesIO()
     out.encoding = "utf-8"
     out.errors = None
-    six.print_(six.u("\u053c"), end="", file=out)
+    six.print_(six.u("\\u053c"), end="", file=out)
     assert out.getvalue() == six.b("\xd4\xbc")
     out = six.BytesIO()
     out.encoding = "ascii"
     out.errors = "strict"
-    py.test.raises(UnicodeEncodeError, six.print_, six.u("\u053c"), file=out)
+    py.test.raises(UnicodeEncodeError, six.print_, six.u("\\u053c"), file=out)
     out.errors = "backslashreplace"
-    six.print_(six.u("\u053c"), end="", file=out)
+    six.print_(six.u("\\u053c"), end="", file=out)
     assert out.getvalue() == six.b("\\u053c")
 
 

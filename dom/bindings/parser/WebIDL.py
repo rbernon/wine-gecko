@@ -59,9 +59,7 @@ def enum(*names, **kw):
         base = object
         start = 0
 
-    class Foo(base):
-        __metaclass__ = M_add_class_attribs(names, start)
-
+    class Foo(base, metaclass=M_add_class_attribs(names, start)):
         def __setattr__(self, name, value):  # this makes it read-only
             raise NotImplementedError
     return Foo()
@@ -2007,7 +2005,7 @@ class IDLUnresolvedType(IDLType):
 
         assert obj
         if obj.isType():
-            print obj
+            print(obj)
         assert not obj.isType()
         if obj.isTypedef():
             assert self.name.name == obj.identifier.name
@@ -3186,7 +3184,7 @@ integerTypeSizes = {
 
 
 def matchIntegerValueToType(value):
-    for type, extremes in integerTypeSizes.items():
+    for type, extremes in list(integerTypeSizes.items()):
         (min, max) = extremes
         if value <= max and value >= min:
             return BuiltinTypes[type]
@@ -3250,7 +3248,7 @@ class IDLValue(IDLObject):
         elif self.type.isString() and type.isEnum():
             # Just keep our string, but make sure it's a valid value for this enum
             enum = type.unroll().inner
-            if self.value not in enum.values():
+            if self.value not in list(enum.values()):
                 raise WebIDLError("'%s' is not a valid default value for enum %s"
                                   % (self.value, enum.identifier.name),
                                   [location, enum.location])
@@ -3409,7 +3407,7 @@ class IDLInterfaceMember(IDLObjectWithIdentifier, IDLExposureMixins):
     def finish(self, scope):
         # We better be exposed _somewhere_.
         if (len(self._exposureGlobalNames) == 0):
-            print self.identifier.name
+            print(self.identifier.name)
         assert len(self._exposureGlobalNames) != 0
         IDLExposureMixins.finish(self, scope)
 
@@ -5045,7 +5043,7 @@ class Tokenizer(object):
         "iterable": "ITERABLE"
         }
 
-    tokens.extend(keywords.values())
+    tokens.extend(list(keywords.values()))
 
     def t_error(self, t):
         raise WebIDLError("Unrecognized Input",
@@ -5191,7 +5189,7 @@ class Parser(Tokenizer):
                                       [location, p[0].location])
                 p[0].setNonPartial(location, parent, members)
                 return
-        except Exception, ex:
+        except Exception as ex:
             if isinstance(ex, WebIDLError):
                 raise ex
             pass
@@ -5216,7 +5214,7 @@ class Parser(Tokenizer):
                                       "%s and %s" % (identifier.name, p[0]),
                                       [location, p[0].location])
                 return
-        except Exception, ex:
+        except Exception as ex:
             if isinstance(ex, WebIDLError):
                 raise ex
             pass
@@ -5239,7 +5237,7 @@ class Parser(Tokenizer):
                     raise WebIDLError("Partial interface has the same name as "
                                       "non-interface object",
                                       [location, nonPartialInterface.location])
-        except Exception, ex:
+        except Exception as ex:
             if isinstance(ex, WebIDLError):
                 raise ex
             pass
@@ -6548,7 +6546,7 @@ class Parser(Tokenizer):
         assert isinstance(scope, IDLScope)
 
         # xrange omits the last value.
-        for x in xrange(IDLBuiltinType.Types.ArrayBuffer, IDLBuiltinType.Types.Float64Array + 1):
+        for x in range(IDLBuiltinType.Types.ArrayBuffer, IDLBuiltinType.Types.Float64Array + 1):
             builtin = BuiltinTypes[x]
             name = builtin.name
             typedef = IDLTypedef(BuiltinLocation("<builtin type>"), scope, builtin, name)
@@ -6679,14 +6677,14 @@ def main():
             f = open(fullPath, 'rb')
             lines = f.readlines()
             f.close()
-            print fullPath
+            print(fullPath)
             parser.parse(''.join(lines), fullPath)
         parser.finish()
-    except WebIDLError, e:
+    except WebIDLError as e:
         if options.verbose_errors:
             traceback.print_exc()
         else:
-            print e
+            print(e)
 
 if __name__ == '__main__':
     main()

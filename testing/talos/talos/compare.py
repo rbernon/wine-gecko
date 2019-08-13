@@ -3,14 +3,14 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import json
-import urllib
-import httplib
+import urllib.request, urllib.parse, urllib.error
+import http.client
 import datetime
 import time
 from argparse import ArgumentParser
 import sys
 import os
-import filter
+from . import filter
 
 SERVER = 'graphs.mozilla.org'
 selector = '/api/test/runs'
@@ -149,13 +149,13 @@ def getListOfTests(platform, tests):
 def getGraphData(testid, branchid, platformid):
     body = {"id": testid, "branchid": branchid, "platformid": platformid}
     if debug >= 3:
-        print "Querying graph server for: %s" % body
-    params = urllib.urlencode(body)
+        print("Querying graph server for: %s" % body)
+    params = urllib.parse.urlencode(body)
     headers = {
         "Content-type": "application/x-www-form-urlencoded",
         "Accept": "text/plain"
     }
-    conn = httplib.HTTPConnection(SERVER)
+    conn = http.client.HTTPConnection(SERVER)
     conn.request("POST", selector, params, headers)
     response = conn.getresponse()
     data = response.read()
@@ -164,7 +164,7 @@ def getGraphData(testid, branchid, platformid):
         try:
             data = json.loads(data)
         except:
-            print "NOT JSON: %s" % data
+            print("NOT JSON: %s" % data)
             return None
 
     if data['stat'] == 'fail':
@@ -207,7 +207,7 @@ def getDatazillaCSET(revision, branchid):
     if os.path.exists(cached):
         response = open(cached, 'r')
     else:
-        conn = httplib.HTTPSConnection('datazilla.mozilla.org')
+        conn = http.client.HTTPSConnection('datazilla.mozilla.org')
         cset = "/talos/testdata/raw/%s/%s" % (branchid, revision)
         conn.request("GET", cset)
         response = conn.getresponse()
@@ -276,13 +276,13 @@ def getDatazillaCSET(revision, branchid):
         if pgo:
             pgodata[platform][suite] = float(sum(values)/len(values))
             if debug > 1:
-                print "%s: %s: %s (PGO)" % (platform, suite,
-                                            pgodata[platform][suite])
+                print("%s: %s: %s (PGO)" % (platform, suite,
+                                            pgodata[platform][suite]))
         else:
             testdata[platform][suite] = float(sum(values)/len(values))
             if debug > 1:
-                print "%s: %s: %s" % (platform, suite,
-                                      testdata[platform][suite])
+                print("%s: %s: %s" % (platform, suite,
+                                      testdata[platform][suite]))
 
     return testdata, pgodata, xperfdata
 
@@ -292,7 +292,7 @@ def getDatazillaData(branchid):
 
     # https://datazilla.mozilla.org/refdata/pushlog/list
     # /?days_ago=7&branches=Mozilla-Inbound
-    conn = httplib.HTTPSConnection('datazilla.mozilla.org')
+    conn = http.client.HTTPSConnection('datazilla.mozilla.org')
     cset = "/refdata/pushlog/list/?days_ago=14&branches=%s" % branchid
     conn.request("GET", cset)
     response = conn.getresponse()
@@ -307,7 +307,7 @@ def getDatazillaData(branchid):
 
 
 def parseGraphResultsByDate(data, start, end):
-    low = sys.maxint
+    low = sys.maxsize
     high = 0
     count = 0
     runs = data['test_runs']
@@ -332,7 +332,7 @@ def parseGraphResultsByDate(data, start, end):
 
 
 def parseGraphResultsByChangeset(data, changeset):
-    low = sys.maxint
+    low = sys.maxsize
     high = 0
     count = 0
     runs = data['test_runs']
@@ -430,8 +430,8 @@ def compareResults(revision, branch, masterbranch, skipdays, history,
                     if t in reverse_tests:
                         status = ':)'
 
-                if test['low'] == sys.maxint or \
-                        results['low'] == sys.maxint or \
+                if test['low'] == sys.maxsize or \
+                        results['low'] == sys.maxsize or \
                         test['high'] == 0 or \
                         results['high'] == 0:
                     output.append("   %-18s    No results found" % t)
@@ -475,7 +475,7 @@ def compareResults(revision, branch, masterbranch, skipdays, history,
                 output.append("   %-18s    No data for platform" % t)
 
         if doPrint:
-            print '\n'.join(output)
+            print('\n'.join(output))
 
 
 class CompareOptions(ArgumentParser):
@@ -618,7 +618,7 @@ def main():
     datazilla, pgodatazilla, xperfdata = \
         getDatazillaCSET(args.revision, branch)
     if args.xperf:
-        print xperfdata
+        print(xperfdata)
     else:
         compareResults(args.revision, args.branch, args.masterbranch,
                        args.skipdays, args.history, platforms, tests,
@@ -630,7 +630,7 @@ def shorten(url):
     headers = {'content-type': 'application/json'}
     base_url = "www.googleapis.com"
 
-    conn = httplib.HTTPSConnection(base_url)
+    conn = http.client.HTTPSConnection(base_url)
     body = json.dumps(dict(longUrl=url))
 
     conn.request("POST", "/urlshortener/v1/url", body, headers)

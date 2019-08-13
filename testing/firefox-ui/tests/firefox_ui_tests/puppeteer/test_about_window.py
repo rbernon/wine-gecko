@@ -69,5 +69,5 @@ class TestAboutWindow(FirefoxTestCase):
         self.about_window.close()
         for trigger in open_strategies:
             about_window = self.browser.open_about_window(trigger=trigger)
-            self.assertEquals(about_window, self.windows.current)
+            self.assertEqual(about_window, self.windows.current)
             about_window.close()

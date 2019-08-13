@@ -32,7 +32,7 @@
 
 """Tests for mux module."""
 
-import Queue
+import queue
 import copy
 import logging
 import optparse
@@ -42,7 +42,7 @@ import unittest
 import time
 import zlib
 
-import set_sys_path  # Update sys.path to locate mod_pywebsocket module.
+from . import set_sys_path  # Update sys.path to locate mod_pywebsocket module.
 
 from mod_pywebsocket import common
 from mod_pywebsocket import mux
@@ -58,7 +58,7 @@ from mod_pywebsocket._stream_hybi import parse_frame
 from mod_pywebsocket.extensions import MuxExtensionProcessor
 
 
-import mock
+from . import mock
 
 
 _TEST_HEADERS = {'Host': 'server.example.com',
@@ -258,9 +258,9 @@ class _MuxMockDispatcher(object):
                 raise ValueError('Cannot handle path %r' % request.path)
             if not request.server_terminated:
                 request.ws_stream.close_connection()
-        except ConnectionTerminatedException, e:
+        except ConnectionTerminatedException as e:
             self.channel_events[request.channel_id].exception = e
-        except Exception, e:
+        except Exception as e:
             self.channel_events[request.channel_id].exception = e
             raise
 
@@ -1767,7 +1767,7 @@ class MuxHandlerTest(unittest.TestCase):
 
         self.assertEqual([], dispatcher.channel_events[1].messages)
         self.assertEqual(['Hello'], dispatcher.channel_events[2].messages)
-        self.assertFalse(dispatcher.channel_events.has_key(3))
+        self.assertFalse(3 in dispatcher.channel_events)
         drop_channel = next(
             b for b in request.connection.get_written_control_blocks()
             if b.opcode == mux._MUX_OPCODE_DROP_CHANNEL)

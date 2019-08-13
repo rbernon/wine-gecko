@@ -110,7 +110,7 @@ class TestEmulatorCallbacks(MarionetteTestCase):
     @skip_unless_protocol(lambda level: level >= 3)
     def test_emulator_result_error_content(self):
         with self.marionette.using_context("content"):
-            with self.assertRaisesRegexp(JavascriptException, "TypeError"):
+            with self.assertRaisesRegex(JavascriptException, "TypeError"):
                 self.marionette.execute_async_script("runEmulatorCmd()")
 
     def test_emulator_cmd_chrome(self):
@@ -126,7 +126,7 @@ class TestEmulatorCallbacks(MarionetteTestCase):
     @skip_unless_protocol(lambda level: level >= 3)
     def test_emulator_result_error_chrome(self):
         with self.marionette.using_context("chrome"):
-            with self.assertRaisesRegexp(JavascriptException, "TypeError"):
+            with self.assertRaisesRegex(JavascriptException, "TypeError"):
                 self.marionette.execute_async_script("runEmulatorCmd()")
 
     def test_multiple_callbacks(self):

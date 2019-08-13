@@ -38,7 +38,7 @@ def GypTestFormat(title, format=None, msvs_version=None):
   if not format:
     format = title
 
-  print '@@@BUILD_STEP ' + title + '@@@'
+  print('@@@BUILD_STEP ' + title + '@@@')
   sys.stdout.flush()
   env = os.environ.copy()
   # TODO(bradnelson): remove this when this issue is resolved:
@@ -57,17 +57,17 @@ def GypTestFormat(title, format=None, msvs_version=None):
       cwd=ROOT_DIR, env=env, shell=True)
   if retcode:
     # Emit failure tag, and keep going.
-    print '@@@STEP_FAILURE@@@'
+    print('@@@STEP_FAILURE@@@')
     return 1
   return 0
 
 
 def GypBuild():
   # Dump out/ directory.
-  print '@@@BUILD_STEP cleanup@@@'
-  print 'Removing %s...' % OUT_DIR
+  print('@@@BUILD_STEP cleanup@@@')
+  print('Removing %s...' % OUT_DIR)
   shutil.rmtree(OUT_DIR, ignore_errors=True)
-  print 'Done.'
+  print('Done.')
 
   retcode = 0
   if sys.platform.startswith('linux'):
@@ -90,7 +90,7 @@ def GypBuild():
     #     after the build proper that could be used for cumulative failures),
     #     use that instead of this. This isolates the final return value so
     #     that it isn't misattributed to the last stage.
-    print '@@@BUILD_STEP failures@@@'
+    print('@@@BUILD_STEP failures@@@')
     sys.exit(retcode)
 
 

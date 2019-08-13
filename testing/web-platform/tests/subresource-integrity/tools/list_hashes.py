@@ -45,13 +45,13 @@ def md5_uri(content):
 
 def main():
   for file in js_and_css_files():
-    print "Listing hash values for %s" % file
+    print("Listing hash values for %s" % file)
     with open(file, "r") as content_file:
       content = content_file.read()
-      print "\tSHA512 integrity: %s" % sha512_uri(content)
-      print "\tSHA384 integrity: %s" % sha384_uri(content)
-      print "\tSHA256 integrity: %s" % sha256_uri(content)
-      print "\tMD5 integrity:    %s" % md5_uri(content)
+      print("\tSHA512 integrity: %s" % sha512_uri(content))
+      print("\tSHA384 integrity: %s" % sha384_uri(content))
+      print("\tSHA256 integrity: %s" % sha256_uri(content))
+      print("\tMD5 integrity:    %s" % md5_uri(content))
 
 if __name__ == "__main__":
   main()

@@ -325,7 +325,7 @@ class EmulatorBuild(BaseScript, PurgeMixin):
         self.download_file("http://commondatastorage.googleapis.com/git-repo-downloads/repo",
                            file_name="repo", parent_dir=self.bindir)
         repo = os.path.join(self.bindir, "repo")
-        self.chmod(repo, 0755)
+        self.chmod(repo, 0o755)
 
         self.mkdir_p(self.aospdir)
         self.run_command([repo, "init", "-u", self.config['android_url'],
@@ -545,7 +545,7 @@ class EmulatorBuild(BaseScript, PurgeMixin):
                               os.path.join(named_avddir, i))
 
         ini_file = open(os.path.join(named_avddir, "config.ini"), "w")
-        for (k,v) in ini.items():
+        for (k,v) in list(ini.items()):
             ini_file.write("%s=%s\n" % (k,v))
         ini_file.close()
 

@@ -11,7 +11,7 @@
 # 2. To generate code for each reset style struct.
 # 3. To generate the dependency of each style struct.
 
-from __future__ import print_function
+
 
 import math
 

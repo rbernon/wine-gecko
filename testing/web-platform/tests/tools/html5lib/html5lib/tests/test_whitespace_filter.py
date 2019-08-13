@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, unicode_literals
+
 
 import unittest
 
@@ -9,7 +9,7 @@ spaceCharacters = "".join(spaceCharacters)
 try:
     unittest.TestCase.assertEqual
 except AttributeError:
-    unittest.TestCase.assertEqual = unittest.TestCase.assertEquals
+    unittest.TestCase.assertEqual = unittest.TestCase.assertEqual
 
 
 class TestCase(unittest.TestCase):

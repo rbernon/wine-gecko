@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, unicode_literals
+
 from six import text_type
 
 import re
@@ -63,7 +63,7 @@ def getETreeBuilder(ElementTreeImplementation, fullTree=False):
             # XXX - there may be a better way to do this...
             for key in list(self._element.attrib.keys()):
                 del self._element.attrib[key]
-            for key, value in attributes.items():
+            for key, value in list(attributes.items()):
                 if isinstance(key, tuple):
                     name = "{%s}%s" % (key[2], key[1])
                 else:
@@ -126,7 +126,7 @@ def getETreeBuilder(ElementTreeImplementation, fullTree=False):
 
         def cloneNode(self):
             element = type(self)(self.name, self.namespace)
-            for name, value in self.attributes.items():
+            for name, value in list(self.attributes.items()):
                 element.attributes[name] = value
             return element
 
@@ -230,7 +230,7 @@ def getETreeBuilder(ElementTreeImplementation, fullTree=False):
 
                 if hasattr(element, "attrib"):
                     attributes = []
-                    for name, value in element.attrib.items():
+                    for name, value in list(element.attrib.items()):
                         nsmatch = tag_regexp.match(name)
                         if nsmatch is not None:
                             ns, name = nsmatch.groups()
@@ -290,7 +290,7 @@ def getETreeBuilder(ElementTreeImplementation, fullTree=False):
                 else:
                     attr = " ".join(["%s=\"%s\"" % (
                         filter.fromXmlName(name), value)
-                        for name, value in element.attrib.items()])
+                        for name, value in list(element.attrib.items())])
                     rv.append("<%s %s>" % (element.tag, attr))
                 if element.text:
                     rv.append(element.text)

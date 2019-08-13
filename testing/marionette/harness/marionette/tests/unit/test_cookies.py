@@ -29,12 +29,12 @@ class CookieTest(MarionetteTestCase):
         cookie["expiry"] = calendar.timegm(time.gmtime()) - 1
         self.marionette.add_cookie(cookie)
         cookies = self.marionette.get_cookies()
-        self.assertEquals(0, len(cookies))
+        self.assertEqual(0, len(cookies))
 
     def test_delete_all_cookie(self):
         self.marionette.add_cookie(self.COOKIE_A)
         cookie_returned = str(self.marionette.execute_script("return document.cookie"))
-        print cookie_returned
+        print(cookie_returned)
         self.assertTrue(self.COOKIE_A["name"] in cookie_returned)
         self.marionette.delete_all_cookies()
         self.assertFalse(self.marionette.get_cookies())
@@ -52,7 +52,7 @@ class CookieTest(MarionetteTestCase):
         self.marionette.execute_script("document.cookie = arguments[0] + '=set';", [key])
 
         cookie = self.marionette.get_cookie(key)
-        self.assertEquals("set", cookie["value"])
+        self.assertEqual("set", cookie["value"])
 
     def test_get_all_cookies(self):
         key1 = "key_%d" % int(random.random()*10000000)
@@ -72,7 +72,7 @@ class CookieTest(MarionetteTestCase):
         test_url = self.marionette.absolute_url('test.html')
         self.marionette.navigate(test_url)
         cookies = self.marionette.get_cookies()
-        self.assertEquals(count + 2, len(cookies))
+        self.assertEqual(count + 2, len(cookies))
 
     def test_should_not_delete_cookies_with_a_similar_name(self):
         cookieOneName = "fish"
@@ -87,7 +87,7 @@ class CookieTest(MarionetteTestCase):
         cookies = self.marionette.get_cookies()
 
         self.assertFalse(cookie1["name"] == cookies[0]["name"], msg=str(cookies))
-        self.assertEquals(cookie2["name"] , cookies[0]["name"], msg=str(cookies))
+        self.assertEqual(cookie2["name"] , cookies[0]["name"], msg=str(cookies))
 
     def test_we_get_required_elements_when_available(self):
         self.marionette.add_cookie(self.COOKIE_A)

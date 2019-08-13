@@ -1,9 +1,9 @@
 """Entry point for WebDriver."""
 
-import alert
-import command
-import searchcontext
-import webelement
+from . import alert
+from . import command
+from . import searchcontext
+from . import webelement
 
 import base64
 

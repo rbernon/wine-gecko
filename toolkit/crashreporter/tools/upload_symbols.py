@@ -12,7 +12,7 @@
 # and set SOCORRO_SYMBOL_UPLOAD_TOKEN_FILE to the path to the file in
 # the mozconfig you're using.
 
-from __future__ import print_function
+
 
 import os
 import redo

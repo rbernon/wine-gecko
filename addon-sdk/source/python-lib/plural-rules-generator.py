@@ -14,7 +14,7 @@
 # Usage:
 # $ python plural-rules-generator.py > ../packages/api-utils/lib/l10n/plural-rules.js
 
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import xml.dom.minidom
 import json
 import re
@@ -88,7 +88,7 @@ def computeRules():
     Fetch plural rules data directly from unicode.org website:
     """
     url = UNICODE_ORG_XML_URL
-    f = urllib2.urlopen(url)
+    f = urllib.request.urlopen(url)
     doc = xml.dom.minidom.parse(f)
 
     # Read XML document and extract locale to rules mapping
@@ -108,7 +108,7 @@ def computeRules():
 
     # Go through all rules and compute a Javascript code for each of them
     rules = {}
-    for index,rule in algorithms.iteritems():
+    for index,rule in algorithms.items():
         lines = []
         for pluralForm in rule:
             condition = rule[pluralForm]
@@ -141,7 +141,7 @@ for index in rules:
     rulesLines.append('  return "other"')
     rulesLines.append('},')
 
-print """/* This Source Code Form is subject to the terms of the Mozilla Public
+print("""/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
@@ -182,4 +182,4 @@ exports.getRulesForLocale = function getRulesForLocale(locale) {
 }
 """ % (UNICODE_ORG_XML_URL,
         json.dumps(localesMapping, sort_keys=True, indent=2),
-        "\n  ".join(rulesLines))
+        "\n  ".join(rulesLines)))

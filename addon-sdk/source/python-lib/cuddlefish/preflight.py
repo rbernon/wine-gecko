@@ -53,7 +53,7 @@ def preflight_config(target_cfg, filename, stderr=sys.stderr):
     config = json.load(open(filename, 'r'))
 
     if "id" not in config:
-        print >>stderr, ("No 'id' in package.json: creating a new ID for you.")
+        print(("No 'id' in package.json: creating a new ID for you."), file=stderr)
         jid = create_jid()
         config["id"] = jid
         modified = True

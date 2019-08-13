@@ -45,7 +45,7 @@ class Spider(object):
         except:
             self.buggyURLs.add(self.currentURL)
             failed = True
-            print("BUGGY:", self.currentURL)
+            print(("BUGGY:", self.currentURL))
         self.visitedURLs.add(self.currentURL)
         if not failed:
             self.updateURLs(tree)

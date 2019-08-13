@@ -13,7 +13,7 @@ import os
 import functools
 import time
 import random
-import urlparse
+import urllib.parse
 import os.path
 import re
 from external_tools.detect_repo import detect_git, detect_hg, detect_local
@@ -283,7 +283,7 @@ class B2GBuildBaseScript(BuildbotMixin, MockMixin,
         dirs = self.query_abs_dirs()
         gecko_config = self.load_gecko_config()
         env = self.query_env()
-        for k, v in gecko_config.get('env', {}).items():
+        for k, v in list(gecko_config.get('env', {}).items()):
             v = v.format(workdir=dirs['abs_work_dir'],
                          srcdir=os.path.abspath(dirs['gecko_src']))
             env[k] = v
@@ -334,7 +334,7 @@ class B2GBuildBaseScript(BuildbotMixin, MockMixin,
                         repo=repo,
                         rev=rev)
         else:
-            bits = urlparse.urlparse(repo)
+            bits = urllib.parse.urlparse(repo)
             repo = bits.path.lstrip('/')
             if filename:
                 url = "{scheme}://{host}/?p={repo};a=blob_plain;f={filename};hb={rev}".format(

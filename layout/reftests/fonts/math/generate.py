@@ -15,7 +15,7 @@
 # To install what you need, on Ubuntu,
 #   sudo apt-get install python-fontforge
 
-from __future__ import print_function
+
 import fontforge
 
 em = 1000

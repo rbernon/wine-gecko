@@ -6,7 +6,7 @@ import hashlib
 import json
 import os
 import traceback
-import urlparse
+import urllib.parse
 from abc import ABCMeta, abstractmethod
 
 from ..testrunner import Stop
@@ -37,10 +37,10 @@ def strip_server(url):
 
     e.g. http://example.org:8000/tests?id=1#2 becomes /tests?id=1#2"""
 
-    url_parts = list(urlparse.urlsplit(url))
+    url_parts = list(urllib.parse.urlsplit(url))
     url_parts[0] = ""
     url_parts[1] = ""
-    return urlparse.urlunsplit(url_parts)
+    return urllib.parse.urlunsplit(url_parts)
 
 
 class TestharnessResultConverter(object):
@@ -76,9 +76,7 @@ class ExecutorException(Exception):
         self.status = status
         self.message = message
 
-class TestExecutor(object):
-    __metaclass__ = ABCMeta
-
+class TestExecutor(object, metaclass=ABCMeta):
     test_type = None
     convert_result = None
 
@@ -151,7 +149,7 @@ class TestExecutor(object):
                                self.server_config["ports"][protocol][0])
 
     def test_url(self, test):
-        return urlparse.urljoin(self.server_url(test.environment["protocol"]), test.url)
+        return urllib.parse.urljoin(self.server_url(test.environment["protocol"]), test.url)
 
     @abstractmethod
     def do_test(self, test):
@@ -169,7 +167,7 @@ class TestExecutor(object):
             status = e.status
         else:
             status = "ERROR"
-        message = unicode(getattr(e, "message", ""))
+        message = str(getattr(e, "message", ""))
         if message:
             message += "\n"
         message += traceback.format_exc(e)

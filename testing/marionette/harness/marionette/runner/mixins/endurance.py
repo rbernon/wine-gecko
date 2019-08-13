@@ -76,8 +76,8 @@ class EnduranceTestCaseMixin(object):
             self.marionette.log("%s iteration %d of %d" % (self.test_method.__name__, count, self.iterations))
             # Print to console so can see what iteration we're on while test is running
             if self.iteration == 1:
-                print "\n"
-            print "Iteration %d of %d..." % (count, self.iterations)
+                print("\n")
+            print("Iteration %d of %d..." % (count, self.iterations))
             sys.stdout.flush()
 
             for function in self.pre_test_functions:
@@ -97,14 +97,14 @@ class EnduranceTestCaseMixin(object):
 
     def checkpoint(self):
         # Console output so know what's happening if watching console
-        print "Checkpoint..."
+        print("Checkpoint...")
         sys.stdout.flush()
         self.cur_time = time.strftime("%Y%m%d%H%M%S", time.localtime())
         # If first checkpoint, create the file if it doesn't exist already
         if self.iteration in (0, self.checkpoint_interval):
             self.checkpoint_path = "checkpoints"
             if not os.path.exists(self.checkpoint_path):
-                os.makedirs(self.checkpoint_path, 0755)
+                os.makedirs(self.checkpoint_path, 0o755)
             self.log_name = "%s/checkpoint_%s_%s.log" % (self.checkpoint_path, self.test_method.__name__, self.cur_time)
             with open(self.log_name, 'a') as log_file:
                 log_file.write('%s Endurance Test: %s\n' % (self.cur_time, self.test_method.__name__))

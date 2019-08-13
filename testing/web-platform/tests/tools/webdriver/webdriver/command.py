@@ -1,11 +1,11 @@
 """Dispatches requests to remote WebDriver endpoint."""
 
-import exceptions
+from . import exceptions
 
-import httplib
+import http.client
 import json
-import urlparse
-import webelement
+import urllib.parse
+from . import webelement
 
 class CommandExecutor(object):
     """Dispatches requests to remote WebDriver endpoint."""
@@ -20,8 +20,8 @@ class CommandExecutor(object):
         }
 
     def __init__(self, url, mode='strict'):
-        self._parsed_url = urlparse.urlparse(url)
-        self._conn = httplib.HTTPConnection(self._parsed_url.hostname,
+        self._parsed_url = urllib.parse.urlparse(url)
+        self._conn = http.client.HTTPConnection(self._parsed_url.hostname,
                                             self._parsed_url.port)
         self._mode = mode
 

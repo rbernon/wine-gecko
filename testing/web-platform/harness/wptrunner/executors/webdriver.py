@@ -1,9 +1,9 @@
 import errno
-import httplib
+import http.client
 import json
 import socket
 import time
-import urlparse
+import urllib.parse
 from collections import defaultdict
 
 element_key = "element-6066-11e4-a52e-4f735466cecf"
@@ -146,7 +146,7 @@ def group_exceptions():
     return exceptions
 
 
-_objs = locals().values()
+_objs = list(locals().values())
 _exceptions = group_exceptions()
 del _objs
 del group_exceptions
@@ -185,7 +185,7 @@ class Transport(object):
 
     def connect(self):
         wait_for_port(self.host, self.port, self.port_timeout)
-        self._connection = httplib.HTTPConnection(self.host, self.port)
+        self._connection = http.client.HTTPConnection(self.host, self.port)
 
     def close_connection(self):
         if self._connection:
@@ -193,7 +193,7 @@ class Transport(object):
         self._connection = None
 
     def url(self, suffix):
-        return urlparse.urljoin(self.url_prefix, suffix)
+        return urllib.parse.urljoin(self.url_prefix, suffix)
 
     def send(self, method, url, body=None, headers=None, key=None):
         if not self._connection:
@@ -205,7 +205,7 @@ class Transport(object):
         if isinstance(body, dict):
             body = json.dumps(body)
 
-        if isinstance(body, unicode):
+        if isinstance(body, str):
             body = body.encode("utf-8")
 
         if headers is None:
@@ -308,7 +308,8 @@ class Window(object):
 
     @size.setter
     @command
-    def size(self, (height, width)):
+    def size(self, xxx_todo_changeme):
+        (height, width) = xxx_todo_changeme
         body = {"width": width,
                 "height": height}
 
@@ -355,7 +356,7 @@ class Cookies(object):
         cookie = {"name": name,
                   "value": None}
 
-        if isinstance(name, (str, unicode)):
+        if isinstance(name, str):
             cookie["value"] = value
         elif hasattr(value, "value"):
             cookie["value"] = value.value
@@ -413,7 +414,7 @@ class Session(object):
             raise Exception(resp)
 
     def send_command(self, method, url, body=None, key=None):
-        url = urlparse.urljoin("session/%s/" % self.session_id, url)
+        url = urllib.parse.urljoin("session/%s/" % self.session_id, url)
         return self.transport.send(method, url, body, key=key)
 
     @property
@@ -424,7 +425,7 @@ class Session(object):
     @url.setter
     @command
     def url(self, url):
-        if urlparse.urlsplit(url).netloc is None:
+        if urllib.parse.urlsplit(url).netloc is None:
             return self.url(url)
         body = {"url": url}
         return self.send_command("POST", "url", body)
@@ -592,7 +593,7 @@ class Element(object):
 
     @command
     def send_keys(self, keys):
-        if isinstance(keys, (str, unicode)):
+        if isinstance(keys, str):
             keys = [char for char in keys]
 
         body = {"value": keys}

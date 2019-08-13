@@ -5,13 +5,13 @@
 import os
 import sys
 
-from metadata import MetadataUpdateRunner
-from sync import SyncFromUpstreamRunner
-from tree import GitTree, HgTree, NoVCSTree
+from .metadata import MetadataUpdateRunner
+from .sync import SyncFromUpstreamRunner
+from .tree import GitTree, HgTree, NoVCSTree
 
 from .. import environment as env
-from base import Step, StepRunner, exit_clean, exit_unclean
-from state import State
+from .base import Step, StepRunner, exit_clean, exit_unclean
+from .state import State
 
 def setup_paths(sync_path):
     sys.path.insert(0, os.path.abspath(sync_path))

@@ -27,11 +27,11 @@ def print_test_dirs(topsrcdir, manifest_file):
         dirs.add(d)
     for path in dirs:
         path = path.replace('\\', '/')
-        print path
+        print(path)
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:
-        print >>sys.stderr, "Usage: %s topsrcdir manifest.ini" % sys.argv[0]
+        print("Usage: %s topsrcdir manifest.ini" % sys.argv[0], file=sys.stderr)
         sys.exit(1)
 
     print_test_dirs(sys.argv[1], sys.argv[2])

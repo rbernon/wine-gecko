@@ -90,9 +90,9 @@ def _DoRemapping(element, map):
     if not callable(map):
       map = map.get # Assume it's a dict, otherwise a callable to do the remap.
     if isinstance(element, list) or isinstance(element, tuple):
-      element = filter(None, [map(elem) for elem in element])
+      element = [_f for _f in [list(map(elem)) for elem in element] if _f]
     else:
-      element = map(element)
+      element = list(map(element))
   return element
 
 
@@ -157,7 +157,7 @@ class MsvsSettings(object):
     configs = spec['configurations']
     for field, default in supported_fields:
       setattr(self, field, {})
-      for configname, config in configs.iteritems():
+      for configname, config in configs.items():
         getattr(self, field)[configname] = config.get(field, default())
 
     self.msvs_cygwin_dirs = spec.get('msvs_cygwin_dirs', ['.'])
@@ -304,7 +304,7 @@ class MsvsSettings(object):
     cl('ExceptionHandling', map={'1': 'sc','2': 'a'}, prefix='/EH')
     cl('AdditionalOptions', prefix='')
     # ninja handles parallelism by itself, don't have the compiler do it too.
-    cflags = filter(lambda x: not x.startswith('/MP'), cflags)
+    cflags = [x for x in cflags if not x.startswith('/MP')]
     return cflags
 
   def GetPrecompiledHeader(self, config, gyp_to_build_path):
@@ -410,8 +410,7 @@ class MsvsSettings(object):
 
     # If the base address is not specifically controlled, DYNAMICBASE should
     # be on by default.
-    base_flags = filter(lambda x: 'DYNAMICBASE' in x or x == '/FIXED',
-                        ldflags)
+    base_flags = [x for x in ldflags if 'DYNAMICBASE' in x or x == '/FIXED']
     if not base_flags:
       ldflags.append('/DYNAMICBASE')
 
@@ -419,10 +418,10 @@ class MsvsSettings(object):
     # documentation that says this only defaults to on when the subsystem is
     # Vista or greater (which applies to the linker), the IDE defaults it on
     # unless it's explicitly off.
-    if not filter(lambda x: 'NXCOMPAT' in x, ldflags):
+    if not [x for x in ldflags if 'NXCOMPAT' in x]:
       ldflags.append('/NXCOMPAT')
 
-    have_def_file = filter(lambda x: x.startswith('/DEF:'), ldflags)
+    have_def_file = [x for x in ldflags if x.startswith('/DEF:')]
     manifest_flags, intermediate_manifest_file = self._GetLdManifestFlags(
         config, manifest_base_name, is_executable and not have_def_file)
     ldflags.extend(manifest_flags)
@@ -456,7 +455,7 @@ class MsvsSettings(object):
                           default=[])
     if (self._Setting(
         ('VCManifestTool', 'EmbedManifest'), config, default='') == 'true'):
-      print 'gyp/msvs_emulation.py: "EmbedManifest: true" not yet supported.'
+      print('gyp/msvs_emulation.py: "EmbedManifest: true" not yet supported.')
     if isinstance(files, str):
       files = files.split(';')
     return [os.path.normpath(
@@ -617,7 +616,7 @@ def ExpandMacros(string, expansions):
   """Expand $(Variable) per expansions dict. See MsvsSettings.GetVSMacroEnv
   for the canonical way to retrieve a suitable dict."""
   if '$' in string:
-    for old, new in expansions.iteritems():
+    for old, new in expansions.items():
       assert '$(' not in new, new
       string = string.replace(old, new)
   return string
@@ -661,7 +660,7 @@ def _FormatAsEnvironmentBlock(envvar_dict):
   CreateProcess documentation for more details."""
   block = ''
   nul = '\0'
-  for key, value in envvar_dict.iteritems():
+  for key, value in envvar_dict.items():
     block += key + '=' + value + nul
   block += nul
   return block

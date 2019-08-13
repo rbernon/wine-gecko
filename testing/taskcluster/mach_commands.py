@@ -4,7 +4,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import
+
 
 from collections import defaultdict
 import os
@@ -138,7 +138,7 @@ def remove_caches_from_task(task):
     ]
     try:
         caches = task["task"]["payload"]["cache"]
-        for cache in caches.keys():
+        for cache in list(caches.keys()):
             if not any(pat.match(cache) for pat in whitelist):
                 caches.pop(cache)
     except KeyError:
@@ -211,7 +211,7 @@ class DecisionTask(object):
 
         templates = Templates(ROOT)
         # Template parameters used when expanding the graph
-        parameters = dict(gaia_info().items() + {
+        parameters = dict(list(gaia_info().items()) + list({
             'source': 'http://todo.com/soon',
             'project': params['project'],
             'comment': params['comment'],
@@ -222,9 +222,9 @@ class DecisionTask(object):
             'as_slugid': SlugidJar(),
             'from_now': json_time_from_now,
             'now': current_json_time()
-        }.items())
+        }.items()))
         task = templates.load(params['task'], parameters)
-        print(json.dumps(task, indent=4))
+        print((json.dumps(task, indent=4)))
 
 @CommandProvider
 class Graph(object):
@@ -336,7 +336,7 @@ class Graph(object):
 
         # Template parameters used when expanding the graph
         seen_images = {}
-        parameters = dict(gaia_info().items() + {
+        parameters = dict(list(gaia_info().items()) + list({
             'index': 'index',
             'project': project,
             'pushlog_id': params.get('pushlog_id', 0),
@@ -357,7 +357,7 @@ class Graph(object):
             'from_now': json_time_from_now,
             'now': current_json_time(),
             'revision_hash': params['revision_hash']
-        }.items())
+        }.items()))
 
         treeherder_route = '{}.{}'.format(
             params['project'],
@@ -424,7 +424,7 @@ class Graph(object):
 
             return True
 
-        job_graph = filter(should_run, job_graph)
+        job_graph = list(filter(should_run, job_graph))
 
         all_routes = {}
 
@@ -487,7 +487,7 @@ class Graph(object):
 
             graph['scopes'].add(define_task)
             graph['scopes'] |= set(build_task['task'].get('scopes', []))
-            route_scopes = map(lambda route: 'queue:route:' + route, build_task['task'].get('routes', []))
+            route_scopes = ['queue:route:' + route for route in build_task['task'].get('routes', [])]
             graph['scopes'] |= set(route_scopes)
 
             # Treeherder symbol configuration for the graph required for each
@@ -505,7 +505,7 @@ class Graph(object):
             if 'collection' not in build_treeherder_config:
                 build_treeherder_config['collection'] = { 'opt': True }
 
-            if len(build_treeherder_config['collection'].keys()) != 1:
+            if len(list(build_treeherder_config['collection'].keys())) != 1:
                 message = '({}), extra.treeherder.collection must contain one type'
                 raise ValueError(message.fomrat(build['task']))
 
@@ -597,7 +597,7 @@ class Graph(object):
             tIDs = defaultdict(list)
 
             def print_task(task, indent=0):
-                print('{}- {}'.format(' ' * indent, task['task']['metadata']['name']))
+                print(('{}- {}'.format(' ' * indent, task['task']['metadata']['name'])))
 
                 for child in tIDs[task['taskId']]:
                     print_task(child, indent=indent+2)
@@ -619,7 +619,7 @@ class Graph(object):
             graph.pop('scopes', None)
             graph.pop('metadata', None)
 
-        print(json.dumps(graph, indent=4, sort_keys=True))
+        print((json.dumps(graph, indent=4, sort_keys=True)))
 
 @CommandProvider
 class CIBuild(object):
@@ -676,7 +676,7 @@ class CIBuild(object):
             json_time_from_now,
             current_json_time,
         )
-        build_parameters = dict(gaia_info().items() + {
+        build_parameters = dict(list(gaia_info().items()) + list({
             'docker_image': docker_image,
             'owner': params['owner'],
             'level': params['level'],
@@ -691,7 +691,7 @@ class CIBuild(object):
             'year': pushdate[0:4],
             'month': pushdate[4:6],
             'day': pushdate[6:8],
-        }.items())
+        }.items()))
 
         try:
             build_task = templates.load(params['build_task'], build_parameters)
@@ -705,4 +705,4 @@ class CIBuild(object):
 
         taskcluster_graph.build_task.validate(build_task)
 
-        print(json.dumps(build_task['task'], indent=4))
+        print((json.dumps(build_task['task'], indent=4)))

@@ -48,7 +48,7 @@ class TestSetWindowSize(MarionetteTestCase):
         height = self.max_height - 100
         self.marionette.set_window_size(width, height)
         # invalid size (cannot maximize)
-        with self.assertRaisesRegexp(MarionetteException, "Invalid requested size"):
+        with self.assertRaisesRegex(MarionetteException, "Invalid requested size"):
             self.marionette.set_window_size(self.max_width, self.max_height)
         size = self.marionette.window_size
         self.assertEqual(size['width'], width, "Window width should not have changed")

@@ -28,7 +28,7 @@ class XcodeSettings(object):
     # the same for all configs are implicitly per-target settings.
     self.xcode_settings = {}
     configs = spec['configurations']
-    for configname, config in configs.iteritems():
+    for configname, config in configs.items():
       self.xcode_settings[configname] = config.get('xcode_settings', {})
 
     # This is only non-None temporarily during the execution of some methods.
@@ -52,7 +52,7 @@ class XcodeSettings(object):
 
   def _WarnUnimplemented(self, test_key):
     if test_key in self._Settings():
-      print 'Warning: Ignoring not yet implemented key "%s".' % test_key
+      print('Warning: Ignoring not yet implemented key "%s".' % test_key)
 
   def _IsBundle(self):
     return int(self.spec.get('mac_bundle', 0)) != 0
@@ -230,7 +230,7 @@ class XcodeSettings(object):
                              stderr=subprocess.STDOUT)
       out, err = job.communicate()
       if job.returncode != 0:
-        print out
+        print(out)
         raise Exception('Error %d running xcode-select' % job.returncode)
       # The Developer folder moved in Xcode 4.3.
       xcode43_sdk_path = os.path.join(
@@ -588,7 +588,7 @@ class XcodeSettings(object):
         result = dict(self.xcode_settings[configname])
         first_pass = False
       else:
-        for key, value in self.xcode_settings[configname].iteritems():
+        for key, value in self.xcode_settings[configname].items():
           if key not in result:
             continue
           elif result[key] != value:
@@ -800,7 +800,7 @@ def MergeGlobalXcodeSettingsToSpec(global_dict, spec):
   # that amounts to merging in the global xcode_settings into each local
   # xcode_settings dict.
   global_xcode_settings = global_dict.get('xcode_settings', {})
-  for config in spec['configurations'].values():
+  for config in list(spec['configurations'].values()):
     if 'xcode_settings' in config:
       new_settings = global_xcode_settings.copy()
       new_settings.update(config['xcode_settings'])
@@ -1038,10 +1038,10 @@ def _TopologicallySortedEnvVarKeys(env):
     # Topologically sort, and then reverse, because we used an edge definition
     # that's inverted from the expected result of this function (see comment
     # above).
-    order = gyp.common.TopologicallySorted(env.keys(), GetEdges)
+    order = gyp.common.TopologicallySorted(list(env.keys()), GetEdges)
     order.reverse()
     return order
-  except gyp.common.CycleError, e:
+  except gyp.common.CycleError as e:
     raise Exception(
         'Xcode environment variables are cyclically dependent: ' + str(e.nodes))
 

@@ -52,7 +52,7 @@ class B2GXPCShellRemote(XPCShellRemote):
         XPCShellRemote.setupUtilities(self)
 
     def clean(self):
-        print >>sys.stderr, "\nCleaning files from previous run.."
+        print("\nCleaning files from previous run..", file=sys.stderr)
         self.device.removeDir(self.options.remoteTestRoot)
 
     # Overriden
@@ -64,7 +64,7 @@ class B2GXPCShellRemote(XPCShellRemote):
             for filename in files:
                 rel_path = os.path.relpath(os.path.join(root, filename), self.xpcDir)
                 test_file = os.path.join(self.remoteScriptsDir, rel_path)
-                print 'pushing %s' % test_file
+                print('pushing %s' % test_file)
                 self.device.pushFile(os.path.join(root, filename), test_file, retryLimit=10)
 
     # Overridden
@@ -142,7 +142,7 @@ def run_remote_xpcshell(parser, options, log):
                               **vars(options)):
             sys.exit(1)
     except:
-        print "Automation Error: Exception caught while running tests"
+        print("Automation Error: Exception caught while running tests")
         traceback.print_exc()
         sys.exit(1)
 

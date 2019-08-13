@@ -9,7 +9,7 @@ import os
 import posixpath
 import re
 import struct
-import StringIO
+import io
 import zlib
 
 from functools import wraps
@@ -25,8 +25,8 @@ class DMError(Exception):
         return self.msg
 
 def abstractmethod(method):
-    line = method.func_code.co_firstlineno
-    filename = method.func_code.co_filename
+    line = method.__code__.co_firstlineno
+    filename = method.__code__.co_filename
     @wraps(method)
     def not_implemented(*args, **kwargs):
         raise NotImplementedError('Abstract method %s at File "%s", line %s '
@@ -252,7 +252,7 @@ class DeviceManager(object):
                 if (parts[1] == ""):
                     remoteRoot = remoteDirname
                 remoteName = remoteRoot + '/' + f
-                if (self.validateFile(remoteName, os.path.join(root, f)) <> True):
+                if (self.validateFile(remoteName, os.path.join(root, f)) != True):
                         return False
         return True
 
@@ -397,7 +397,7 @@ class DeviceManager(object):
         :param root: Specifies whether command requires root privileges
         :raises: DMError
         """
-        buf = StringIO.StringIO()
+        buf = io.StringIO()
         retval = self.shell(cmd, buf, env=env, cwd=cwd, timeout=timeout, root=root)
         output = str(buf.getvalue()[0:-1]).rstrip()
         buf.close()
@@ -419,13 +419,13 @@ class DeviceManager(object):
         Information on process is in tuple format: (pid, process path, user)
         If a process with the specified name does not exist this function will return None.
         """
-        if not isinstance(processName, basestring):
+        if not isinstance(processName, str):
             raise TypeError("Process name %s is not a string" % processName)
 
         processInfo = None
 
         #filter out extra spaces
-        parts = filter(lambda x: x != '', processName.split(' '))
+        parts = [x for x in processName.split(' ') if x != '']
         processName = ' '.join(parts)
 
         #filter out the quoted env string if it exists

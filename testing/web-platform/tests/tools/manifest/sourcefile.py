@@ -1,5 +1,5 @@
 import os
-import urlparse
+import urllib.parse
 from fnmatch import fnmatch
 try:
     from xml.etree import cElementTree as ElementTree
@@ -8,9 +8,9 @@ except ImportError:
 
 import html5lib
 
-import vcs
-from item import Stub, ManualTest, WebdriverSpecTest, RefTest, TestharnessTest
-from utils import rel_path_to_url, is_blacklisted, ContextManagerStringIO, cached_property
+from . import vcs
+from .item import Stub, ManualTest, WebdriverSpecTest, RefTest, TestharnessTest
+from .utils import rel_path_to_url, is_blacklisted, ContextManagerStringIO, cached_property
 
 wd_pattern = "*.py"
 
@@ -52,7 +52,7 @@ class SourceFile(object):
 
         if "__cached_properties__" in rv:
             cached_properties = rv["__cached_properties__"]
-            for key in rv.keys():
+            for key in list(rv.keys()):
                 if key in cached_properties:
                     del rv[key]
             del rv["__cached_properties__"]
@@ -267,7 +267,7 @@ class SourceFile(object):
         rel_map = {"match": "==", "mismatch": "!="}
         for item in self.reftest_nodes:
             if "href" in item.attrib:
-                ref_url = urlparse.urljoin(self.url, item.attrib["href"])
+                ref_url = urllib.parse.urljoin(self.url, item.attrib["href"])
                 ref_type = rel_map[item.attrib["rel"]]
                 rv.append((ref_url, ref_type))
         return rv

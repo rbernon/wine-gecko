@@ -13,12 +13,12 @@ import tempfile
 import types
 import uuid
 
-from addons import AddonManager
+from .addons import AddonManager
 import mozfile
-from permissions import Permissions
-from prefs import Preferences
+from .permissions import Permissions
+from .prefs import Preferences
 from shutil import copytree
-from webapps import WebappCollection
+from .webapps import WebappCollection
 
 
 class Profile(object):
@@ -67,7 +67,7 @@ class Profile(object):
         if preferences:
             if isinstance(preferences, dict):
                 # unordered
-                preferences = preferences.items()
+                preferences = list(preferences.items())
 
             # sanity check
             assert not [i for i in preferences if len(i) != 2]
@@ -221,7 +221,7 @@ class Profile(object):
 
         # this is a dict sometimes, convert
         if isinstance(preferences, dict):
-            preferences = preferences.items()
+            preferences = list(preferences.items())
 
         # add new prefs to preserve them during reset
         for new_pref in preferences:
@@ -246,7 +246,7 @@ class Profile(object):
             returns the last index of an item;
             this should actually be part of python code but it isn't
             """
-            for index in reversed(range(len(_list))):
+            for index in reversed(list(range(len(_list)))):
                 if _list[index] == value:
                     return index
         s = last_index(lines, self.delimeters[0])

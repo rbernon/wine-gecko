@@ -51,7 +51,7 @@ class TestElementsChrome(MarionetteTestCase):
     def test_tag_name(self):
         el = self.marionette.execute_script("return window.document.getElementsByTagName('vbox')[0];")
         found_el = self.marionette.find_element(By.TAG_NAME, "vbox")
-        self.assertEquals('vbox', found_el.tag_name)
+        self.assertEqual('vbox', found_el.tag_name)
         self.assertEqual(HTMLElement, type(found_el))
         self.assertEqual(el, found_el)
 

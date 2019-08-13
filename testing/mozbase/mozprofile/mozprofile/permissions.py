@@ -15,7 +15,7 @@ __all__ = ['MissingPrimaryLocationError', 'MultiplePrimaryLocationsError',
 import codecs
 import os
 import sqlite3
-import urlparse
+import urllib.parse
 
 # http://hg.mozilla.org/mozilla-central/file/b871dfb2186f/build/automation.py.in#l28
 DEFAULT_PORTS = { 'http': '8888',
@@ -135,7 +135,7 @@ class ServerLocations(object):
             self.add_callback([location])
 
     def add_host(self, host, port='80', scheme='http', options='privileged'):
-        if isinstance(options, basestring):
+        if isinstance(options, str):
             options = options.split(',')
         self.add(Location(scheme, host, port, options))
 
@@ -177,7 +177,7 @@ class ServerLocations(object):
             # parse the server url
             if '://' not in server:
                 server = 'http://' + server
-            scheme, netloc, path, query, fragment = urlparse.urlsplit(server)
+            scheme, netloc, path, query, fragment = urllib.parse.urlsplit(server)
             # get the host and port
             try:
                 host, port = netloc.rsplit(':', 1)
@@ -188,7 +188,7 @@ class ServerLocations(object):
             try:
                 location = Location(scheme, host, port, options)
                 self.add(location, suppress_callback=True)
-            except LocationError, e:
+            except LocationError as e:
                 raise LocationsSyntaxError(lineno, e)
 
             new_locations.append(location)
@@ -264,7 +264,7 @@ class Permissions(object):
         for location in locations:
             # set the permissions
             permissions = { 'allowXULXBL': 'noxul' not in location.options }
-            for perm, allow in permissions.iteritems():
+            for perm, allow in permissions.items():
                 if allow:
                     permission_type = 1
                 else:

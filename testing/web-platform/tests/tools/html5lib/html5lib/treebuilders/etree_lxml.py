@@ -9,7 +9,7 @@ Docypes with no name
 When any of these things occur, we emit a DataLossWarning
 """
 
-from __future__ import absolute_import, division, unicode_literals
+
 
 import warnings
 import re
@@ -105,7 +105,7 @@ def testSerializer(element):
 
             if hasattr(element, "attrib"):
                 attributes = []
-                for name, value in element.attrib.items():
+                for name, value in list(element.attrib.items()):
                     nsmatch = tag_regexp.match(name)
                     if nsmatch is not None:
                         ns, name = nsmatch.groups()
@@ -158,7 +158,7 @@ def tostring(element):
                 rv.append("<%s>" % (element.tag,))
             else:
                 attr = " ".join(["%s=\"%s\"" % (name, value)
-                                 for name, value in element.attrib.items()])
+                                 for name, value in list(element.attrib.items())])
                 rv.append("<%s %s>" % (element.tag, attr))
             if element.text:
                 rv.append(element.text)
@@ -196,7 +196,7 @@ class TreeBuilder(_base.TreeBuilder):
             def __init__(self, element, value={}):
                 self._element = element
                 dict.__init__(self, value)
-                for key, value in self.items():
+                for key, value in list(self.items()):
                     if isinstance(key, tuple):
                         name = "{%s}%s" % (key[2], infosetFilter.coerceAttribute(key[1]))
                     else:

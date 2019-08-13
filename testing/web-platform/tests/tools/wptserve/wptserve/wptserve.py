@@ -2,7 +2,7 @@
 import argparse
 import os
 
-import server
+from . import server
 
 def abs_path(path):
     return os.path.abspath(path)

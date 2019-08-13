@@ -172,7 +172,7 @@ class PushAPK(BaseScript, GooglePlayMixin, VirtualenvMixin):
             editId=edit_id,
             track=self.config['track'],
             packageName=self.config['package_name'],
-            body={u'versionCodes': versions}).execute()
+            body={'versionCodes': versions}).execute()
         self.log('Application "%s" set to track "%s" for versions %s' %
                  (self.config['package_name'], self.config['track'], versions))
 

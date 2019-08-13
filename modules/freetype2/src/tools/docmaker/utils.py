@@ -33,7 +33,7 @@ output_dir = None
 # sorted before `fftt__xX'.
 #
 def  index_key( s ):
-    return string.join( itertools.chain( *zip( s.lower(), s ) ) )
+    return string.join( itertools.chain( *list(zip( s.lower(), s )) ) )
 
 
 # Sort `input_list', placing the elements of `order_list' in front.
@@ -120,7 +120,7 @@ def  make_file_list( args = None ):
         file_list = None
     else:
         # now filter the file list to remove non-existing ones
-        file_list = filter( file_exists, file_list )
+        file_list = list(filter( file_exists, file_list ))
 
     return file_list
 

@@ -7,7 +7,7 @@ import sys, imp
 for name, source in module_sources:
     source = source.decode("base64").decode("zlib")
     mod = imp.new_module(name)
-    exec source in mod.__dict__
+    exec(source, mod.__dict__)
     sys.modules[name] = mod
 
 ### Original script follows ###
@@ -106,4 +106,4 @@ if __name__ == '__main__':
                              bundles=options.bundles,
                              autoPurge=options.auto_purge)
 
-    print "Got revision %s" % got_revision
+    print("Got revision %s" % got_revision)

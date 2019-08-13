@@ -4,7 +4,7 @@ def main(request, response):
     fallback_url = ""
     if mode == "FALLBACK":
         fallback_url = "fallback-namespace/"
-    manifest = u"""CACHE MANIFEST
+    manifest = """CACHE MANIFEST
 
 %s:
 %s stash.py?q=\u00E5&id=%s&action=put

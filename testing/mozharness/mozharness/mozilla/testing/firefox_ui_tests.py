@@ -12,7 +12,7 @@ Author: Armen Zambrano G.
 import copy
 import os
 import sys
-import urlparse
+import urllib.parse
 
 from mozharness.base.log import FATAL, WARNING
 from mozharness.base.python import PostScriptRun, PreScriptAction
@@ -264,7 +264,7 @@ class FirefoxUITests(TestingMixin, VCSToolsScript):
             dirs = self.query_abs_dirs()
             manifest_path = os.path.join(dirs['abs_work_dir'], 'releng.manifest')
             try:
-                self.download_file(urlparse.urljoin(url_base, tooltool_manifest),
+                self.download_file(urllib.parse.urljoin(url_base, tooltool_manifest),
                                    manifest_path)
             except Exception as e:
                 self.fatal('Download of tooltool manifest file failed: %s' % e.message)
@@ -378,7 +378,7 @@ class FirefoxUITests(TestingMixin, VCSToolsScript):
         def _filter_entries(namelist):
             """Filter entries of the archive based on the specified list of extract_dirs."""
             filter_partial = functools.partial(fnmatch.filter, namelist)
-            for entry in itertools.chain(*map(filter_partial, target_unzip_dirs or ['*'])):
+            for entry in itertools.chain(*list(map(filter_partial, target_unzip_dirs or ['*']))):
                 yield entry
 
         dirs = self.query_abs_dirs()

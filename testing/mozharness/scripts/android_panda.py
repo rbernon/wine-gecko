@@ -187,7 +187,7 @@ class PandaTest(TestingMixin, MercurialScript, BlobUploadMixin, MozpoolMixin, Bu
         try:
             self.info("*** Touching the shutdown file **")
             open(shutdown_file, 'w').close()
-        except Exception, e:
+        except Exception as e:
             self.warning("We failed to create the shutdown file: str(%s)" % str(e))
 
     def request_device(self):
@@ -283,7 +283,7 @@ class PandaTest(TestingMixin, MercurialScript, BlobUploadMixin, MozpoolMixin, Bu
                 env['MINIDUMP_SAVE_PATH'] = self.query_abs_dirs()['abs_blob_upload_dir']
 
                 env = self.query_env(partial_env=env, log_level=INFO)
-                if env.has_key('PYTHONPATH'):
+                if 'PYTHONPATH' in env:
                     del env['PYTHONPATH']
 
                 parser = self.get_test_output_parser(suite_category,
@@ -306,7 +306,7 @@ class PandaTest(TestingMixin, MercurialScript, BlobUploadMixin, MozpoolMixin, Bu
                         for l in lines:
                             self.info(l)
                         self.info("*** END LOGCAT ***")
-                    except Exception, e:
+                    except Exception as e:
                         self.warning("We failed to run logcat: str(%s)" % str(e))
 
                 parser.append_tinderboxprint_line(suite)
@@ -335,7 +335,7 @@ class PandaTest(TestingMixin, MercurialScript, BlobUploadMixin, MozpoolMixin, Bu
                 # suites gets a dict of everything from all_suites where a key
                 # is also in specified_suites
                 suites = dict((key, all_suites.get(key)) for key in
-                              specified_suites if key in all_suites.keys())
+                              specified_suites if key in list(all_suites.keys()))
         else:
             if c.get('run_all_suites'):  # needed if you dont specify any suites
                 suites = all_suites
@@ -433,7 +433,7 @@ class PandaTest(TestingMixin, MercurialScript, BlobUploadMixin, MozpoolMixin, Bu
         dirs['shutdown_dir'] = abs_dirs['abs_work_dir'].rsplit("/", 2)[0]
         dirs['abs_cppunittest_dir'] = os.path.join(
             dirs['abs_test_install_dir'], 'cppunittest')
-        for key in dirs.keys():
+        for key in list(dirs.keys()):
             if key not in abs_dirs:
                 abs_dirs[key] = dirs[key]
         self.abs_dirs = abs_dirs

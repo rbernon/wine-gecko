@@ -47,19 +47,19 @@ class TestAnonymousContent(MarionetteTestCase):
 
     def test_find_anonymous_element_by_attribute(self):
         el = Wait(self.marionette).until(element_present(By.ID, "dia"))
-        self.assertEquals(HTMLElement, type(el.find_element(By.ANON_ATTRIBUTE, {"anonid": "buttons"})))
-        self.assertEquals(1, len(el.find_elements(By.ANON_ATTRIBUTE, {"anonid": "buttons"})))
+        self.assertEqual(HTMLElement, type(el.find_element(By.ANON_ATTRIBUTE, {"anonid": "buttons"})))
+        self.assertEqual(1, len(el.find_elements(By.ANON_ATTRIBUTE, {"anonid": "buttons"})))
 
         with self.assertRaises(NoSuchElementException):
             el.find_element(By.ANON_ATTRIBUTE, {"anonid": "nonexistent"})
-        self.assertEquals([], el.find_elements(By.ANON_ATTRIBUTE, {"anonid": "nonexistent"}))
+        self.assertEqual([], el.find_elements(By.ANON_ATTRIBUTE, {"anonid": "nonexistent"}))
 
     def test_find_anonymous_children(self):
         el = Wait(self.marionette).until(element_present(By.ID, "dia"))
-        self.assertEquals(HTMLElement, type(el.find_element(By.ANON, None)))
-        self.assertEquals(2, len(el.find_elements(By.ANON, None)))
+        self.assertEqual(HTMLElement, type(el.find_element(By.ANON, None)))
+        self.assertEqual(2, len(el.find_elements(By.ANON, None)))
 
         el = self.marionette.find_element(By.ID, "framebox")
         with self.assertRaises(NoSuchElementException):
             el.find_element(By.ANON, None)
-        self.assertEquals([], el.find_elements(By.ANON, None))
+        self.assertEqual([], el.find_elements(By.ANON, None))

@@ -225,13 +225,13 @@ class TestGypBase(TestCommon.TestCommon):
     that expect exact output from the command (make, scons) can
     just set stdout= when they call the run_build() method.
     """
-    print "Build is not up-to-date:"
-    print self.banner('STDOUT ')
-    print self.stdout()
+    print("Build is not up-to-date:")
+    print(self.banner('STDOUT '))
+    print(self.stdout())
     stderr = self.stderr()
     if stderr:
-      print self.banner('STDERR ')
-      print stderr
+      print(self.banner('STDERR '))
+      print(stderr)
 
   def run_gyp(self, gyp_file, *args, **kw):
     """
@@ -259,7 +259,7 @@ class TestGypBase(TestCommon.TestCommon):
     the tool-specific subclasses or clutter the tests themselves
     with platform-specific code.
     """
-    if kw.has_key('SYMROOT'):
+    if 'SYMROOT' in kw:
       del kw['SYMROOT']
     super(TestGypBase, self).run(*args, **kw)
 
@@ -538,7 +538,7 @@ class TestGypMake(TestGypBase):
     # Makefile.gyp_filename), so use that if there is no Makefile.
     chdir = kw.get('chdir', '')
     if not os.path.exists(os.path.join(chdir, 'Makefile')):
-      print "NO Makefile in " + os.path.join(chdir, 'Makefile')
+      print("NO Makefile in " + os.path.join(chdir, 'Makefile'))
       arguments.insert(0, '-f')
       arguments.insert(1, os.path.splitext(gyp_file)[0] + '.Makefile')
     kw['arguments'] = arguments
@@ -645,11 +645,11 @@ def FindVisualStudioInstallation():
         uses_msbuild = msvs_version >= '2010'
         return build_tool, uses_msbuild
     else:
-      print ('Warning: Environment variable GYP_MSVS_VERSION specifies "%s" '
-              'but corresponding "%s" was not found.' % (msvs_version, path))
+      print(('Warning: Environment variable GYP_MSVS_VERSION specifies "%s" '
+              'but corresponding "%s" was not found.' % (msvs_version, path)))
   if build_tool:
     # We found 'devenv' on the path, use that and try to guess the version.
-    for version, path in possible_paths.iteritems():
+    for version, path in possible_paths.items():
       if build_tool.find(path) >= 0:
         uses_msbuild = version >= '2010'
         return build_tool, uses_msbuild
@@ -667,7 +667,7 @@ def FindVisualStudioInstallation():
         build_tool = bt
         uses_msbuild = msvs_version >= '2010'
         return build_tool, uses_msbuild
-  print 'Error: could not find devenv'
+  print('Error: could not find devenv')
   sys.exit(1)
 
 class TestGypOnMSToolchain(TestGypBase):
@@ -809,9 +809,9 @@ class TestGypMSVS(TestGypOnMSToolchain):
     Verifies that a build of the specified Visual Studio target is up to date.
 
     Beware that VS2010 will behave strangely if you build under
-    C:\USERS\yourname\AppData\Local. It will cause needless work.  The ouptut
+    C:\\USERS\yourname\AppData\Local. It will cause needless work.  The ouptut
     will be "1 succeeded and 0 up to date".  MSBuild tracing reveals that:
-    "Project 'C:\Users\...\AppData\Local\...vcxproj' not up to date because
+    "Project 'C:\\Users\...\AppData\Local\...vcxproj' not up to date because
     'C:\PROGRAM FILES (X86)\MICROSOFT VISUAL STUDIO 10.0\VC\BIN\1033\CLUI.DLL'
     was modified at 02/21/2011 17:03:30, which is newer than '' which was
     modified at 01/01/0001 00:00:00.
@@ -1046,4 +1046,4 @@ def TestGyp(*args, **kw):
   for format_class in format_class_list:
     if format == format_class.format:
       return format_class(*args, **kw)
-  raise Exception, "unknown format %r" % format
+  raise Exception("unknown format %r" % format)

@@ -237,7 +237,7 @@ def playback_started(video):
     try:
         return video.current_time > video._start_time
     except Exception as e:
-        print ('Got exception %s' % e)
+        print(('Got exception %s' % e))
         return False
 
 

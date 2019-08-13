@@ -4,13 +4,13 @@
 # http://creativecommons.org/publicdomain/zero/1.0/
 #
 
-from __future__ import print_function
+
 from modules.scm import detect_scm_system
 from contextlib import closing
 import checkmozstyle
 import os
 import modules.cpplint as cpplint
-import StringIO
+import io
 
 TESTS = [
     # Empty patch
@@ -56,7 +56,7 @@ def main():
         with open(test["patch"]) as fh:
             patch = fh.read()
 
-        with closing(StringIO.StringIO()) as output:
+        with closing(io.StringIO()) as output:
             cpplint.set_stream(output)
             checkmozstyle.process_patch(patch, cwd, cwd, scm)
             result = output.getvalue()

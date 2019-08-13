@@ -163,12 +163,12 @@ class RemoteFennecRunner(mozrunner.Runner):
             else:
                 self._intent_name = self._INTENT_PREFIX + intents[0]
 
-        print "Launching mobile application with intent name " + self._intent_name
+        print("Launching mobile application with intent name " + self._intent_name)
 
         # First try to kill firefox if it is already running
         pid = self.getProcessPID(self._intent_name)
         if pid != None:
-            print "Killing running Firefox instance ..."
+            print("Killing running Firefox instance ...")
             subprocess.call([self._adb_path, "shell",
                              "am force-stop " + self._intent_name])
             time.sleep(7)
@@ -182,7 +182,7 @@ class RemoteFennecRunner(mozrunner.Runner):
             #                    " instance. Please close it manually before " +
             #                    "executing cfx.")
 
-        print "Pushing the addon to your device"
+        print("Pushing the addon to your device")
 
         # Create a clean empty profile on the sd card
         subprocess.call([self._adb_path, "shell", "rm -r " + FENNEC_REMOTE_PATH])
@@ -370,7 +370,7 @@ def set_overloaded_modules(env_root, app_type, addon_id, preferences, overloads)
     pref_prefix = "extensions.modules." + addon_id + ".path"
 
     # Set preferences that will map require prefix to a given path
-    for name, path in overloads.items():
+    for name, path in list(overloads.items()):
         if len(name) == 0:
             prefName = pref_prefix
         else:
@@ -425,11 +425,11 @@ def run_app(harness_root_dir, manifest_rdf, harness_options,
 
     # For now, only allow running on Mobile with --force-mobile argument
     if app_type in ["fennec-on-device"] and not enable_mobile:
-        print """
+        print("""
   WARNING: Firefox Mobile support is still experimental.
   If you would like to run an addon on this platform, use --force-mobile flag:
 
-    cfx --force-mobile"""
+    cfx --force-mobile""")
         return 0
 
     if app_type == "fennec-on-device":
@@ -527,8 +527,8 @@ def run_app(harness_root_dir, manifest_rdf, harness_options,
         if os.path.exists(outfile):
             try:
                 os.remove(outfile)
-            except Exception, e:
-                print "Error Cleaning up: " + str(e)
+            except Exception as e:
+                print("Error Cleaning up: " + str(e))
     atexit.register(maybe_remove_outfile)
     outf = open(outfile, "w")
     popen_kwargs = { 'stdout': outf, 'stderr': outf}
@@ -569,7 +569,7 @@ def run_app(harness_root_dir, manifest_rdf, harness_options,
     #  profile folder)
     if app_type == "fennec-on-device":
         profile_path = profile.profile
-        for name, path in overloads.items():
+        for name, path in list(overloads.items()):
             shutil.copytree(path, \
                 os.path.join(profile_path, "overloads", name))
 
@@ -583,11 +583,11 @@ def run_app(harness_root_dir, manifest_rdf, harness_options,
 
     if app_type == "fennec-on-device":
         if not enable_mobile:
-            print >>sys.stderr, """
+            print("""
   WARNING: Firefox Mobile support is still experimental.
   If you would like to run an addon on this platform, use --force-mobile flag:
 
-    cfx --force-mobile"""
+    cfx --force-mobile""", file=sys.stderr)
             return 0
 
         # In case of mobile device, we need to get stdio from `adb logcat` cmd:
@@ -620,21 +620,21 @@ def run_app(harness_root_dir, manifest_rdf, harness_options,
                 # All JS Console messages, stdout and stderr.
                 m = CLEANUP_ADB.match(line)
                 if not m:
-                    print line.rstrip()
+                    print(line.rstrip())
                     continue
-                print m.group(3)
+                print(m.group(3))
             else:
                 # Otherwise, display addons messages dispatched through
                 # console.[info, log, debug, warning, error](msg)
                 m = FILTER_ONLY_CONSOLE_FROM_ADB.match(line)
                 if m:
-                    print m.group(2)
+                    print(m.group(2))
 
-        print >>sys.stderr, "Program terminated successfully."
+        print("Program terminated successfully.", file=sys.stderr)
         return 0
 
 
-    print >>sys.stderr, "Using binary at '%s'." % runner.binary
+    print("Using binary at '%s'." % runner.binary, file=sys.stderr)
 
     # Ensure cfx is being used with Firefox 4.0+.
     # TODO: instead of dying when Firefox is < 4, warn when Firefox is outside
@@ -648,28 +648,28 @@ def run_app(harness_root_dir, manifest_rdf, harness_options,
     if not mo:
         # cfx may be used with Thunderbird, SeaMonkey or an exotic Firefox
         # version.
-        print """
+        print("""
   WARNING: cannot determine Firefox version; please ensure you are running
   a Mozilla application equivalent to Firefox 4.0 or greater.
-  """
+  """)
     elif mo.group(1) == "Fennec":
         # For now, only allow running on Mobile with --force-mobile argument
         if not enable_mobile:
-            print """
+            print("""
   WARNING: Firefox Mobile support is still experimental.
   If you would like to run an addon on this platform, use --force-mobile flag:
 
-    cfx --force-mobile"""
+    cfx --force-mobile""")
             return
     else:
         version = mo.group(3)
         if int(version) < 4:
-            print """
+            print("""
   cfx requires Firefox 4 or greater and is unable to find a compatible
   binary. Please install a newer version of Firefox or provide the path to
   your existing compatible version with the --binary flag:
 
-    cfx --binary=PATH_TO_FIREFOX_BINARY"""
+    cfx --binary=PATH_TO_FIREFOX_BINARY""")
             return
 
         # Set the appropriate extensions.checkCompatibility preference to false,
@@ -692,12 +692,12 @@ def run_app(harness_root_dir, manifest_rdf, harness_options,
             # preferences that are ultimately registered in Firefox.
             profile.set_preferences(profile.preferences)
 
-    print >>sys.stderr, "Using profile at '%s'." % profile.profile
+    print("Using profile at '%s'." % profile.profile, file=sys.stderr)
     sys.stderr.flush()
 
     if norun:
-        print "To launch the application, enter the following command:"
-        print " ".join(runner.command) + " " + (" ".join(runner.cmdargs))
+        print("To launch the application, enter the following command:")
+        print(" ".join(runner.command) + " " + (" ".join(runner.cmdargs)))
         return 0
 
     runner.start()
@@ -717,7 +717,7 @@ def run_app(harness_root_dir, manifest_rdf, harness_options,
             time.sleep(0.05)
             for tail in (logfile_tail, outfile_tail):
                 if tail:
-                    new_chars = tail.next()
+                    new_chars = next(tail)
                     if new_chars:
                         last_output_time = time.time()
                         sys.stderr.write(new_chars)
@@ -757,11 +757,11 @@ def run_app(harness_root_dir, manifest_rdf, harness_options,
         if profile:
             profile.cleanup()
 
-    print >>sys.stderr, "Total time: %f seconds" % (time.time() - starttime)
+    print("Total time: %f seconds" % (time.time() - starttime), file=sys.stderr)
 
     if result == 'OK':
-        print >>sys.stderr, "Program terminated successfully."
+        print("Program terminated successfully.", file=sys.stderr)
         return 0
     else:
-        print >>sys.stderr, "Program terminated unsuccessfully."
+        print("Program terminated unsuccessfully.", file=sys.stderr)
         return -1

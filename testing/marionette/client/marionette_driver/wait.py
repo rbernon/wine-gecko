@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import collections
-import errors
+from . import errors
 import sys
 import time
 

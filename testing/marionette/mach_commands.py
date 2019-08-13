@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import, unicode_literals
+
 
 import os
 import sys
@@ -59,7 +59,7 @@ def run_marionette(tests, b2g_path=None, emulator=None, testtype=None,
         args.binary = binary
         path, exe = os.path.split(args.binary)
 
-    for k, v in kwargs.iteritems():
+    for k, v in kwargs.items():
         setattr(args, k, v)
 
     parser.verify_usage(args)
@@ -101,7 +101,7 @@ class B2GCommands(MachCommandBase):
                     emulator = 'x86'
 
         if self.substs.get('ENABLE_MARIONETTE') != '1':
-            print(MARIONETTE_DISABLED_B2G % 'marionette-webapi')
+            print((MARIONETTE_DISABLED_B2G % 'marionette-webapi'))
             return 1
 
         return run_marionette(tests, b2g_path=self.b2g_home, emulator=emulator,

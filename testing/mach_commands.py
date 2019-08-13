@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import, print_function, unicode_literals
+
 
 import json
 import os
@@ -230,7 +230,7 @@ class Test(MachCommandBase):
                 run_suites.add(entry)
                 continue
             suitefound = False
-            for suite, v in TEST_SUITES.items():
+            for suite, v in list(TEST_SUITES.items()):
                 if entry in v.get('aliases', []):
                     run_suites.add(suite)
                     suitefound = True
@@ -265,7 +265,7 @@ class Test(MachCommandBase):
             files_info = reader.files_info(changed_files)
 
             paths, tags, flavors = set(), set(), set()
-            for info in files_info.values():
+            for info in list(files_info.values()):
                 paths |= info.test_files
                 tags |= info.test_tags
                 flavors |= info.test_flavors
@@ -491,13 +491,13 @@ class PushToTry(MachCommandBase):
         rv = defaultdict(list)
         for item in items:
             parsed = parse_arg(item)
-            for key, values in parsed.iteritems():
+            for key, values in parsed.items():
                 rv[key].extend(values)
 
         if not allow_subitems:
-            if not all(item == [] for item in rv.itervalues()):
+            if not all(item == [] for item in rv.values()):
                 raise ValueError("Unexpected subitems in argument")
-            return rv.keys()
+            return list(rv.keys())
         else:
             return rv
 
@@ -553,8 +553,8 @@ class PushToTry(MachCommandBase):
             print("Error parsing --tags argument:\n%s" % e.message)
             sys.exit(1)
 
-        extra_values = {k['dest'] for k in AutoTry.pass_through_arguments.values()}
-        extra_args = {k: v for k, v in kwargs.items()
+        extra_values = {k['dest'] for k in list(AutoTry.pass_through_arguments.values())}
+        extra_args = {k: v for k, v in list(kwargs.items())
                       if k in extra_values and v}
 
         return kwargs["builds"], platforms, tests, talos, paths, tags, extra_args
@@ -626,7 +626,7 @@ class PushToTry(MachCommandBase):
                 print("No saved configuration called %s found in autotry.ini" % kwargs["load"],
                       file=sys.stderr)
 
-            for key, value in kwargs.iteritems():
+            for key, value in kwargs.items():
                 if value in (None, []) and key in defaults:
                     kwargs[key] = defaults[key]
 
@@ -666,7 +666,7 @@ class PushToTry(MachCommandBase):
 
         if kwargs["verbose"] and paths_by_flavor:
             print('The following tests will be selected: ')
-            for flavor, paths in paths_by_flavor.iteritems():
+            for flavor, paths in paths_by_flavor.items():
                 print("%s: %s" % (flavor, ",".join(paths)))
 
         if kwargs["verbose"] or not kwargs["push"]:

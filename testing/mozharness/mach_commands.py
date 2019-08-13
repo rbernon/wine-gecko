@@ -2,15 +2,15 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import, print_function, unicode_literals
+
 
 import argparse
 import os
 import re
 import subprocess
 import sys
-import urllib
-import urlparse
+import urllib.request, urllib.parse, urllib.error
+import urllib.parse
 
 import mozinfo
 
@@ -157,7 +157,7 @@ class MozharnessRunner(MozbuildObject):
 
 
     def path_to_url(self, path):
-        return urlparse.urljoin('file:', urllib.pathname2url(path))
+        return urllib.parse.urljoin('file:', urllib.request.pathname2url(path))
 
     def _installer_url(self):
         package_re = {

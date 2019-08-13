@@ -6,7 +6,7 @@
 
 '''This script analyzes a JSON file emitted by DMD.'''
 
-from __future__ import print_function, division
+
 
 import argparse
 import collections
@@ -74,7 +74,7 @@ class Record(object):
         self.usableSize = -self.usableSize
 
         negatedUsableSizes = collections.defaultdict(int)
-        for (usableSize, isSampled), count in self.usableSizes.items():
+        for (usableSize, isSampled), count in list(self.usableSizes.items()):
             negatedUsableSizes[(-usableSize, isSampled)] = count
         self.usableSizes = negatedUsableSizes
 
@@ -179,7 +179,7 @@ variable is used to find breakpad symbols for stack fixing.
     p.add_argument('-f', '--max-frames', type=range_1_24,
                    help='maximum number of frames to consider in each trace')
 
-    p.add_argument('-s', '--sort-by', choices=sortByChoices.keys(),
+    p.add_argument('-s', '--sort-by', choices=list(sortByChoices.keys()),
                    default='usable',
                    help='sort the records by a particular metric')
 
@@ -296,11 +296,11 @@ def getDigestFromFile(args, inputFile):
     # Remove allocation functions at the start of traces.
     if args.ignore_alloc_fns:
         # Build a regexp that matches every function in allocatorFns.
-        escapedAllocatorFns = map(re.escape, allocatorFns)
+        escapedAllocatorFns = list(map(re.escape, allocatorFns))
         fn_re = re.compile('|'.join(escapedAllocatorFns))
 
         # Remove allocator fns from each stack trace.
-        for traceKey, frameKeys in traceTable.items():
+        for traceKey, frameKeys in list(traceTable.items()):
             numSkippedFrames = 0
             for frameKey in frameKeys:
                 frameDesc = frameTable[frameKey]
@@ -312,7 +312,7 @@ def getDigestFromFile(args, inputFile):
                 traceTable[traceKey] = frameKeys[numSkippedFrames:]
 
     # Trim the number of frames.
-    for traceKey, frameKeys in traceTable.items():
+    for traceKey, frameKeys in list(traceTable.items()):
         if len(frameKeys) > args.max_frames:
             traceTable[traceKey] = frameKeys[:args.max_frames]
 
@@ -383,8 +383,7 @@ def getDigestFromFile(args, inputFile):
             if traceKey in recordKeyPartCache:
                 return recordKeyPartCache[traceKey]
 
-            recordKeyPart = str(map(lambda frameKey: frameTable[frameKey],
-                                    traceTable[traceKey]))
+            recordKeyPart = str([frameTable[frameKey] for frameKey in traceTable[traceKey]])
             recordKeyPartCache[traceKey] = recordKeyPart
             return recordKeyPart
 
@@ -444,7 +443,7 @@ def getDigestFromFile(args, inputFile):
         elif mode == 'dark-matter':
             if 'reps' in block and record.reportedAtDescs == []:
                 f = lambda k: buildTraceDescription(traceTable, frameTable, k)
-                record.reportedAtDescs = map(f, reportedAtTraceKeys)
+                record.reportedAtDescs = list(map(f, reportedAtTraceKeys))
         record.usableSizes[(usableSize, isSampled)] += num
 
     # All the processed data for a single DMD file is called a "digest".
@@ -554,7 +553,7 @@ def printDigest(args, digest):
         out(separator)
         numRecords = len(records)
         cmpRecords = sortByChoices[args.sort_by]
-        sortedRecords = sorted(records.values(), cmp=cmpRecords, reverse=True)
+        sortedRecords = sorted(list(records.values()), cmp=cmpRecords, reverse=True)
         kindBlocks = 0
         kindUsableSize = 0
         maxRecord = 1000
@@ -592,7 +591,7 @@ def printDigest(args, digest):
             abscmp = lambda ((usableSize1, _1a), _1b), \
                             ((usableSize2, _2a), _2b): \
                             cmp(abs(usableSize1), abs(usableSize2))
-            usableSizes = sorted(record.usableSizes.items(), cmp=abscmp,
+            usableSizes = sorted(list(record.usableSizes.items()), cmp=abscmp,
                                  reverse=True)
 
             hasSingleBlock = len(usableSizes) == 1 and usableSizes[0][1] == 1
@@ -733,7 +732,7 @@ def prettyPrintDmdJson(out, j):
 
     out.write(' "traceTable": {')
     first = True
-    for k, l in j['traceTable'].iteritems():
+    for k, l in j['traceTable'].items():
         out.write('' if first else ',')
         out.write('\n  "{0}": {1}'.format(k, json.dumps(l)))
         first = False
@@ -741,7 +740,7 @@ def prettyPrintDmdJson(out, j):
 
     out.write(' "frameTable": {')
     first = True
-    for k, v in j['frameTable'].iteritems():
+    for k, v in j['frameTable'].items():
         out.write('' if first else ',')
         out.write('\n  "{0}": "{1}"'.format(k, v))
         first = False

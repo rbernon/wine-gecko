@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import contextlib
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 from tempfile import NamedTemporaryFile as tempfile
 
@@ -12,9 +12,9 @@ from marionette_driver import By, errors, expected
 from marionette_driver.wait import Wait
 
 
-single = "data:text/html,%s" % urllib.quote("<input type=file>")
-multiple = "data:text/html,%s" % urllib.quote("<input type=file multiple>")
-upload = lambda url: "data:text/html,%s" % urllib.quote("""
+single = "data:text/html,%s" % urllib.parse.quote("<input type=file>")
+multiple = "data:text/html,%s" % urllib.parse.quote("<input type=file multiple>")
+upload = lambda url: "data:text/html,%s" % urllib.parse.quote("""
     <form action='%s' method=post enctype='multipart/form-data'>
      <input type=file>
      <input type=submit>
@@ -89,7 +89,7 @@ class TestFileUpload(MarionetteTestCase):
 
     def test_illegal_file(self):
         self.marionette.navigate(single)
-        with self.assertRaisesRegexp(errors.MarionetteException, "File not found"):
+        with self.assertRaisesRegex(errors.MarionetteException, "File not found"):
             self.input.send_keys("rochefort")
 
     def test_upload(self):
@@ -128,7 +128,7 @@ class TestFileUpload(MarionetteTestCase):
         # error.
         fl = self.marionette.execute_script(
             "return arguments[0].files", script_args=[el])
-        return [f["name"] for f in [v for k, v in fl.iteritems() if k.isdigit()]]
+        return [f["name"] for f in [v for k, v in fl.items() if k.isdigit()]]
 
     def assertFilesEqual(self, act, exp):
         # File array returned from browser doesn't contain full path names,

@@ -240,7 +240,7 @@ def GenerateConfig(fp, config, indent='', src_dir=''):
             result.append('env.Dir(%r)' % v)
           value = result
         else:
-          value = map(repr, value)
+          value = list(map(repr, value))
         WriteList(fp,
                   value,
                   prefix=indent,
@@ -335,7 +335,7 @@ def GenerateSConscript(output_filename, spec, build_file, build_file_data):
   fp.write('                TARGET_NAME=%s)\n' % repr(target_name))
 
   #
-  for config in spec['configurations'].itervalues():
+  for config in spec['configurations'].values():
     if config.get('scons_line_length'):
       fp.write(_spawn_hack)
       break
@@ -344,7 +344,7 @@ def GenerateSConscript(output_filename, spec, build_file, build_file_data):
   indent = ' ' * 12
   fp.write('\n')
   fp.write('configurations = {\n')
-  for config_name, config in spec['configurations'].iteritems():
+  for config_name, config in spec['configurations'].items():
     fp.write('    \'%s\' : {\n' % config_name)
 
     fp.write('        \'Append\' : dict(\n')
@@ -352,14 +352,14 @@ def GenerateSConscript(output_filename, spec, build_file, build_file_data):
     libraries = spec.get('libraries')
     if libraries:
       WriteList(fp,
-                map(repr, libraries),
+                list(map(repr, libraries)),
                 prefix=indent,
                 preamble='%sLIBS = [\n    ' % indent,
                 postamble='\n%s],\n' % indent)
     fp.write('        ),\n')
 
     fp.write('        \'FilterOut\' : dict(\n' )
-    for key, var in config.get('scons_remove', {}).iteritems():
+    for key, var in config.get('scons_remove', {}).items():
       fp.write('             %s = %s,\n' % (key, repr(var)))
     fp.write('        ),\n')
 
@@ -498,14 +498,14 @@ def GenerateSConscript(output_filename, spec, build_file, build_file_data):
     files = None
     try:
       destdir = copy['destination']
-    except KeyError, e:
+    except KeyError as e:
       gyp.common.ExceptionAppend(
         e,
         "Required 'destination' key missing for 'copies' in %s." % build_file)
       raise
     try:
       files = copy['files']
-    except KeyError, e:
+    except KeyError as e:
       gyp.common.ExceptionAppend(
         e, "Required 'files' key missing for 'copies' in %s." % build_file)
       raise
@@ -544,7 +544,7 @@ def GenerateSConscript(output_filename, spec, build_file, build_file_data):
         working_directory = os.path.normpath(os.path.join(gyp_dir,
                                                           working_directory))
     if run_as.get('environment'):
-      for (key, val) in run_as.get('environment').iteritems():
+      for (key, val) in run_as.get('environment').items():
         action = ['%s="%s"' % (key, val)] + action
     action = ['cd', '"%s"' % working_directory, '&&'] + action
     fp.write(_run_as_template % {
@@ -973,15 +973,15 @@ def PerformBuild(data, configurations, params):
   for scons_name in ['scons', 'scons.py']:
     for path in paths:
       test_scons = os.path.join(path, scons_name)
-      print 'looking for: %s' % test_scons
+      print('looking for: %s' % test_scons)
       if os.path.exists(test_scons):
-        print "found scons: %s" % scons
+        print("found scons: %s" % scons)
         scons = test_scons
         break
 
   for config in configurations:
     arguments = [scons, '-C', options.toplevel_dir, '--mode=%s' % config]
-    print "Building [%s]: %s" % (config, arguments)
+    print("Building [%s]: %s" % (config, arguments))
     subprocess.check_call(arguments)
 
 
@@ -1022,7 +1022,7 @@ def GenerateOutput(target_list, target_dicts, data, params):
     if options.generator_output:
       output_file = output_path(output_file)
 
-    if not spec.has_key('libraries'):
+    if 'libraries' not in spec:
       spec['libraries'] = []
 
     # Add dependent static library targets to the 'libraries' value.

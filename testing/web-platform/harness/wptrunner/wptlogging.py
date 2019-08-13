@@ -5,7 +5,7 @@
 import logging
 import sys
 import threading
-from StringIO import StringIO
+from io import StringIO
 from multiprocessing import Queue
 
 from mozlog import commandline, stdadapter
@@ -14,7 +14,7 @@ def setup(args, defaults):
     logger = commandline.setup_logging("web-platform-tests", args, defaults)
     setup_stdlib_logger()
 
-    for name in args.keys():
+    for name in list(args.keys()):
         if name.startswith("log_"):
             args.pop(name)
 

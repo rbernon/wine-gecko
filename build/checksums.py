@@ -3,7 +3,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import with_statement
+
 
 from optparse import OptionParser
 import logging
@@ -81,9 +81,9 @@ def process_files(files, output_filename, digests, strip):
                         short_file = short_file.lstrip('/')
                     else:
                         short_file = file
-                    print >>output, '%s %s %s %s' % (hash, digest,
+                    print('%s %s %s %s' % (hash, digest,
                                                      os.path.getsize(file),
-                                                     short_file)
+                                                     short_file), file=output)
 
 def setup_logging(level=logging.DEBUG):
     '''This function sets up the logging module using a speficiable logging
@@ -140,7 +140,7 @@ def main():
     try:
         for digest in options.digests:
             hashlib.new(digest)
-    except ValueError, ve:
+    except ValueError as ve:
         logger.error('Could not create a "%s" hash object (%s)' %
                      (digest, ve.args[0]))
         exit(1)

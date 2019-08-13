@@ -44,7 +44,7 @@ def web_socket_transfer_data(request):
         if command is None:
             return
 
-        if not isinstance(command, unicode):
+        if not isinstance(command, str):
             raise ValueError('Invalid command data:' + command)
         commands = command.split(' ')
         if len(commands) == 0:

@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, unicode_literals
+
 
 import string
 import gettext
@@ -449,7 +449,7 @@ adjustForeignAttributes = {
 }
 
 unadjustForeignAttributes = dict([((ns, local), qname) for qname, (prefix, local, ns) in
-                                  adjustForeignAttributes.items()])
+                                  list(adjustForeignAttributes.items())])
 
 spaceCharacters = frozenset((
     "\t",
@@ -3092,7 +3092,7 @@ tagTokenTypes = frozenset((tokenTypes["StartTag"], tokenTypes["EndTag"],
                            tokenTypes["EmptyTag"]))
 
 
-prefixes = dict([(v, k) for k, v in namespaces.items()])
+prefixes = dict([(v, k) for k, v in list(namespaces.items())])
 prefixes["http://www.w3.org/1998/Math/MathML"] = "math"
 
 

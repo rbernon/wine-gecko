@@ -244,10 +244,10 @@ class Talos(TestingMixin, MercurialScript, BlobUploadMixin):
         kw_options.update(kw)
         # talos expects tests to be in the format (e.g.) 'ts:tp5:tsvg'
         tests = kw_options.get('activeTests')
-        if tests and not isinstance(tests, basestring):
+        if tests and not isinstance(tests, str):
             tests = ':'.join(tests)  # Talos expects this format
             kw_options['activeTests'] = tests
-        for key, value in kw_options.items():
+        for key, value in list(kw_options.items()):
             options.extend(['--%s' % key, value])
         # configure profiling options
         options.extend(self.query_sps_profile_options())

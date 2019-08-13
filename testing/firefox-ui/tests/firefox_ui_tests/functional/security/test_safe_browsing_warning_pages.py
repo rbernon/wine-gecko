@@ -95,7 +95,7 @@ class TestSafeBrowsingWarningPages(FirefoxTestCase):
         )
 
         # check that our current url matches the final url we expect
-        self.assertEquals(self.marionette.get_url(), self.browser.get_final_url(url))
+        self.assertEqual(self.marionette.get_url(), self.browser.get_final_url(url))
 
     def check_ignore_warning_button(self, unsafe_page):
         button = self.marionette.find_element(By.ID, 'ignoreWarningButton')
@@ -103,7 +103,7 @@ class TestSafeBrowsingWarningPages(FirefoxTestCase):
 
         Wait(self.marionette, timeout=self.browser.timeout_page_load).until(
             expected.element_present(By.ID, 'main-feature'))
-        self.assertEquals(self.marionette.get_url(), self.browser.get_final_url(unsafe_page))
+        self.assertEqual(self.marionette.get_url(), self.browser.get_final_url(unsafe_page))
 
         # Clean up by removing safe browsing permission for unsafe page
         self.utils.remove_perms('https://www.itisatrap.org', 'safe-browsing')

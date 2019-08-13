@@ -25,7 +25,7 @@ def read_ini(fp, variables=None, default='DEFAULT', defaults_only=False,
     sections = []
     key = value = None
     section_names = set()
-    if isinstance(fp, basestring):
+    if isinstance(fp, str):
         fp = file(fp)
 
     # read the lines

@@ -4,10 +4,10 @@ import imp
 import os
 import sys
 
-import manifest
-import vcs
-from log import get_logger
-from tree import GitTree, NoVCSTree
+from . import manifest
+from . import vcs
+from .log import get_logger
+from .tree import GitTree, NoVCSTree
 
 here = os.path.dirname(__file__)
 localpaths = imp.load_source("localpaths", os.path.abspath(os.path.join(here, os.pardir, "localpaths.py")))
@@ -104,8 +104,8 @@ def main(default_tests_root=None):
             tests_root = find_top_repo()
 
         if tests_root is None:
-            print >> sys.stderr, """No git repo found; could not determine test root.
-Run again with --test-root"""
+            print("""No git repo found; could not determine test root.
+Run again with --test-root""", file=sys.stderr)
             sys.exit(1)
 
         opts.tests_root = tests_root

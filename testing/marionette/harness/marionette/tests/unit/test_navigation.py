@@ -28,7 +28,7 @@ class TestNavigate(MarionetteTestCase):
     @skip_if_b2g # we currently allow this in b2g
     def test_navigate_chrome_error(self):
         with self.marionette.using_context("chrome"):
-            self.assertRaisesRegexp(MarionetteException, "Cannot navigate in chrome context",
+            self.assertRaisesRegex(MarionetteException, "Cannot navigate in chrome context",
                                     self.marionette.navigate, "about:blank")
 
     def test_get_current_url_returns_top_level_browsing_context_url(self):
@@ -100,7 +100,7 @@ class TestNavigate(MarionetteTestCase):
             self.assertIn("Error loading page", str(e))
         except Exception as e:
             import traceback
-            print traceback.format_exc()
+            print(traceback.format_exc())
             self.fail("Should have thrown a MarionetteException instead of %s" % type(e))
 
     @skip_if_b2g # about:blocked isn't a well formed uri on b2g
@@ -127,7 +127,7 @@ class TestNavigate(MarionetteTestCase):
             self.assertTrue("Error loading page, timed out" in str(e))
         except Exception as e:
             import traceback
-            print traceback.format_exc()
+            print(traceback.format_exc())
             self.fail("Should have thrown a TimeoutException instead of %s" % type(e))
 
     def test_navigate_iframe(self):

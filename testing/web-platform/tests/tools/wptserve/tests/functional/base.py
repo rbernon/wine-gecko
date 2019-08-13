@@ -2,9 +2,9 @@ import base64
 import logging
 import os
 import unittest
-import urllib
-import urllib2
-import urlparse
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
+import urllib.parse
 
 import wptserve
 
@@ -13,9 +13,9 @@ logging.basicConfig()
 here = os.path.split(__file__)[0]
 doc_root = os.path.join(here, "docroot")
 
-class Request(urllib2.Request):
+class Request(urllib.request.Request):
     def __init__(self, *args, **kwargs):
-        urllib2.Request.__init__(self, *args, **kwargs)
+        urllib.request.Request.__init__(self, *args, **kwargs)
         self.method = "GET"
 
     def get_method(self):
@@ -23,10 +23,10 @@ class Request(urllib2.Request):
 
     def add_data(self, data):
         if hasattr(data, "iteritems"):
-            data = urllib.urlencode(data)
-        print data
+            data = urllib.parse.urlencode(data)
+        print(data)
         self.add_header("Content-Length", str(len(data)))
-        urllib2.Request.add_data(self, data)
+        urllib.request.Request.add_data(self, data)
 
 class TestUsingServer(unittest.TestCase):
     def setUp(self):
@@ -41,7 +41,7 @@ class TestUsingServer(unittest.TestCase):
         self.server.stop()
 
     def abs_url(self, path, query=None):
-        return urlparse.urlunsplit(("http", "%s:%i" % (self.server.host, self.server.port), path, query, None))
+        return urllib.parse.urlunsplit(("http", "%s:%i" % (self.server.host, self.server.port), path, query, None))
 
     def request(self, path, query=None, method="GET", headers=None, body=None, auth=None):
         req = Request(self.abs_url(path, query))
@@ -49,7 +49,7 @@ class TestUsingServer(unittest.TestCase):
         if headers is None:
             headers = {}
 
-        for name, value in headers.iteritems():
+        for name, value in headers.items():
             req.add_header(name, value)
 
         if body is not None:
@@ -58,4 +58,4 @@ class TestUsingServer(unittest.TestCase):
         if auth is not None:
             req.add_header("Authorization", "Basic %s" % base64.encodestring('%s:%s' % auth))
 
-        return urllib2.urlopen(req)
+        return urllib.request.urlopen(req)

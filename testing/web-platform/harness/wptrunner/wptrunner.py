@@ -2,19 +2,19 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import unicode_literals
+
 
 import json
 import os
 import sys
 
-import environment as env
-import products
-import testloader
-import wptcommandline
-import wptlogging
-import wpttest
-from testrunner import ManagerGroup
+from . import environment as env
+from . import products
+from . import testloader
+from . import wptcommandline
+from . import wptlogging
+from . import wpttest
+from .testrunner import ManagerGroup
 
 here = os.path.split(__file__)[0]
 
@@ -80,7 +80,7 @@ def list_test_groups(test_paths, product, **kwargs):
                                        **kwargs)
 
     for item in sorted(test_loader.groups(kwargs["test_types"])):
-        print item
+        print(item)
 
 
 def list_disabled(test_paths, product, **kwargs):
@@ -93,14 +93,14 @@ def list_disabled(test_paths, product, **kwargs):
     run_info, test_loader = get_loader(test_paths, product, ssl_env,
                                        **kwargs)
 
-    for test_type, tests in test_loader.disabled_tests.iteritems():
+    for test_type, tests in test_loader.disabled_tests.items():
         for test in tests:
             rv.append({"test": test.id, "reason": test.disabled()})
-    print json.dumps(rv, indent=2)
+    print(json.dumps(rv, indent=2))
 
 
 def get_pause_after_test(test_loader, **kwargs):
-    total_tests = sum(len(item) for item in test_loader.tests.itervalues())
+    total_tests = sum(len(item) for item in test_loader.tests.values())
     if kwargs["pause_after_test"] is None:
         if kwargs["repeat"] == 1 and total_tests == 1:
             return True
@@ -160,7 +160,7 @@ def run_tests(config, test_paths, product, **kwargs):
             browser_kwargs = get_browser_kwargs(ssl_env=ssl_env, **kwargs)
 
             repeat = kwargs["repeat"]
-            for repeat_count in xrange(repeat):
+            for repeat_count in range(repeat):
                 if repeat > 1:
                     logger.info("Repetition %i / %i" % (repeat_count + 1, repeat))
 
@@ -231,5 +231,5 @@ def main():
             return not run_tests(**kwargs)
     except Exception:
         import pdb, traceback
-        print traceback.format_exc()
+        print(traceback.format_exc())
         pdb.post_mortem()

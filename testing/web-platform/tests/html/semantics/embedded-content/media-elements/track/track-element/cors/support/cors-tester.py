@@ -1,5 +1,5 @@
 from wptserve.handlers import HTTPException
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 def main(request, response):
     if request.method != "GET":

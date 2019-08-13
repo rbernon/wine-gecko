@@ -59,4 +59,4 @@ template = '''#filter emptyLines
 
 strings = tuple(e.val for e in p if ll.search(e.key))
 
-print codecs.utf_8_encode(template % strings)[0]
+print(codecs.utf_8_encode(template % strings)[0])

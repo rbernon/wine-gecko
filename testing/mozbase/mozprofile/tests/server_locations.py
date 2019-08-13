@@ -59,21 +59,21 @@ http://example.org:80           privileged
         # ensure that they're what we expect
         self.assertEqual(len(locations), 6)
         i = iter(locations)
-        self.compare_location(i.next(), 'http', 'mochi.test', '8888',
+        self.compare_location(next(i), 'http', 'mochi.test', '8888',
                               ['primary', 'privileged'])
-        self.compare_location(i.next(), 'http', '127.0.0.1', '80',
+        self.compare_location(next(i), 'http', '127.0.0.1', '80',
                               ['privileged'])
-        self.compare_location(i.next(), 'http', '127.0.0.1', '8888',
+        self.compare_location(next(i), 'http', '127.0.0.1', '8888',
                               ['privileged'])
-        self.compare_location(i.next(), 'https', 'test', '80', ['privileged'])
-        self.compare_location(i.next(), 'http', 'example.org', '80',
+        self.compare_location(next(i), 'https', 'test', '80', ['privileged'])
+        self.compare_location(next(i), 'http', 'example.org', '80',
                               ['privileged'])
-        self.compare_location(i.next(), 'http', 'test1.example.org', '8888',
+        self.compare_location(next(i), 'http', 'test1.example.org', '8888',
                               ['privileged'])
 
         locations.add_host('mozilla.org')
         self.assertEqual(len(locations), 7)
-        self.compare_location(i.next(), 'http', 'mozilla.org', '80',
+        self.compare_location(next(i), 'http', 'mozilla.org', '80',
                               ['privileged'])
 
         # test some errors
@@ -95,7 +95,7 @@ http://example.org:80           privileged
         exc = None
         try:
             ServerLocations(f.name)
-        except LocationsSyntaxError, e:
+        except LocationsSyntaxError as e:
             exc = e
         self.assertNotEqual(exc, None)
         self.assertEqual(exc.err.__class__, MissingPrimaryLocationError)
@@ -108,7 +108,7 @@ http://example.org:80           privileged
         exc = None
         try:
             ServerLocations(f.name)
-        except LocationsSyntaxError, e:
+        except LocationsSyntaxError as e:
             exc = e
         self.assertNotEqual(exc, None)
         self.assertEqual(exc.err.__class__, BadPortLocationError)

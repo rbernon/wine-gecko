@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, unicode_literals
+
 
 from . import _base
 
@@ -13,7 +13,7 @@ class Filter(_base.Filter):
         for token in _base.Filter.__iter__(self):
             if token["type"] in ("StartTag", "EmptyTag"):
                 attrs = OrderedDict()
-                for name, value in sorted(token["data"].items(),
+                for name, value in sorted(list(token["data"].items()),
                                           key=lambda x: x[0]):
                     attrs[name] = value
                 token["data"] = attrs

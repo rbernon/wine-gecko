@@ -115,7 +115,7 @@ class HTMLFormatter(base.BaseFormatter):
                 additional_html.append(html.div(
                     html.a(html.img(src=screenshot), href="#"),
                     class_='screenshot'))
-            for name, content in debug.items():
+            for name, content in list(debug.items()):
                 if 'screenshot' in name:
                     href = '#'
                 else:
@@ -169,7 +169,7 @@ class HTMLFormatter(base.BaseFormatter):
                         id='environment'),
 
                     html.h2('Summary'),
-                    html.p('%i tests ran in %.1f seconds.' % (sum(self.test_count.itervalues()),
+                    html.p('%i tests ran in %.1f seconds.' % (sum(self.test_count.values()),
                                                               (self.suite_times["end"] -
                                                                self.suite_times["start"]) / 1000.),
                            html.br(),
@@ -191,4 +191,4 @@ class HTMLFormatter(base.BaseFormatter):
                             html.th('Links')]), id='results-table-head'),
                         html.tbody(self.result_rows, id='results-table-body')], id='results-table')))
 
-        return u"<!DOCTYPE html>\n" + doc.unicode(indent=2)
+        return "<!DOCTYPE html>\n" + doc.str(indent=2)

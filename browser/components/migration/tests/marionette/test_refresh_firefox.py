@@ -69,7 +69,7 @@ class TestFirefoxRefresh(MarionetteTestCase):
           );
         """, script_args=[self._historyURL, self._historyTitle])
         if error:
-            print error
+            print(error)
 
     def createFormHistory(self):
         error = self.runAsyncCode("""
@@ -93,7 +93,7 @@ class TestFirefoxRefresh(MarionetteTestCase):
           });
         """, script_args=[self._formHistoryFieldName, self._formHistoryValue])
         if error:
-          print error
+          print(error)
 
     def createCookie(self):
         self.runCode("""

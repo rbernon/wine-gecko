@@ -27,9 +27,9 @@ class TestErrors(marionette_test.MarionetteTestCase):
     def test_construction(self):
         exc = errors.MarionetteException(
             message=message, cause=cause, stacktrace=stacktrace)
-        self.assertEquals(exc.msg, message)
-        self.assertEquals(exc.cause, cause)
-        self.assertEquals(exc.stacktrace, stacktrace)
+        self.assertEqual(exc.msg, message)
+        self.assertEqual(exc.cause, cause)
+        self.assertEqual(exc.stacktrace, stacktrace)
 
     def test_str(self):
         exc = errors.MarionetteException(
@@ -69,7 +69,7 @@ class TestLookup(marionette_test.MarionetteTestCase):
 
     def test_by_known_unicode_string(self):
         self.assertEqual(errors.NoSuchElementException,
-            errors.lookup(u"no such element"))
+            errors.lookup("no such element"))
 
 
 class TestAllErrors(marionette_test.MarionetteTestCase):

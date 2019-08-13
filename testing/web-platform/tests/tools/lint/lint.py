@@ -70,9 +70,9 @@ def parse_whitelist_file(filename):
             data[file_match][error_type].add(line_number)
 
     def inner(path, errors):
-        whitelisted = [False for item in xrange(len(errors))]
+        whitelisted = [False for item in range(len(errors))]
 
-        for file_match, whitelist_errors in data.iteritems():
+        for file_match, whitelist_errors in data.items():
             if fnmatch.fnmatch(path, file_match):
                 for i, (error_type, msg, line) in enumerate(errors):
                     if "*" in whitelist_errors:
@@ -211,7 +211,7 @@ def check_parsed(path, f):
                          "testharnessreport": False}
         required_elements = [key for key, value in {"testharness": True,
                                                     "testharnessreport": len(testharnessreport_nodes) > 0,
-                                                    "timeout": len(source_file.timeout_nodes) > 0}.iteritems()
+                                                    "timeout": len(source_file.timeout_nodes) > 0}.items()
                              if value]
 
         for elem in source_file.root.iter():
@@ -237,18 +237,18 @@ def check_parsed(path, f):
 
 def output_errors(errors):
     for error_type, error, line_number in errors:
-        print "%s: %s" % (error_type, error)
+        print("%s: %s" % (error_type, error))
 
 def output_error_count(error_count):
     if not error_count:
         return
 
-    by_type = " ".join("%s: %d" % item for item in error_count.iteritems())
+    by_type = " ".join("%s: %d" % item for item in error_count.items())
     count = sum(error_count.values())
     if count == 1:
-        print "There was 1 error (%s)" % (by_type,)
+        print("There was 1 error (%s)" % (by_type,))
     else:
-        print "There were %d errors (%s)" % (count, by_type)
+        print("There were %d errors (%s)" % (count, by_type))
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -290,8 +290,8 @@ def lint(paths):
 
     output_error_count(error_count)
     if error_count:
-        print ERROR_MSG % (last[0], last[1], last[0], last[1])
-    return sum(error_count.itervalues())
+        print(ERROR_MSG % (last[0], last[1], last[0], last[1]))
+    return sum(error_count.values())
 
 path_lints = [check_path_length]
 file_lints = [check_regexp_line, check_parsed]

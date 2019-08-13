@@ -4,11 +4,11 @@
 # http://creativecommons.org/publicdomain/zero/1.0/
 #
 
-from __future__ import with_statement
+
 import sys, os, unittest, tempfile, shutil, re, pprint
 import mozinfo
 
-from StringIO import StringIO
+from io import StringIO
 
 from mozlog import structured
 from mozbuild.base import MozbuildObject
@@ -144,7 +144,7 @@ PASSING_TEST_UNICODE = '''
 function run_test () { run_next_test(); }
 
 add_test(function test_unicode_print () {
-  do_check_eq("\u201c\u201d", "\u201c\u201d");
+  do_check_eq("\\u201c\\u201d", "\\u201c\\u201d");
   run_next_test();
 });
 '''
@@ -438,7 +438,7 @@ class XPCShellTestsTests(unittest.TestCase):
         """
         testlines = []
         for t in tests:
-            testlines.append("[%s]" % (t if isinstance(t, basestring)
+            testlines.append("[%s]" % (t if isinstance(t, str)
                                        else t[0]))
             if isinstance(t, tuple):
                 testlines.extend(t[1:])
@@ -455,7 +455,7 @@ tail =
         Assert that self.x.runTests with manifest=self.manifest
         returns |expected|.
         """
-        self.assertEquals(expected,
+        self.assertEqual(expected,
                           self.x.runTests(xpcshellBin,
                                           symbolsPath=symbolsPath,
                                           manifest=self.manifest,
@@ -499,10 +499,10 @@ tail =
         self.writeManifest(["test_basic.js"])
 
         self.assertTestResult(True)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(1, self.x.passCount)
-        self.assertEquals(0, self.x.failCount)
-        self.assertEquals(0, self.x.todoCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(1, self.x.passCount)
+        self.assertEqual(0, self.x.failCount)
+        self.assertEqual(0, self.x.todoCount)
         self.assertInLog(TEST_PASS_STRING)
         self.assertNotInLog(TEST_FAIL_STRING)
 
@@ -514,10 +514,10 @@ tail =
         self.writeManifest(["test_basic.js"])
 
         self.assertTestResult(False)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(0, self.x.passCount)
-        self.assertEquals(1, self.x.failCount)
-        self.assertEquals(0, self.x.todoCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(0, self.x.passCount)
+        self.assertEqual(1, self.x.failCount)
+        self.assertEqual(0, self.x.todoCount)
         self.assertInLog(TEST_FAIL_STRING)
         self.assertNotInLog(TEST_PASS_STRING)
 
@@ -567,10 +567,10 @@ tail =
         self.writeManifest(["test_child_pass.js"])
 
         self.assertTestResult(True, verbose=True)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(1, self.x.passCount)
-        self.assertEquals(0, self.x.failCount)
-        self.assertEquals(0, self.x.todoCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(1, self.x.passCount)
+        self.assertEqual(0, self.x.failCount)
+        self.assertEqual(0, self.x.todoCount)
         self.assertInLog(TEST_PASS_STRING)
         self.assertInLog("CHILD-TEST-STARTED")
         self.assertInLog("CHILD-TEST-COMPLETED")
@@ -588,10 +588,10 @@ tail =
         self.writeManifest(["test_child_fail.js"])
 
         self.assertTestResult(False)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(0, self.x.passCount)
-        self.assertEquals(1, self.x.failCount)
-        self.assertEquals(0, self.x.todoCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(0, self.x.passCount)
+        self.assertEqual(1, self.x.failCount)
+        self.assertEqual(0, self.x.todoCount)
         self.assertInLog(TEST_FAIL_STRING)
         self.assertInLog("CHILD-TEST-STARTED")
         self.assertInLog("CHILD-TEST-COMPLETED")
@@ -609,10 +609,10 @@ tail =
         self.writeManifest(["test_child_hang.js"])
 
         self.assertTestResult(False)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(0, self.x.passCount)
-        self.assertEquals(1, self.x.failCount)
-        self.assertEquals(0, self.x.todoCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(0, self.x.passCount)
+        self.assertEqual(1, self.x.failCount)
+        self.assertEqual(0, self.x.todoCount)
         self.assertInLog(TEST_FAIL_STRING)
         self.assertInLog("CHILD-TEST-STARTED")
         self.assertNotInLog("CHILD-TEST-COMPLETED")
@@ -630,10 +630,10 @@ tail =
         self.writeManifest(["test_child_assertions.js"])
 
         self.assertTestResult(True)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(1, self.x.passCount)
-        self.assertEquals(0, self.x.failCount)
-        self.assertEquals(0, self.x.todoCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(1, self.x.passCount)
+        self.assertEqual(0, self.x.failCount)
+        self.assertEqual(0, self.x.todoCount)
         self.assertInLog(TEST_PASS_STRING)
         self.assertNotInLog(TEST_FAIL_STRING)
 
@@ -651,10 +651,10 @@ add_test({
 """)
         self.writeManifest(["test_skip.js"])
         self.assertTestResult(True, verbose=True)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(1, self.x.passCount)
-        self.assertEquals(0, self.x.failCount)
-        self.assertEquals(0, self.x.todoCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(1, self.x.passCount)
+        self.assertEqual(0, self.x.failCount)
+        self.assertEqual(0, self.x.todoCount)
         self.assertInLog(TEST_PASS_STRING)
         self.assertInLog("TEST-SKIP")
         self.assertNotInLog(TEST_FAIL_STRING)
@@ -672,10 +672,10 @@ add_task({
 """)
         self.writeManifest(["test_not_skip.js"])
         self.assertTestResult(True, verbose=True)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(1, self.x.passCount)
-        self.assertEquals(0, self.x.failCount)
-        self.assertEquals(0, self.x.todoCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(1, self.x.passCount)
+        self.assertEqual(0, self.x.failCount)
+        self.assertEqual(0, self.x.todoCount)
         self.assertInLog(TEST_PASS_STRING)
         self.assertNotInLog("TEST-SKIP")
         self.assertNotInLog(TEST_FAIL_STRING)
@@ -693,10 +693,10 @@ add_task({
 """)
         self.writeManifest(["test_skip.js"])
         self.assertTestResult(True, verbose=True)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(1, self.x.passCount)
-        self.assertEquals(0, self.x.failCount)
-        self.assertEquals(0, self.x.todoCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(1, self.x.passCount)
+        self.assertEqual(0, self.x.failCount)
+        self.assertEqual(0, self.x.todoCount)
         self.assertInLog(TEST_PASS_STRING)
         self.assertInLog("TEST-SKIP")
         self.assertNotInLog(TEST_FAIL_STRING)
@@ -715,10 +715,10 @@ add_test({
 """)
         self.writeManifest(["test_not_skip.js"])
         self.assertTestResult(True, verbose=True)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(1, self.x.passCount)
-        self.assertEquals(0, self.x.failCount)
-        self.assertEquals(0, self.x.todoCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(1, self.x.passCount)
+        self.assertEqual(0, self.x.failCount)
+        self.assertEqual(0, self.x.todoCount)
         self.assertInLog(TEST_PASS_STRING)
         self.assertNotInLog("TEST-SKIP")
         self.assertNotInLog(TEST_FAIL_STRING)
@@ -732,10 +732,10 @@ add_test({
         self.writeManifest(["test_syntax_error.js"])
 
         self.assertTestResult(False, verbose=True)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(0, self.x.passCount)
-        self.assertEquals(1, self.x.failCount)
-        self.assertEquals(0, self.x.todoCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(0, self.x.passCount)
+        self.assertEqual(1, self.x.failCount)
+        self.assertEqual(0, self.x.todoCount)
         self.assertInLog(TEST_FAIL_STRING)
         self.assertNotInLog(TEST_PASS_STRING)
 
@@ -761,10 +761,10 @@ add_test({
         self.x.harness_timeout = 1
 
         self.assertTestResult(False)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(1, self.x.failCount)
-        self.assertEquals(0, self.x.passCount)
-        self.assertEquals(0, self.x.todoCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(1, self.x.failCount)
+        self.assertEqual(0, self.x.passCount)
+        self.assertEqual(0, self.x.todoCount)
         self.assertInLog("TEST-UNEXPECTED-TIMEOUT")
 
         self.x.harness_timeout = old_timeout
@@ -778,10 +778,10 @@ add_test({
         self.writeManifest(["test_pass.js", "test_fail.js"])
 
         self.assertTestResult(False)
-        self.assertEquals(2, self.x.testCount)
-        self.assertEquals(1, self.x.passCount)
-        self.assertEquals(1, self.x.failCount)
-        self.assertEquals(0, self.x.todoCount)
+        self.assertEqual(2, self.x.testCount)
+        self.assertEqual(1, self.x.passCount)
+        self.assertEqual(1, self.x.failCount)
+        self.assertEqual(0, self.x.todoCount)
         self.assertInLog(TEST_PASS_STRING)
         self.assertInLog(TEST_FAIL_STRING)
 
@@ -793,10 +793,10 @@ add_test({
         self.writeFile("test_basic.js", SIMPLE_FAILING_TEST)
         self.writeManifest([("test_basic.js", "skip-if = true")])
         self.assertTestResult(True)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(0, self.x.passCount)
-        self.assertEquals(0, self.x.failCount)
-        self.assertEquals(0, self.x.todoCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(0, self.x.passCount)
+        self.assertEqual(0, self.x.failCount)
+        self.assertEqual(0, self.x.todoCount)
         self.assertNotInLog(TEST_FAIL_STRING)
         self.assertNotInLog(TEST_PASS_STRING)
 
@@ -808,10 +808,10 @@ add_test({
         self.writeFile("test_basic.js", SIMPLE_FAILING_TEST)
         self.writeManifest([("test_basic.js", "fail-if = true")])
         self.assertTestResult(True)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(0, self.x.passCount)
-        self.assertEquals(0, self.x.failCount)
-        self.assertEquals(1, self.x.todoCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(0, self.x.passCount)
+        self.assertEqual(0, self.x.failCount)
+        self.assertEqual(1, self.x.todoCount)
         self.assertInLog("TEST-FAIL")
         # This should be suppressed because the harness doesn't include
         # the full log from the xpcshell run when things pass.
@@ -826,10 +826,10 @@ add_test({
         self.writeFile("test_basic.js", SIMPLE_PASSING_TEST)
         self.writeManifest([("test_basic.js", "fail-if = true")])
         self.assertTestResult(False)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(0, self.x.passCount)
-        self.assertEquals(1, self.x.failCount)
-        self.assertEquals(0, self.x.todoCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(0, self.x.passCount)
+        self.assertEqual(1, self.x.failCount)
+        self.assertEqual(0, self.x.todoCount)
         # From the outer (Python) harness
         self.assertInLog("TEST-UNEXPECTED-PASS")
         self.assertNotInLog("TEST-KNOWN-FAIL")
@@ -842,10 +842,10 @@ add_test({
         self.writeManifest(["test_error.js"])
 
         self.assertTestResult(False)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(0, self.x.passCount)
-        self.assertEquals(1, self.x.failCount)
-        self.assertEquals(0, self.x.todoCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(0, self.x.passCount)
+        self.assertEqual(1, self.x.failCount)
+        self.assertEqual(0, self.x.todoCount)
         self.assertInLog(TEST_FAIL_STRING)
         self.assertNotInLog(TEST_PASS_STRING)
 
@@ -857,9 +857,9 @@ add_test({
         self.writeManifest(["test_simple_uncaught_rejection.js"])
 
         self.assertTestResult(False)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(0, self.x.passCount)
-        self.assertEquals(1, self.x.failCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(0, self.x.passCount)
+        self.assertEqual(1, self.x.failCount)
 
     def testUncaughtRejectionJSM(self):
         """
@@ -869,9 +869,9 @@ add_test({
         self.writeManifest(["test_simple_uncaught_rejection_jsm.js"])
 
         self.assertTestResult(False)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(0, self.x.passCount)
-        self.assertEquals(1, self.x.failCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(0, self.x.passCount)
+        self.assertEqual(1, self.x.failCount)
 
     def testAddTestSimple(self):
         """
@@ -881,9 +881,9 @@ add_test({
         self.writeManifest(["test_add_test_simple.js"])
 
         self.assertTestResult(True)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(1, self.x.passCount)
-        self.assertEquals(0, self.x.failCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(1, self.x.passCount)
+        self.assertEqual(0, self.x.failCount)
 
     def testLogCorrectFileName(self):
         """
@@ -906,9 +906,9 @@ add_test({
         self.writeManifest(["test_add_test_failing.js"])
 
         self.assertTestResult(False)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(0, self.x.passCount)
-        self.assertEquals(1, self.x.failCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(0, self.x.passCount)
+        self.assertEqual(1, self.x.failCount)
 
     def testAddTestUncaughtRejection(self):
         """
@@ -918,9 +918,9 @@ add_test({
         self.writeManifest(["test_add_test_uncaught_rejection.js"])
 
         self.assertTestResult(False)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(0, self.x.passCount)
-        self.assertEquals(1, self.x.failCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(0, self.x.passCount)
+        self.assertEqual(1, self.x.failCount)
 
     def testAddTestUncaughtRejectionJSM(self):
         """
@@ -930,9 +930,9 @@ add_test({
         self.writeManifest(["test_add_test_uncaught_rejection_jsm.js"])
 
         self.assertTestResult(False)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(0, self.x.passCount)
-        self.assertEquals(1, self.x.failCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(0, self.x.passCount)
+        self.assertEqual(1, self.x.failCount)
 
     def testAddTaskTestSingle(self):
         """
@@ -942,9 +942,9 @@ add_test({
         self.writeManifest(["test_add_task_simple.js"])
 
         self.assertTestResult(True)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(1, self.x.passCount)
-        self.assertEquals(0, self.x.failCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(1, self.x.passCount)
+        self.assertEqual(0, self.x.failCount)
 
     def testAddTaskTestMultiple(self):
         """
@@ -955,9 +955,9 @@ add_test({
         self.writeManifest(["test_add_task_multiple.js"])
 
         self.assertTestResult(True)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(1, self.x.passCount)
-        self.assertEquals(0, self.x.failCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(1, self.x.passCount)
+        self.assertEqual(0, self.x.failCount)
 
     def testAddTaskTestRejected(self):
         """
@@ -968,9 +968,9 @@ add_test({
         self.writeManifest(["test_add_task_rejected.js"])
 
         self.assertTestResult(False)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(0, self.x.passCount)
-        self.assertEquals(1, self.x.failCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(0, self.x.passCount)
+        self.assertEqual(1, self.x.failCount)
 
     def testAddTaskTestFailureInside(self):
         """
@@ -981,9 +981,9 @@ add_test({
         self.writeManifest(["test_add_task_failure_inside.js"])
 
         self.assertTestResult(False)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(0, self.x.passCount)
-        self.assertEquals(1, self.x.failCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(0, self.x.passCount)
+        self.assertEqual(1, self.x.failCount)
 
     def testAddTaskRunNextTest(self):
         """
@@ -994,9 +994,9 @@ add_test({
         self.writeManifest(["test_add_task_run_next_test.js"])
 
         self.assertTestResult(False)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(0, self.x.passCount)
-        self.assertEquals(1, self.x.failCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(0, self.x.passCount)
+        self.assertEqual(1, self.x.failCount)
 
     def testAddTaskStackTrace(self):
         """
@@ -1041,9 +1041,9 @@ add_test({
         try:
             # The actual return value is never checked because we raise.
             self.assertTestResult(True)
-        except Exception, ex:
+        except Exception as ex:
             raised = True
-            self.assertEquals(ex.message[0:9], "head file")
+            self.assertEqual(ex.message[0:9], "head file")
 
         self.assertTrue(raised)
 
@@ -1058,9 +1058,9 @@ add_test({
 
         try:
             self.assertTestResult(True)
-        except Exception, ex:
+        except Exception as ex:
             raised = True
-            self.assertEquals(ex.message[0:9], "tail file")
+            self.assertEqual(ex.message[0:9], "tail file")
 
         self.assertTrue(raised)
 
@@ -1076,8 +1076,8 @@ add_test({
 
         self.writeManifest(manifest)
         self.assertTestResult(True, shuffle=True)
-        self.assertEquals(10, self.x.testCount)
-        self.assertEquals(10, self.x.passCount)
+        self.assertEqual(10, self.x.testCount)
+        self.assertEqual(10, self.x.passCount)
 
     def testDoThrowString(self):
         """
@@ -1219,9 +1219,9 @@ add_test({
         self.writeManifest(["test_noRunTestAddTest.js"])
 
         self.assertTestResult(True)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(1, self.x.passCount)
-        self.assertEquals(0, self.x.failCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(1, self.x.passCount)
+        self.assertEqual(0, self.x.failCount)
         self.assertInLog(TEST_PASS_STRING)
         self.assertNotInLog(TEST_FAIL_STRING)
 
@@ -1233,9 +1233,9 @@ add_test({
         self.writeManifest(["test_noRunTestAddTask.js"])
 
         self.assertTestResult(True)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(1, self.x.passCount)
-        self.assertEquals(0, self.x.failCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(1, self.x.passCount)
+        self.assertEqual(0, self.x.failCount)
         self.assertInLog(TEST_PASS_STRING)
         self.assertNotInLog(TEST_FAIL_STRING)
 
@@ -1248,9 +1248,9 @@ add_test({
         self.writeManifest(["test_noRunTestAddTestAddTask.js"])
 
         self.assertTestResult(True)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(1, self.x.passCount)
-        self.assertEquals(0, self.x.failCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(1, self.x.passCount)
+        self.assertEqual(0, self.x.failCount)
         self.assertInLog(TEST_PASS_STRING)
         self.assertNotInLog(TEST_FAIL_STRING)
 
@@ -1263,9 +1263,9 @@ add_test({
         self.writeManifest(["test_noRunTestEmptyTest.js"])
 
         self.assertTestResult(True)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(1, self.x.passCount)
-        self.assertEquals(0, self.x.failCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(1, self.x.passCount)
+        self.assertEqual(0, self.x.failCount)
         self.assertInLog(TEST_PASS_STRING)
         self.assertNotInLog(TEST_FAIL_STRING)
 
@@ -1277,9 +1277,9 @@ add_test({
         self.writeManifest(["test_noRunTestAddTestFail.js"])
 
         self.assertTestResult(False)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(0, self.x.passCount)
-        self.assertEquals(1, self.x.failCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(0, self.x.passCount)
+        self.assertEqual(1, self.x.failCount)
         self.assertInLog(TEST_FAIL_STRING)
         self.assertNotInLog(TEST_PASS_STRING)
 
@@ -1291,9 +1291,9 @@ add_test({
         self.writeManifest(["test_noRunTestAddTaskFail.js"])
 
         self.assertTestResult(False)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(0, self.x.passCount)
-        self.assertEquals(1, self.x.failCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(0, self.x.passCount)
+        self.assertEqual(1, self.x.failCount)
         self.assertInLog(TEST_FAIL_STRING)
         self.assertNotInLog(TEST_PASS_STRING)
 
@@ -1305,9 +1305,9 @@ add_test({
         self.writeManifest(["test_noRunTestAddTaskMultiple.js"])
 
         self.assertTestResult(True)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(1, self.x.passCount)
-        self.assertEquals(0, self.x.failCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(1, self.x.passCount)
+        self.assertEqual(0, self.x.failCount)
         self.assertInLog(TEST_PASS_STRING)
         self.assertNotInLog(TEST_FAIL_STRING)
 
@@ -1318,10 +1318,10 @@ add_test({
         self.writeFile("test_mozinfo.js", LOAD_MOZINFO)
         self.writeManifest(["test_mozinfo.js"])
         self.assertTestResult(True)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(1, self.x.passCount)
-        self.assertEquals(0, self.x.failCount)
-        self.assertEquals(0, self.x.todoCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(1, self.x.passCount)
+        self.assertEqual(0, self.x.failCount)
+        self.assertEqual(0, self.x.todoCount)
         self.assertInLog(TEST_PASS_STRING)
         self.assertNotInLog(TEST_FAIL_STRING)
 
@@ -1333,10 +1333,10 @@ add_test({
         self.writeFile("test_child_mozinfo.js", CHILD_MOZINFO)
         self.writeManifest(["test_child_mozinfo.js"])
         self.assertTestResult(True)
-        self.assertEquals(1, self.x.testCount)
-        self.assertEquals(1, self.x.passCount)
-        self.assertEquals(0, self.x.failCount)
-        self.assertEquals(0, self.x.todoCount)
+        self.assertEqual(1, self.x.testCount)
+        self.assertEqual(1, self.x.passCount)
+        self.assertEqual(0, self.x.failCount)
+        self.assertEqual(0, self.x.todoCount)
         self.assertInLog(TEST_PASS_STRING)
         self.assertNotInLog(TEST_FAIL_STRING)
 

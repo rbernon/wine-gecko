@@ -2,7 +2,7 @@
 
 This script requires Python 2.7."""
 
-from __future__ import print_function
+
 
 import sys
 import os

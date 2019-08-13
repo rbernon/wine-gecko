@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import os
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import hashlib
 
 doctmpl = """<!doctype html>
@@ -22,7 +22,7 @@ runTests([
 testobj = "{name:'%s', input:'%s', expected:'%s'}"
 
 def appendtest(tests, input, expected):
-    tests.append(testobj % (hashlib.sha1(input).hexdigest(), urllib.quote(input[:-1]),  urllib.quote(expected[:-1])))
+    tests.append(testobj % (hashlib.sha1(input).hexdigest(), urllib.parse.quote(input[:-1]),  urllib.parse.quote(expected[:-1])))
 
 files = os.listdir('dat/')
 for file in files:

@@ -116,7 +116,7 @@ class B2GDesktopTest(BlobUploadMixin, TestingMixin, MercurialScript):
             dirs['abs_%s_dir' % d] = os.path.join(
                     dirs['abs_tests_dir'], d)
 
-        for key in dirs.keys():
+        for key in list(dirs.keys()):
             if key not in abs_dirs:
                 abs_dirs[key] = dirs[key]
         self.abs_dirs = abs_dirs

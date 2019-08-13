@@ -183,7 +183,7 @@ class Emulator(Device):
         # boot; we have to wait for the syste-message-listener-ready
         # message before we'll be able to use them successfully.  See
         # bug 792647.
-        print 'waiting for system-message-listener-ready...'
+        print('waiting for system-message-listener-ready...')
         try:
             marionette.execute_async_script("""
 waitFor(
@@ -198,13 +198,13 @@ waitFor(
             if exc_name != 'ScriptTimeoutException':
                 raise
 
-            print 'timed out'
+            print('timed out')
             # We silently ignore the timeout if it occurs, since
             # isSystemMessageListenerReady() isn't available on
             # older emulators.  45s *should* be enough of a delay
             # to allow telephony API's to work.
             pass
-        print '...done'
+        print('...done')
 
     def _get_telnet_response(self, command=None):
         output = []

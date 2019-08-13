@@ -7,7 +7,7 @@ import mozcrash
 import threading
 import os
 import posixpath
-import Queue
+import queue
 import re
 import shutil
 import signal
@@ -181,7 +181,7 @@ class B2GRemoteAutomation(Automation):
     def checkForCrashes(self, directory, symbolsPath):
         crashed = False
         remote_dump_dir = self._remoteProfile + '/minidumps'
-        print "checking for crashes in '%s'" % remote_dump_dir
+        print("checking for crashes in '%s'" % remote_dump_dir)
         if self._devicemanager.dirExists(remote_dump_dir):
             local_dump_dir = tempfile.mkdtemp()
             self._devicemanager.getDirectory(remote_dump_dir, local_dump_dir)
@@ -247,7 +247,7 @@ class B2GRemoteAutomation(Automation):
                         break
                     time.sleep(1)
                 else:
-                    print "timed out after %d seconds waiting for b2g process to exit" % timeout
+                    print("timed out after %d seconds waiting for b2g process to exit" % timeout)
                     return 1
 
                 self.checkForCrashes(None, symbolsPath)
@@ -292,7 +292,7 @@ class B2GRemoteAutomation(Automation):
         time.sleep(10)
 
         # wait for device to come back to previous status
-        print 'waiting for device to come back online after reboot'
+        print('waiting for device to come back online after reboot')
         start = time.time()
         rserial, rstatus = self.getDeviceStatus(serial)
         while rstatus != 'device':
@@ -301,7 +301,7 @@ class B2GRemoteAutomation(Automation):
                 raise Exception("Device %s (status: %s) not back online after reboot" % (serial, rstatus))
             time.sleep(5)
             rserial, rstatus = self.getDeviceStatus(serial)
-        print 'device:', serial, 'status:', rstatus
+        print('device:', serial, 'status:', rstatus)
 
     def Process(self, cmd, stdout=None, stderr=None, env=None, cwd=None):
         # On a desktop or fennec run, the Process method invokes a gecko
@@ -377,7 +377,7 @@ class B2GRemoteAutomation(Automation):
                     script = open(self.test_script, 'r')
                     self.marionette.execute_script(script.read(), script_args=self.test_script_args)
                     script.close()
-                elif isinstance(self.test_script, basestring):
+                elif isinstance(self.test_script, str):
                     self.marionette.execute_script(self.test_script, script_args=self.test_script_args)
             else:
                 # assumes the tests are started on startup automatically
@@ -396,7 +396,7 @@ class B2GRemoteAutomation(Automation):
             self.dm = dm
             self.env = env or {}
             self.stdout_proc = None
-            self.queue = Queue.Queue()
+            self.queue = queue.Queue()
 
             # Launch b2g in a separate thread, and dump all output lines
             # into a queue.  The lines in this queue are
@@ -406,7 +406,7 @@ class B2GRemoteAutomation(Automation):
             if self.dm._deviceSerial:
                 cmd.extend(['-s', self.dm._deviceSerial])
             cmd.append('shell')
-            for k, v in self.env.iteritems():
+            for k, v in self.env.items():
                 cmd.append("%s=%s" % (k, v))
             cmd.append('/system/bin/b2g.sh')
             proc = threading.Thread(target=self._save_stdout_proc, args=(cmd, self.queue))
@@ -434,14 +434,14 @@ class B2GRemoteAutomation(Automation):
             while True:
                 try:
                     lines.append(self.queue.get_nowait())
-                except Queue.Empty:
+                except queue.Empty:
                     break
 
             # wait 'timeout' for any additional lines
             if not lines:
                 try:
                     lines.append(self.queue.get(True, timeout))
-                except Queue.Empty:
+                except queue.Empty:
                     pass
             return lines
 

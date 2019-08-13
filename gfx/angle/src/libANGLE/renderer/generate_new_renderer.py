@@ -21,7 +21,7 @@ import re
 import string
 
 if len(sys.argv) < 3:
-    print('Usage: ' + sys.argv[0] + ' <renderer name> <renderer suffix>')
+    print(('Usage: ' + sys.argv[0] + ' <renderer name> <renderer suffix>'))
 
 renderer_name = sys.argv[1]
 renderer_suffix = sys.argv[2]

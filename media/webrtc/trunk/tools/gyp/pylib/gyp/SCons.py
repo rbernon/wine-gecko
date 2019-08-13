@@ -63,7 +63,7 @@ class TargetBase(object):
       return
     preamble = '\ninput_files = [\n    '
     postamble = ',\n]\n'
-    WriteList(fp, map(repr, sources), preamble=preamble, postamble=postamble)
+    WriteList(fp, list(map(repr, sources)), preamble=preamble, postamble=postamble)
 
   def builder_call(self):
     """

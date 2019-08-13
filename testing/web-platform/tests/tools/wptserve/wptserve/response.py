@@ -1,13 +1,13 @@
 from collections import OrderedDict
 from datetime import datetime, timedelta
-import Cookie
+import http.cookies
 import json
 import types
 import uuid
 import socket
 
-from constants import response_codes
-from logger import get_logger
+from .constants import response_codes
+from .logger import get_logger
 
 missing = object()
 
@@ -132,7 +132,7 @@ class Response(object):
                 max_age = int(max_age.total_seconds())
             max_age = "%.0d" % max_age
 
-        m = Cookie.Morsel()
+        m = http.cookies.Morsel()
 
         def maybe_set(key, value):
             if value is not None and value is not False:
@@ -152,13 +152,13 @@ class Response(object):
     def unset_cookie(self, name):
         """Remove a cookie from those that are being sent with the response"""
         cookies = self.headers.get("Set-Cookie")
-        parser = Cookie.BaseCookie()
+        parser = http.cookies.BaseCookie()
         for cookie in cookies:
             parser.load(cookie)
 
-        if name in parser.keys():
+        if name in list(parser.keys()):
             del self.headers["Set-Cookie"]
-            for m in parser.values():
+            for m in list(parser.values()):
                 if m.key != name:
                     self.headers.append(("Set-Cookie", m.OutputString()))
 
@@ -173,7 +173,7 @@ class Response(object):
 
         If any part of the content is a function, this will be called
         and the resulting value (if any) returned."""
-        if type(self.content) in types.StringTypes:
+        if type(self.content) in (str,):
             yield self.content
         else:
             for item in self.content:
@@ -323,7 +323,7 @@ class ResponseHeaders(object):
         self.set(key, value)
 
     def __iter__(self):
-        for key, values in self.data.itervalues():
+        for key, values in self.data.values():
             for value in values:
                 yield key, value
 
@@ -387,7 +387,7 @@ class ResponseWriter(object):
             if name.lower() not in self._headers_seen:
                 self.write_header(name, f())
 
-        if (type(self._response.content) in (str, unicode) and
+        if (type(self._response.content) in (str, str) and
             "content-length" not in self._headers_seen):
             #Would be nice to avoid double-encoding here
             self.write_header("Content-Length", len(self.encode(self._response.content)))
@@ -429,7 +429,7 @@ class ResponseWriter(object):
         """Convert unicode to bytes according to response.encoding."""
         if isinstance(data, str):
             return data
-        elif isinstance(data, unicode):
+        elif isinstance(data, str):
             return data.encode(self._response.encoding)
         else:
             raise ValueError

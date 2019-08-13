@@ -10,7 +10,7 @@ import tempfile
 import time
 import traceback
 
-from devicemanager import DeviceManager, DMError
+from .devicemanager import DeviceManager, DMError
 from mozprocess import ProcessHandler
 import mozfile
 
@@ -127,7 +127,7 @@ class DeviceManagerADB(DeviceManager):
         if cwd:
             cmdline = "cd %s; %s" % (cwd, cmdline)
         if env:
-            envstr = '; '.join(map(lambda x: 'export %s=%s' % (x[0], x[1]), env.iteritems()))
+            envstr = '; '.join(['export %s=%s' % (x[0], x[1]) for x in iter(env.items())])
             cmdline = envstr + "; " + cmdline
 
         # all output should be in stdout
@@ -388,7 +388,7 @@ class DeviceManagerADB(DeviceManager):
         if env != '' and env != None:
             envCnt = 0
             # env is expected to be a dict of environment variables
-            for envkey, envval in env.iteritems():
+            for envkey, envval in env.items():
                 acmd.append("--es")
                 acmd.append("env" + str(envCnt))
                 acmd.append(envkey + "=" + envval);
@@ -397,7 +397,7 @@ class DeviceManagerADB(DeviceManager):
             acmd.append("-d")
             acmd.append(uri)
 
-        acmd = ["shell", ' '.join(map(lambda x: '"' + x + '"', ["am", "start"] + acmd))]
+        acmd = ["shell", ' '.join(['"' + x + '"' for x in ["am", "start"] + acmd])]
         self._logger.info(acmd)
         self._checkCmd(acmd)
         return outputFile
@@ -658,7 +658,7 @@ class DeviceManagerADB(DeviceManager):
 
         try:
             self._checkCmd(["version"], timeout=self.short_timeout)
-        except os.error, err:
+        except os.error as err:
             raise DMError("unable to execute ADB (%s): ensure Android SDK is installed and adb is in your $PATH" % err)
 
     def _verifyDevice(self):

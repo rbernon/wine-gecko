@@ -9,7 +9,7 @@ import os
 
 import mozinfo
 
-from wptmanifest.parser import atoms
+from .wptmanifest.parser import atoms
 
 atom_reset = atoms["Reset"]
 

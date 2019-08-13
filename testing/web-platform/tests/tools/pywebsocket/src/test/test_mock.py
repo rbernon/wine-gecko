@@ -33,11 +33,11 @@
 """Tests for mock module."""
 
 
-import Queue
+import queue
 import threading
 import unittest
 
-import set_sys_path  # Update sys.path to locate mod_pywebsocket module.
+from . import set_sys_path  # Update sys.path to locate mod_pywebsocket module.
 
 from test import mock
 
@@ -100,9 +100,9 @@ class MockBlockingConnTest(unittest.TestCase):
                     self._queue.put(data)
 
         conn = mock.MockBlockingConn()
-        queue = Queue.Queue()
+        queue = queue.Queue()
         reader = LineReader(conn, queue)
-        self.failUnless(queue.empty())
+        self.assertTrue(queue.empty())
         conn.put_bytes('Foo bar\r\n')
         read = queue.get()
         self.assertEqual('Foo bar\r\n', read)

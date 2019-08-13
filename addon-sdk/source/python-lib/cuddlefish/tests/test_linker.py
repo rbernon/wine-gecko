@@ -5,7 +5,7 @@
 import os.path
 import shutil
 import zipfile
-from StringIO import StringIO
+from io import StringIO
 import simplejson as json
 import unittest
 import cuddlefish
@@ -29,17 +29,17 @@ class Basic(unittest.TestCase):
         target_cfg = self.get_pkg("one")
         pkg_cfg = packaging.build_config(ROOT, target_cfg)
         deps = packaging.get_deps_for_targets(pkg_cfg, ["one"])
-        self.failUnlessEqual(deps, ["one"])
+        self.assertEqual(deps, ["one"])
         deps = packaging.get_deps_for_targets(pkg_cfg,
                                               [target_cfg.name, "addon-sdk"])
-        self.failUnlessEqual(deps, ["addon-sdk", "one"])
+        self.assertEqual(deps, ["addon-sdk", "one"])
 
     def test_manifest(self):
         target_cfg = self.get_pkg("one")
         pkg_cfg = packaging.build_config(ROOT, target_cfg)
         deps = packaging.get_deps_for_targets(pkg_cfg,
                                               [target_cfg.name, "addon-sdk"])
-        self.failUnlessEqual(deps, ["addon-sdk", "one"])
+        self.assertEqual(deps, ["addon-sdk", "one"])
         # target_cfg.dependencies is not provided, so we'll search through
         # all known packages (everything in 'deps').
         m = manifest.build_manifest(target_cfg, pkg_cfg, deps, scan_tests=False)
@@ -47,7 +47,7 @@ class Basic(unittest.TestCase):
 
         def assertReqIs(modname, reqname, path):
             reqs = m["one/%s" % modname]["requirements"]
-            self.failUnlessEqual(reqs[reqname], path)
+            self.assertEqual(reqs[reqname], path)
 
         assertReqIs("main", "sdk/panel", "sdk/panel")
         assertReqIs("main", "two.js", "one/two")
@@ -69,7 +69,7 @@ class Basic(unittest.TestCase):
             # "sdk/tabs.js" mapped to "sdk/tabs", but without,
             # we just get the default (identity) mapping
             assertReqIs("main", "sdk/tabs.js", "sdk/tabs.js")
-        except Exception, e:
+        except Exception as e:
             self.fail("Must not throw from build_manifest() if modules are missing")
 
         # now, because .dependencies *is* provided, we won't search 'deps',
@@ -86,12 +86,12 @@ class Basic(unittest.TestCase):
                                          packagepath=package_path)
         deps = packaging.get_deps_for_targets(pkg_cfg,
                                               [target_cfg.name, "addon-sdk"])
-        self.failUnlessEqual(deps, ["addon-sdk", "three"])
+        self.assertEqual(deps, ["addon-sdk", "three"])
         m = manifest.build_manifest(target_cfg, pkg_cfg, deps, scan_tests=False)
         m = m.get_harness_options_manifest(False)
         def assertReqIs(modname, reqname, path):
             reqs = m["three/%s" % modname]["requirements"]
-            self.failUnlessEqual(reqs[reqname], path)
+            self.assertEqual(reqs[reqname], path)
         assertReqIs("main", "three-a", "three-a/main")
         assertReqIs("main", "three-b", "three-b/main")
         assertReqIs("main", "three-c", "three-c/main")
@@ -103,12 +103,12 @@ class Basic(unittest.TestCase):
                                          packagepath=package_path)
         deps = packaging.get_deps_for_targets(pkg_cfg,
                                               [target_cfg.name, "addon-sdk"])
-        self.failUnlessEqual(deps, ["addon-sdk", "five"])
+        self.assertEqual(deps, ["addon-sdk", "five"])
         # all we care about is that this next call doesn't raise an exception
         m = manifest.build_manifest(target_cfg, pkg_cfg, deps, scan_tests=False)
         m = m.get_harness_options_manifest(False)
         reqs = m["five/main"]["requirements"]
-        self.failUnlessEqual(reqs, {});
+        self.assertEqual(reqs, {});
 
     def test_unreachable_relative_main_in_top(self):
         target_cfg = self.get_pkg("six")
@@ -117,7 +117,7 @@ class Basic(unittest.TestCase):
                                          packagepath=package_path)
         deps = packaging.get_deps_for_targets(pkg_cfg,
                                               [target_cfg.name, "addon-sdk"])
-        self.failUnlessEqual(deps, ["addon-sdk", "six"])
+        self.assertEqual(deps, ["addon-sdk", "six"])
         self.assertRaises(manifest.UnreachablePrefixError,
                           manifest.build_manifest,
                           target_cfg, pkg_cfg, deps, scan_tests=False)
@@ -129,7 +129,7 @@ class Basic(unittest.TestCase):
                                          packagepath=package_path)
         deps = packaging.get_deps_for_targets(pkg_cfg,
                                               [target_cfg.name, "addon-sdk"])
-        self.failUnlessEqual(deps, ["addon-sdk", "four"])
+        self.assertEqual(deps, ["addon-sdk", "four"])
         self.assertRaises(manifest.UnreachablePrefixError,
                           manifest.build_manifest,
                           target_cfg, pkg_cfg, deps, scan_tests=False)
@@ -150,7 +150,7 @@ class Contents(unittest.TestCase):
             os.chdir(top)
 
     def assertIn(self, what, inside_what):
-        self.failUnless(what in inside_what, inside_what)
+        self.assertTrue(what in inside_what, inside_what)
 
     def test_jetpackID(self):
         # this uses "id": "jid7", to which a @jetpack should be appended
@@ -163,11 +163,11 @@ class Contents(unittest.TestCase):
                 # regrettably, run() always finishes with sys.exit()
                 cuddlefish.run(["xpi", "--no-strip-xpi"],
                                stdout=stdout)
-            except SystemExit, e:
-                self.failUnlessEqual(e.args[0], 0)
+            except SystemExit as e:
+                self.assertEqual(e.args[0], 0)
             zf = zipfile.ZipFile("seven.xpi", "r")
             hopts = json.loads(zf.read("harness-options.json"))
-            self.failUnlessEqual(hopts["jetpackID"], "jid7@jetpack")
+            self.assertEqual(hopts["jetpackID"], "jid7@jetpack")
         self.run_in_subdir("x", _test)
 
     def test_jetpackID_suffix(self):
@@ -181,11 +181,11 @@ class Contents(unittest.TestCase):
                 # regrettably, run() always finishes with sys.exit()
                 cuddlefish.run(["xpi", "--no-strip-xpi"],
                                stdout=stdout)
-            except SystemExit, e:
-                self.failUnlessEqual(e.args[0], 0)
+            except SystemExit as e:
+                self.assertEqual(e.args[0], 0)
             zf = zipfile.ZipFile("one.xpi", "r")
             hopts = json.loads(zf.read("harness-options.json"))
-            self.failUnlessEqual(hopts["jetpackID"], "jid1@jetpack")
+            self.assertEqual(hopts["jetpackID"], "jid1@jetpack")
         self.run_in_subdir("x", _test)
 
     def test_strip_default(self):
@@ -200,8 +200,8 @@ class Contents(unittest.TestCase):
                 # regrettably, run() always finishes with sys.exit()
                 cuddlefish.run(["xpi"], # --strip-xpi is now the default
                                stdout=stdout)
-            except SystemExit, e:
-                self.failUnlessEqual(e.args[0], 0)
+            except SystemExit as e:
+                self.assertEqual(e.args[0], 0)
             zf = zipfile.ZipFile("seven.xpi", "r")
             names = zf.namelist()
             # problem found in bug 664840 was that an addon
@@ -209,13 +209,13 @@ class Contents(unittest.TestCase):
             # the package into a bogus JID-PKGNAME-tests/ directory, so check
             # for that
             testfiles = [fn for fn in names if "seven/tests" in fn]
-            self.failUnlessEqual([], testfiles)
+            self.assertEqual([], testfiles)
             # another problem was that data files were being stripped from
             # the XPI. Note that data/ is only supposed to be included if a
             # module that actually gets used does a require("self") .
             self.assertIn("resources/seven/data/text.data",
                           names)
-            self.failIf("seven/lib/unused.js"
+            self.assertFalse("seven/lib/unused.js"
                         in names, names)
         self.run_in_subdir("x", _test)
 
@@ -229,16 +229,16 @@ class Contents(unittest.TestCase):
                 # regrettably, run() always finishes with sys.exit()
                 cuddlefish.run(["xpi", "--no-strip-xpi"],
                                stdout=stdout)
-            except SystemExit, e:
-                self.failUnlessEqual(e.args[0], 0)
+            except SystemExit as e:
+                self.assertEqual(e.args[0], 0)
             zf = zipfile.ZipFile("seven.xpi", "r")
             names = zf.namelist()
             self.assertIn("resources/addon-sdk/lib/sdk/loader/cuddlefish.js", names)
             testfiles = [fn for fn in names if "seven/tests" in fn]
-            self.failUnlessEqual([], testfiles)
+            self.assertEqual([], testfiles)
             self.assertIn("resources/seven/data/text.data",
                           names)
-            self.failUnless("resources/seven/lib/unused.js"
+            self.assertTrue("resources/seven/lib/unused.js"
                             in names, names)
         self.run_in_subdir("x", _test)
 

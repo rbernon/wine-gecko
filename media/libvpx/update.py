@@ -9,7 +9,7 @@ import shutil
 import sys
 import subprocess
 from pprint import pprint
-from StringIO import StringIO
+from io import StringIO
 
 PLATFORMS= [
   'x86-win32-vs12',
@@ -411,18 +411,18 @@ def prepare_upstream(prefix, commit=None):
 
         if target == 'armv7-android-gcc':
             configure += ['--sdk-path=%s' % ndk_path]
-        print "\n" + target_objdir
-        print " ".join(configure)
+        print("\n" + target_objdir)
+        print(" ".join(configure))
         sys.stdout.flush()
         subprocess.call(configure)
         make_targets = [f for f in platform_files if not os.path.exists(f)]
         if make_targets:
-            print " ".join(['make'] + make_targets)
+            print(" ".join(['make'] + make_targets))
             sys.stdout.flush()
             subprocess.call(['make'] + make_targets)
         for f in make_targets:
             if not os.path.exists(f):
-                print "%s missing from %s, check toolchain" % (f, target)
+                print("%s missing from %s, check toolchain" % (f, target))
                 sys.exit(1)
 
     os.chdir(base)
@@ -504,7 +504,7 @@ def update_sources_mozbuild(files, sources_mozbuild):
     pprint(files, stream=f)
     sources_mozbuild_new = "files = {\n %s\n}\n" % f.getvalue().strip()[1:-1]
     if sources_mozbuild != sources_mozbuild_new:
-        print 'updating sources.mozbuild'
+        print('updating sources.mozbuild')
         with open('sources.mozbuild', 'w') as f:
             f.write(sources_mozbuild_new)
 
@@ -534,7 +534,7 @@ def update_and_remove_files(prefix, libvpx_files, files):
     current_files = get_current_files()
 
     def copy(src, dst):
-        print '    ', dst
+        print('    ', dst)
         shutil.copy(src, dst)
 
     # Update files
@@ -547,7 +547,7 @@ def update_and_remove_files(prefix, libvpx_files, files):
         f = rename_files.get(f, f)
         if is_new(f, s):
             if first:
-                print "Copy files:"
+                print("Copy files:")
                 first = False
             copy(s, f)
 
@@ -560,7 +560,7 @@ def update_and_remove_files(prefix, libvpx_files, files):
             f = os.path.join(prefix, 'objdir', target, f)
             if is_new(f, t):
                 if first:
-                    print "Copy files for %s:" % target
+                    print("Copy files for %s:" % target)
                     first = False
                 copy(f, t)
 
@@ -571,16 +571,16 @@ def update_and_remove_files(prefix, libvpx_files, files):
         copy(s, f)
 
     # Remove unknown files from tree
-    removed_files = [f for f in current_files if f not in libvpx_files and f not in rename_files.values()]
+    removed_files = [f for f in current_files if f not in libvpx_files and f not in list(rename_files.values())]
     for f in rename_files:
         if os.path.exists(f) and os.path.exists(rename_files[f]) and not f in removed_files:
             removed_files.append(f)
 
     if removed_files:
-        print "Remove files:"
+        print("Remove files:")
         for f in removed_files:
             os.unlink(f)
-            print '    ', f
+            print('    ', f)
 
 def apply_patches():
     # Patch to permit vpx users to specify their own <stdint.h> types.
@@ -624,29 +624,29 @@ def update_readme(commit):
 def print_info(source, files, disabled, unknown, moz_build_files):
     for key in moz_build_files:
         if key not in files:
-            print key, 'MISSING'
+            print(key, 'MISSING')
         else:
             gone = set(moz_build_files[key]) - set(files[key])
             new = set(files[key]) - set(moz_build_files[key])
             if gone:
-                print key, 'GONE:'
-                print '    '+ '\n    '.join(gone)
+                print(key, 'GONE:')
+                print('    '+ '\n    '.join(gone))
             if new:
-                print key, 'NEW:'
-                print '    '+ '\n    '.join(new)
+                print(key, 'NEW:')
+                print('    '+ '\n    '.join(new))
 
     if unknown:
-        print "Please update this script, the following modules are unknown"
+        print("Please update this script, the following modules are unknown")
         pprint(unknown)
 
     if DEBUG:
-        print "===== SOURCE"
+        print("===== SOURCE")
         pprint(source)
-        print "===== FILES"
+        print("===== FILES")
         pprint(files)
-        print "===== DISABLED"
+        print("===== DISABLED")
         pprint(disabled)
-        print "===== UNKNOWN"
+        print("===== UNKNOWN")
         pprint(unknown)
 
 

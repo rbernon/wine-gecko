@@ -1,1 +1,1 @@
-from html import HTMLFormatter
+from .html import HTMLFormatter

@@ -5,7 +5,7 @@
 '''Given a list of object files and library names, prints a library
 descriptor to standard output'''
 
-from __future__ import with_statement
+
 import sys
 import os
 import expandlibs_config as conf
@@ -38,4 +38,4 @@ if __name__ == '__main__':
 
     ensureParentDir(options.output)
     with open(options.output, 'w') as outfile:
-        print >>outfile, generate(args)
+        print(generate(args), file=outfile)

@@ -17,7 +17,7 @@ are detected and it is fixed earlier.
 """
 
 import json
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import math
 import sys
 from optparse import OptionParser
@@ -63,12 +63,12 @@ def get_raw_data_for_revisions(revisions):
     selectors = ["revision=%s" % revision for revision in revisions]
     selector = '&'.join(selectors)
     url = "http://graphs.mozilla.org/api/test/runs/revisions?%s" % selector
-    url_stream = urllib2.urlopen(url)
+    url_stream = urllib.request.urlopen(url)
     data = json.load(url_stream)
-    assert frozenset(data.keys()) == frozenset(('stat', 'revisions'))
+    assert frozenset(list(data.keys())) == frozenset(('stat', 'revisions'))
     assert data['stat'] == 'ok'
     rev_data = data['revisions']
-    assert frozenset(rev_data.keys()) == frozenset(revisions)
+    assert frozenset(list(rev_data.keys())) == frozenset(revisions)
     return [rev_data[r] for r in revisions]
 
 def mean(values):
@@ -107,7 +107,7 @@ class BenchmarkResult:
 # perspective?
 def digest_revision_data(data):
     ret = {}
-    benchmarks = frozenset(data.keys())
+    benchmarks = frozenset(list(data.keys()))
     # assert that all the benchmarks are known. If they are not,
     # smaller_is_better or bigger_is_better needs to be updated depending on
     # the benchmark type.
@@ -116,9 +116,9 @@ def digest_revision_data(data):
     for benchmark in benchmarks:
         benchmark_data = data[benchmark]
         expected_keys = frozenset(("test_runs", "name", "id"))
-        assert frozenset(benchmark_data.keys()) == expected_keys
+        assert frozenset(list(benchmark_data.keys())) == expected_keys
         test_runs = benchmark_data["test_runs"]
-        operating_systems = test_runs.keys()
+        operating_systems = list(test_runs.keys())
         results = {}
         for os in operating_systems:
             os_runs = test_runs[os]
@@ -165,15 +165,15 @@ def print_data_comparison(datav):
     assert len(datav) == 2
     old_data = datav[0]
     new_data = datav[1]
-    old_benchmarks = frozenset(old_data.keys())
-    new_benchmarks = frozenset(new_data.keys())
+    old_benchmarks = frozenset(list(old_data.keys()))
+    new_benchmarks = frozenset(list(new_data.keys()))
     benchmarks = old_benchmarks.intersection(new_benchmarks)
     for benchmark in sorted(benchmarks):
-        print benchmark
+        print(benchmark)
         old_benchmark_data = old_data[benchmark]
         new_benchmark_data = new_data[benchmark]
-        old_operating_systems = frozenset(old_benchmark_data.keys())
-        new_operating_systems = frozenset(new_benchmark_data.keys())
+        old_operating_systems = frozenset(list(old_benchmark_data.keys()))
+        new_operating_systems = frozenset(list(new_benchmark_data.keys()))
         operating_systems = old_operating_systems.intersection(new_operating_systems)
         for os in sorted(operating_systems):
             old_os_data = old_benchmark_data[os]
@@ -182,9 +182,9 @@ def print_data_comparison(datav):
                 continue
 
             diff = compute_difference(benchmark, old_os_data, new_os_data)
-            print '%-33s | %-30s -> %-30s %s' % \
-                (os, old_os_data, new_os_data, diff)
-        print
+            print('%-33s | %-30s -> %-30s %s' % \
+                (os, old_os_data, new_os_data, diff))
+        print()
 
 def main():
     parser = OptionParser(usage='Usage: %prog old_revision new_revision')

@@ -345,7 +345,7 @@ non_errors = {
     "picture-global-attributes": "<picture title=x class=x dir=ltr hidden id=asdf tabindex=0><img src=x alt></picture>",
 }
 
-for key in errors.keys():
+for key in list(errors.keys()):
     template_error = template
     template_error += '<title>invalid %s</title>\n' % key
     template_error += errors[key]
@@ -355,10 +355,10 @@ for key in errors.keys():
 
 file = open(os.path.join(ccdir, "html/elements/picture/picture-isvalid.html"), 'wb')
 file.write(template + '<title>valid picture</title>\n')
-for key in non_errors_in_head.keys():
+for key in list(non_errors_in_head.keys()):
     file.write('%s <!-- %s -->\n' % (non_errors_in_head[key], key))
 file.write('<body>\n')
-for key in non_errors.keys():
+for key in list(non_errors.keys()):
     file.write('%s <!-- %s -->\n' % (non_errors[key], key))
 file.close()
 # vim: ts=4:sw=4

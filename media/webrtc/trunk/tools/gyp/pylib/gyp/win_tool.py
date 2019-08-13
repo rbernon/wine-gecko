@@ -103,7 +103,7 @@ class WinTool(object):
       out, _ = popen.communicate()
       for line in out.splitlines():
         if not line.startswith('   Creating library '):
-          print line
+          print(line)
       return popen.returncode
 
   def ExecManifestWrapper(self, arch, *args):
@@ -116,7 +116,7 @@ class WinTool(object):
     out, _ = popen.communicate()
     for line in out.splitlines():
       if line and 'manifest authoring warning 81010002' not in line:
-        print line
+        print(line)
     return popen.returncode
 
   def ExecMidlWrapper(self, arch, outdir, tlb, h, dlldata, iid, proxy, idl,
@@ -145,7 +145,7 @@ class WinTool(object):
     processing = set(os.path.basename(x) for x in lines if x.startswith(prefix))
     for line in lines:
       if not line.startswith(prefix) and line not in processing:
-        print line
+        print(line)
     return popen.returncode
 
   def ExecAsmWrapper(self, arch, *args):
@@ -162,7 +162,7 @@ class WinTool(object):
           not line.startswith('Microsoft (R) Macro Assembler') and
           not line.startswith(' Assembling: ') and
           line):
-        print line
+        print(line)
     return popen.returncode
 
   def ExecRcWrapper(self, arch, *args):
@@ -176,7 +176,7 @@ class WinTool(object):
       if (not line.startswith('Microsoft (R) Windows (R) Resource Compiler') and
           not line.startswith('Copyright (C) Microsoft Corporation') and
           line):
-        print line
+        print(line)
     return popen.returncode
 
   def ExecActionWrapper(self, arch, rspfile, *dir):

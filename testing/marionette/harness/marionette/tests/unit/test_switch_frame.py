@@ -107,7 +107,7 @@ class TestSwitchFrame(MarionetteTestCase):
         self.marionette.navigate(test_html)
         self.marionette.switch_to_frame(2)
         element = self.marionette.find_element(By.ID, "email")
-        self.assertEquals("email", element.get_attribute("type"))
+        self.assertEqual("email", element.get_attribute("type"))
 
     def test_should_be_able_to_switch_to_a_frame_using_a_previously_located_element(self):
         test_html = self.marionette.absolute_url("frameset.html")
@@ -116,7 +116,7 @@ class TestSwitchFrame(MarionetteTestCase):
         self.marionette.switch_to_frame(frame)
 
         element = self.marionette.find_element(By.ID, "email")
-        self.assertEquals("email", element.get_attribute("type"))
+        self.assertEqual("email", element.get_attribute("type"))
 
     def test_switch_to_frame_with_out_of_bounds_index(self):
         self.marionette.navigate(self.marionette.absolute_url("test_iframe.html"))

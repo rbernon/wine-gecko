@@ -62,7 +62,7 @@ class CLI(MozProfileCLI):
             self.profile_class = get_app_context(app).profile_class
         except KeyError:
             self.parser.error('Application "%s" unknown (should be one of "%s")' %
-                              (app, ', '.join(runners.keys())))
+                              (app, ', '.join(list(runners.keys()))))
 
     def add_options(self, parser):
         """add options to the parser"""
@@ -94,7 +94,7 @@ class CLI(MozProfileCLI):
 
     def command_args(self):
         """additional arguments for the mozilla application"""
-        return map(os.path.expanduser, self.options.appArgs)
+        return list(map(os.path.expanduser, self.options.appArgs))
 
     def runner_args(self):
         """arguments to instantiate the runner class"""
@@ -135,7 +135,7 @@ class CLI(MozProfileCLI):
         # attach a debugger if specified
         debug_args, interactive = self.debugger_arguments()
         runner.start(debug_args=debug_args, interactive=interactive)
-        print 'Starting: ' + ' '.join(runner.command)
+        print('Starting: ' + ' '.join(runner.command))
         try:
             runner.wait()
         except KeyboardInterrupt:

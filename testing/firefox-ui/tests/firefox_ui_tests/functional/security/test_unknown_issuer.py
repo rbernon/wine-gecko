@@ -27,7 +27,7 @@ class TestUnknownIssuer(FirefoxTestCase):
 
             # Check the link in cert_domain_link
             link = self.marionette.find_element(By.ID, 'cert_domain_link')
-            self.assertEquals(link.get_attribute('textContent'),
+            self.assertEqual(link.get_attribute('textContent'),
                               'ssl-selfsigned-unknownissuer.mozqa.com')
 
             # Verify the "Go Back" and "Advanced" buttons appear

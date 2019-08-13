@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, unicode_literals
+
 from six import text_type
 from six.moves import http_client
 
@@ -570,7 +570,7 @@ class EncodingBytes(bytes):
             raise TypeError
         return self[p:p + 1]
 
-    def next(self):
+    def __next__(self):
         # Py2 compat
         return self.__next__()
 

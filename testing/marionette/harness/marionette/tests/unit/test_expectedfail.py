@@ -7,4 +7,4 @@ from marionette import MarionetteTestCase
 class TestFail(MarionetteTestCase):
     def test_fails(self):
         # this test is supposed to fail!
-        self.assertEquals(True, False)
+        self.assertEqual(True, False)

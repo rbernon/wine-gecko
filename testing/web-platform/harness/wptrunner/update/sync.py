@@ -9,8 +9,8 @@ import uuid
 
 from .. import testloader
 
-from base import Step, StepRunner
-from tree import Commit
+from .base import Step, StepRunner
+from .tree import Commit
 
 here = os.path.abspath(os.path.split(__file__)[0])
 
@@ -96,7 +96,7 @@ class UpdateCheckout(Step):
                          state.local_branch)
         sync_path = os.path.abspath(sync_tree.root)
         if not sync_path in sys.path:
-            from update import setup_paths
+            from .update import setup_paths
             setup_paths(sync_path)
 
     def restore(self, state):

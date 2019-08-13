@@ -16,13 +16,13 @@ class TestUsingPermssions(MarionetteTestCase):
                                                 'alarms': new_alarm}):
             now_perm = self.marionette.get_permission('systemXHR')
             now_alarm = self.marionette.get_permission('alarms')
-            self.assertEquals(new_perm, now_perm)
-            self.assertNotEquals(now_perm, original_perm)
-            self.assertEquals(new_alarm, now_alarm)
-            self.assertNotEquals(now_alarm, original_alarm)
-        self.assertEquals(original_perm,
+            self.assertEqual(new_perm, now_perm)
+            self.assertNotEqual(now_perm, original_perm)
+            self.assertEqual(new_alarm, now_alarm)
+            self.assertNotEqual(now_alarm, original_alarm)
+        self.assertEqual(original_perm,
                           self.marionette.get_permission('systemXHR'))
-        self.assertEquals(original_alarm,
+        self.assertEqual(original_alarm,
                           self.marionette.get_permission('alarms'))
 
     def test_exception_using_permissions(self):
@@ -32,10 +32,10 @@ class TestUsingPermssions(MarionetteTestCase):
         new_perm = True if original_perm != 1 else False
         with self.marionette.using_permissions({'systemXHR': new_perm}):
             now_perm = self.marionette.get_permission('systemXHR')
-            self.assertEquals(new_perm, now_perm)
-            self.assertNotEquals(now_perm, original_perm)
+            self.assertEqual(new_perm, now_perm)
+            self.assertNotEqual(now_perm, original_perm)
             self.assertRaises(JavascriptException,
                               self.marionette.execute_script,
                               "return foo.bar.baz;")
-        self.assertEquals(original_perm,
+        self.assertEqual(original_perm,
                           self.marionette.get_permission('systemXHR'))

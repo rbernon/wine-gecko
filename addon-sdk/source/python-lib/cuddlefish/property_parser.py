@@ -14,7 +14,7 @@ def parse_file(path):
 def read_file(path):
     try:
         return codecs.open( path, "r", "utf-8" ).readlines()
-    except UnicodeDecodeError, e:
+    except UnicodeDecodeError as e:
         raise MalformedLocaleFileError(
           'Following locale file is not a valid ' +
           'UTF-8 file: %s\n%s"' % (path, str(e)))
@@ -59,7 +59,7 @@ def parse(lines, path=None):
                 line = lines.next().strip()
                 while line.endswith("\\"):
                     val += line[:-1].lstrip()
-                    line = lines.next()
+                    line = next(lines)
                     lineNo += 1
                 val += line.strip()
             except StopIteration:
@@ -104,7 +104,7 @@ def normalize_plural(path, pairs):
                       'You have to defined following key:\n%s'
                       % (path, main_key, key, main_key))
         # convert generic form into an object if it is still a string
-        if isinstance(pairs[main_key], unicode):
+        if isinstance(pairs[main_key], str):
             pairs[main_key] = {"other": pairs[main_key]}
         # then, add this new plural form
         pairs[main_key][plural_form] = pairs[key]

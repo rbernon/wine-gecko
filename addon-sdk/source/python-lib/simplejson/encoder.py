@@ -245,11 +245,11 @@ class JSONEncoder(object):
             encoder = encode_basestring
         allow_nan = self.allow_nan
         if self.sort_keys:
-            keys = dct.keys()
+            keys = list(dct.keys())
             keys.sort()
             items = [(k, dct[k]) for k in keys]
         else:
-            items = dct.iteritems()
+            items = iter(dct.items())
         _encoding = self.encoding
         _do_decode = (_encoding is not None
             and not (_encoding == 'utf-8'))
@@ -257,13 +257,13 @@ class JSONEncoder(object):
             if isinstance(key, str):
                 if _do_decode:
                     key = key.decode(_encoding)
-            elif isinstance(key, basestring):
+            elif isinstance(key, str):
                 pass
             # JavaScript is weakly typed for these, so it makes sense to
             # also allow them.  Many encoders seem to do something like this.
             elif isinstance(key, float):
                 key = floatstr(key, allow_nan)
-            elif isinstance(key, (int, long)):
+            elif isinstance(key, int):
                 key = str(key)
             elif key is True:
                 key = 'true'
@@ -291,7 +291,7 @@ class JSONEncoder(object):
             del markers[markerid]
 
     def _iterencode(self, o, markers=None):
-        if isinstance(o, basestring):
+        if isinstance(o, str):
             if self.ensure_ascii:
                 encoder = encode_basestring_ascii
             else:
@@ -307,7 +307,7 @@ class JSONEncoder(object):
             yield 'true'
         elif o is False:
             yield 'false'
-        elif isinstance(o, (int, long)):
+        elif isinstance(o, int):
             yield str(o)
         elif isinstance(o, float):
             yield floatstr(o, self.allow_nan)
@@ -360,7 +360,7 @@ class JSONEncoder(object):
         '{"foo": ["bar", "baz"]}'
         """
         # This is for extremely simple cases and benchmarks.
-        if isinstance(o, basestring):
+        if isinstance(o, str):
             if isinstance(o, str):
                 _encoding = self.encoding
                 if (_encoding is not None 

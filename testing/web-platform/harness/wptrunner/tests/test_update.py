@@ -3,7 +3,7 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import unittest
-import StringIO
+import io
 
 from .. import metadata, manifestupdate
 from mozlog import structuredlog, handlers, formatters
@@ -11,14 +11,14 @@ from mozlog import structuredlog, handlers, formatters
 
 class TestExpectedUpdater(unittest.TestCase):
     def create_manifest(self, data, test_path="path/to/test.ini"):
-        f = StringIO.StringIO(data)
+        f = io.StringIO(data)
         return manifestupdate.compile(f, test_path)
 
     def create_updater(self, data, **kwargs):
         expected_tree = {}
         id_path_map = {}
         for test_path, test_ids, manifest_str in data:
-            if isinstance(test_ids, (str, unicode)):
+            if isinstance(test_ids, str):
                 test_ids = [test_ids]
             expected_tree[test_path] = self.create_manifest(manifest_str, test_path)
             for test_id in test_ids:
@@ -28,7 +28,7 @@ class TestExpectedUpdater(unittest.TestCase):
 
     def create_log(self, *args, **kwargs):
         logger = structuredlog.StructuredLogger("expected_test")
-        data = StringIO.StringIO()
+        data = io.StringIO()
         handler = handlers.StreamHandler(data, formatters.JSONFormatter())
         logger.add_handler(handler)
 
@@ -91,7 +91,7 @@ class TestExpectedUpdater(unittest.TestCase):
         new_manifest = updater.expected_tree["path/to/test.htm.ini"]
         self.coalesce_results([new_manifest])
         self.assertFalse(new_manifest.is_empty)
-        self.assertEquals(new_manifest.get_test(test_id).children[0].get("expected"), "FAIL")
+        self.assertEqual(new_manifest.get_test(test_id).children[0].get("expected"), "FAIL")
 
     def test_new_subtest(self):
         test_id = "/path/to/test.htm"
@@ -117,8 +117,8 @@ class TestExpectedUpdater(unittest.TestCase):
         new_manifest = updater.expected_tree["path/to/test.htm.ini"]
         self.coalesce_results([new_manifest])
         self.assertFalse(new_manifest.is_empty)
-        self.assertEquals(new_manifest.get_test(test_id).children[0].get("expected"), "FAIL")
-        self.assertEquals(new_manifest.get_test(test_id).children[1].get("expected"), "FAIL")
+        self.assertEqual(new_manifest.get_test(test_id).children[0].get("expected"), "FAIL")
+        self.assertEqual(new_manifest.get_test(test_id).children[1].get("expected"), "FAIL")
 
     def test_update_multiple_0(self):
         test_id = "/path/to/test.htm"
@@ -154,9 +154,9 @@ class TestExpectedUpdater(unittest.TestCase):
         self.coalesce_results([new_manifest])
 
         self.assertFalse(new_manifest.is_empty)
-        self.assertEquals(new_manifest.get_test(test_id).children[0].get(
+        self.assertEqual(new_manifest.get_test(test_id).children[0].get(
             "expected", {"debug": False, "os": "osx"}), "FAIL")
-        self.assertEquals(new_manifest.get_test(test_id).children[0].get(
+        self.assertEqual(new_manifest.get_test(test_id).children[0].get(
             "expected", {"debug": False, "os": "linux"}), "TIMEOUT")
 
     def test_update_multiple_1(self):
@@ -193,11 +193,11 @@ class TestExpectedUpdater(unittest.TestCase):
         self.coalesce_results([new_manifest])
 
         self.assertFalse(new_manifest.is_empty)
-        self.assertEquals(new_manifest.get_test(test_id).children[0].get(
+        self.assertEqual(new_manifest.get_test(test_id).children[0].get(
             "expected", {"debug": False, "os": "osx"}), "FAIL")
-        self.assertEquals(new_manifest.get_test(test_id).children[0].get(
+        self.assertEqual(new_manifest.get_test(test_id).children[0].get(
             "expected", {"debug": False, "os": "linux"}), "TIMEOUT")
-        self.assertEquals(new_manifest.get_test(test_id).children[0].get(
+        self.assertEqual(new_manifest.get_test(test_id).children[0].get(
             "expected", {"debug": False, "os": "windows"}), "FAIL")
 
     def test_update_multiple_2(self):
@@ -234,9 +234,9 @@ class TestExpectedUpdater(unittest.TestCase):
         self.coalesce_results([new_manifest])
 
         self.assertFalse(new_manifest.is_empty)
-        self.assertEquals(new_manifest.get_test(test_id).children[0].get(
+        self.assertEqual(new_manifest.get_test(test_id).children[0].get(
             "expected", {"debug": False, "os": "osx"}), "FAIL")
-        self.assertEquals(new_manifest.get_test(test_id).children[0].get(
+        self.assertEqual(new_manifest.get_test(test_id).children[0].get(
             "expected", {"debug": True, "os": "osx"}), "TIMEOUT")
 
     def test_update_multiple_3(self):
@@ -275,9 +275,9 @@ class TestExpectedUpdater(unittest.TestCase):
         self.coalesce_results([new_manifest])
 
         self.assertFalse(new_manifest.is_empty)
-        self.assertEquals(new_manifest.get_test(test_id).children[0].get(
+        self.assertEqual(new_manifest.get_test(test_id).children[0].get(
             "expected", {"debug": False, "os": "osx"}), "FAIL")
-        self.assertEquals(new_manifest.get_test(test_id).children[0].get(
+        self.assertEqual(new_manifest.get_test(test_id).children[0].get(
             "expected", {"debug": True, "os": "osx"}), "TIMEOUT")
 
     def test_update_ignore_existing(self):
@@ -316,7 +316,7 @@ class TestExpectedUpdater(unittest.TestCase):
         self.coalesce_results([new_manifest])
 
         self.assertFalse(new_manifest.is_empty)
-        self.assertEquals(new_manifest.get_test(test_id).children[0].get(
+        self.assertEqual(new_manifest.get_test(test_id).children[0].get(
             "expected", {"debug": True, "os": "osx"}), "FAIL")
-        self.assertEquals(new_manifest.get_test(test_id).children[0].get(
+        self.assertEqual(new_manifest.get_test(test_id).children[0].get(
             "expected", {"debug": False, "os": "osx"}), "FAIL")

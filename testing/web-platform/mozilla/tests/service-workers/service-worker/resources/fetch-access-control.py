@@ -37,7 +37,7 @@ def main(request, response):
     cookie = request.cookies['cookie'].value if 'cookie' in request.cookies else "undefined"
 
     files = []
-    for key, values in request.POST.iteritems():
+    for key, values in request.POST.items():
         assert len(values) == 1
         value = values[0]
         if not hasattr(value, "file"):
@@ -50,10 +50,10 @@ def main(request, response):
                       "size": len(data),
                       "content": data})
 
-    get_data = {key:request.GET[key] for key,value in request.GET.iteritems()}
-    post_data = {key:request.POST[key] for key,value in request.POST.iteritems()
+    get_data = {key:request.GET[key] for key,value in request.GET.items()}
+    post_data = {key:request.POST[key] for key,value in request.POST.items()
                  if not hasattr(request.POST[key], "file")}
-    headers_data = {key:request.headers[key] for key,value in request.headers.iteritems()}
+    headers_data = {key:request.headers[key] for key,value in request.headers.items()}
 
     data = {"jsonpResult": "success",
             "method": request.method,

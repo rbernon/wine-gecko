@@ -12,7 +12,7 @@ import which
 
 from collections import defaultdict
 
-import ConfigParser
+import configparser
 
 
 def arg_parser():
@@ -43,7 +43,7 @@ def arg_parser():
     parser.add_argument('-v', "--verbose", dest='verbose', action='store_true', default=False,
                         help='Print detailed information about the resulting test selection '
                         'and commands performed.')
-    for arg, opts in AutoTry.pass_through_arguments.items():
+    for arg, opts in list(AutoTry.pass_through_arguments.items()):
         parser.add_argument(arg, **opts)
     return parser
 
@@ -96,7 +96,7 @@ class TryArgumentParser(object):
 
     def consume(self):
         try:
-            self.token = self.tokens.next()
+            self.token = next(self.tokens)
         except StopIteration:
             self.token = (self.EOF, None)
 
@@ -230,14 +230,14 @@ class AutoTry(object):
         return os.path.join(self.mach_context.state_dir, "autotry.ini")
 
     def load_config(self, name):
-        config = ConfigParser.RawConfigParser()
+        config = configparser.RawConfigParser()
         success = config.read([self.config_path])
         if not success:
             return None
 
         try:
             data = config.get("try", name)
-        except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
+        except (configparser.NoSectionError, configparser.NoOptionError):
             return None
 
         kwargs = vars(arg_parser().parse_args(self.split_try_string(data)))
@@ -245,21 +245,21 @@ class AutoTry(object):
         return kwargs
 
     def list_presets(self):
-        config = ConfigParser.RawConfigParser()
+        config = configparser.RawConfigParser()
         success = config.read([self.config_path])
 
         data = []
         if success:
             try:
                 data = config.items("try")
-            except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
+            except (configparser.NoSectionError, configparser.NoOptionError):
                 pass
 
         if not data:
             print("No presets found")
 
         for name, try_string in data:
-            print("%s: %s" % (name, try_string))
+            print(("%s: %s" % (name, try_string)))
 
     def split_try_string(self, data):
         return re.findall(r'(?:\[.*?\]|\S)+', data)
@@ -268,7 +268,7 @@ class AutoTry(object):
         assert data.startswith("try: ")
         data = data[len("try: "):]
 
-        parser = ConfigParser.RawConfigParser()
+        parser = configparser.RawConfigParser()
         parser.read([self.config_path])
 
         if not parser.has_section("try"):
@@ -304,7 +304,7 @@ class AutoTry(object):
                     dir_relpath = os.path.dirname(file_relpath)
                     paths_by_flavor[flavor].add(dir_relpath)
 
-        for flavor, path_set in paths_by_flavor.items():
+        for flavor, path_set in list(paths_by_flavor.items()):
             paths_by_flavor[flavor] = self.deduplicate_prefixes(path_set, paths)
 
         return dict(paths_by_flavor)
@@ -341,7 +341,7 @@ class AutoTry(object):
 
         suites = tests if not intersection else {}
         paths = set()
-        for flavor, flavor_tests in paths_by_flavor.iteritems():
+        for flavor, flavor_tests in paths_by_flavor.items():
             suite = self.flavor_suites[flavor]
             if suite not in suites and (not intersection or suite in tests):
                 for job_name in self.flavor_jobs[flavor]:
@@ -366,8 +366,8 @@ class AutoTry(object):
         if paths:
             parts.append("--try-test-paths %s" % " ".join(sorted(paths)))
 
-        args_by_dest = {v['dest']: k for k, v in AutoTry.pass_through_arguments.items()}
-        for dest, value in extras.iteritems():
+        args_by_dest = {v['dest']: k for k, v in list(AutoTry.pass_through_arguments.items())}
+        for dest, value in extras.items():
             assert dest in args_by_dest
             arg = args_by_dest[dest]
             action = AutoTry.pass_through_arguments[arg]['action']
@@ -387,8 +387,8 @@ class AutoTry(object):
         args = ['git'] + list(args)
         ret = subprocess.call(args)
         if ret:
-            print('ERROR git command %s returned %s' %
-                  (args, ret))
+            print(('ERROR git command %s returned %s' %
+                  (args, ret)))
             sys.exit(1)
 
     def _git_push_to_try(self, msg):
@@ -415,8 +415,8 @@ class AutoTry(object):
             return subprocess.check_output(args).strip('\0').split('\0')
         except subprocess.CalledProcessError as e:
             print('Failed while determining files changed on this branch')
-            print('Failed whle running: %s' % args)
-            print(e.output)
+            print(('Failed whle running: %s' % args))
+            print((e.output))
             sys.exit(1)
 
     def _hg_find_changed_files(self):
@@ -431,8 +431,8 @@ class AutoTry(object):
         except subprocess.CalledProcessError as e:
             print('Failed while finding files changed since the last '
                   'public ancestor')
-            print('Failed whle running: %s' % hg_args)
-            print(e.output)
+            print(('Failed whle running: %s' % hg_args))
+            print((e.output))
             sys.exit(1)
 
     def find_changed_files(self):
@@ -451,7 +451,7 @@ class AutoTry(object):
                 hg_args = ['hg', 'push-to-try', '-m', msg]
                 subprocess.check_call(hg_args, stderr=subprocess.STDOUT)
             except subprocess.CalledProcessError as e:
-                print('ERROR hg command %s returned %s' % (hg_args, e.returncode))
+                print(('ERROR hg command %s returned %s' % (hg_args, e.returncode)))
                 print('The "push-to-try" hg extension is required to push from '
                       'hg to try with the autotry command.\n\nIt can be installed '
                       'to Mercurial 3.3 or above by running ./mach mercurial-setup')
@@ -481,8 +481,8 @@ class AutoTry(object):
         changed_files = self.find_changed_files()
         if changed_files:
             if verbose:
-                print("Pushing tests based on modifications to the "
-                      "following files:\n\t%s" % "\n\t".join(changed_files))
+                print(("Pushing tests based on modifications to the "
+                      "following files:\n\t%s" % "\n\t".join(changed_files)))
 
             from mozbuild.frontend.reader import (
                 BuildReader,
@@ -493,15 +493,15 @@ class AutoTry(object):
             reader = BuildReader(config)
             files_info = reader.files_info(changed_files)
 
-            for path, info in files_info.items():
+            for path, info in list(files_info.items()):
                 paths |= info.test_files
                 tags |= info.test_tags
 
             if verbose:
                 if paths:
-                    print("Pushing tests based on the following patterns:\n\t%s" %
-                          "\n\t".join(paths))
+                    print(("Pushing tests based on the following patterns:\n\t%s" %
+                          "\n\t".join(paths)))
                 if tags:
-                    print("Pushing tests based on the following tags:\n\t%s" %
-                          "\n\t".join(tags))
+                    print(("Pushing tests based on the following tags:\n\t%s" %
+                          "\n\t".join(tags)))
         return paths, tags

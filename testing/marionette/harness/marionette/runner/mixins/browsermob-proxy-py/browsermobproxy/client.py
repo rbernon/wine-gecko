@@ -3,7 +3,7 @@ import requests
 try:
   from urllib.parse import urlencode, unquote
 except ImportError:
-  from urllib import urlencode, unquote
+  from urllib.parse import urlencode, unquote
 import json
 
 

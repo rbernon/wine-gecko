@@ -81,7 +81,7 @@ class UpdateTestRunner(FirefoxUITestRunner):
             results['Fallback'] = False if self.failed else True
 
         self.logger.info("Summary of update tests:")
-        for test_type, result in results.iteritems():
+        for test_type, result in results.items():
             self.logger.info("\t%s update test ran and %s" %
                              (test_type, 'PASSED' if result else 'FAILED'))
 
@@ -91,4 +91,4 @@ class UpdateTestRunner(FirefoxUITestRunner):
         # If exceptions happened, re-throw the last one
         if self.exc_info:
             ex_type, exception, tb = self.exc_info
-            raise ex_type, exception, tb
+            raise ex_type(exception).with_traceback(tb)

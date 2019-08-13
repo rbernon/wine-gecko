@@ -5,7 +5,7 @@
 import argparse
 import os
 import requests
-import urlparse
+import urllib.parse
 
 treeherder_base = "https://treeherder.mozilla.org/"
 
@@ -63,7 +63,7 @@ def fetch_json(url, params=None):
 
 def get_blobber_url(branch, job):
     job_id = job["id"]
-    artifact_url = urlparse.urljoin(treeherder_base, "/api/project/%s/artifact/" % branch)
+    artifact_url = urllib.parse.urljoin(treeherder_base, "/api/project/%s/artifact/" % branch)
     artifact_params = {
         'job_id': job_id,
         'name': 'Job Info',
@@ -83,14 +83,14 @@ def get_blobber_url(branch, job):
 
 
 def get_structured_logs(branch, commit, dest=None):
-    resultset_url = urlparse.urljoin(treeherder_base, "/api/project/%s/resultset/" % branch)
+    resultset_url = urllib.parse.urljoin(treeherder_base, "/api/project/%s/resultset/" % branch)
     resultset_params = {
         'revision': commit,
     }
     revision_data = fetch_json(resultset_url, params=resultset_params)
     result_set = revision_data["results"][0]["id"]
 
-    jobs_url = urlparse.urljoin(treeherder_base, "/api/project/%s/jobs/" % branch)
+    jobs_url = urllib.parse.urljoin(treeherder_base, "/api/project/%s/jobs/" % branch)
     jobs_params = {
         'result_set_id': result_set,
         'count': 2000,

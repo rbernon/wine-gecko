@@ -53,6 +53,6 @@ def main(argv):
         if startup_histogram_re.search(name) is not None:
             all_histograms.update({ "STARTUP_" + name: parameters })
 
-    print json.dumps({ 'histograms': all_histograms})
+    print(json.dumps({ 'histograms': all_histograms}))
 
 main(sys.argv[1:])

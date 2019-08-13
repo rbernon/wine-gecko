@@ -50,7 +50,7 @@ def write_runtimes(data, suite, indir=here, outdir=here):
 
     # identify a threshold of durations, below which we ignore
     runtimes = []
-    for result in data.itervalues():
+    for result in data.values():
         duration = int(result * 1000) if result else 0
         if duration:
             runtimes.append(duration)
@@ -61,7 +61,7 @@ def write_runtimes(data, suite, indir=here, outdir=here):
     ommitted = []
     specified = indata if indata else {}
     current_tests = []
-    for test, duration in data.iteritems():
+    for test, duration in data.items():
         current_tests.append(test)
         duration = int(duration * 1000) if duration else 0
         if duration > 0 and duration < threshold:

@@ -98,7 +98,7 @@ def find_packages_with_module(pkg_cfg, name):
     # TODO: Make this support more than just top-level modules.
     filename = "%s.js" % name
     packages = []
-    for cfg in pkg_cfg.packages.itervalues():
+    for cfg in pkg_cfg.packages.values():
         if 'lib' in cfg:
             matches = [dirname for dirname in resolve_dirs(cfg, cfg.lib)
                        if os.path.exists(os.path.join(dirname, filename))]
@@ -157,14 +157,14 @@ def compute_section_dir(base_json, base_path, dirnames, allow_root):
 
 def normalize_string_or_array(base_json, key):
     if base_json.get(key):
-        if isinstance(base_json[key], basestring):
+        if isinstance(base_json[key], str):
             base_json[key] = [base_json[key]]
 
 def load_json_file(path):
     data = open(path, 'r').read()
     try:
         return Bunch(json.loads(data))
-    except ValueError, e:
+    except ValueError as e:
         raise MalformedJsonFileError('%s when reading "%s"' % (str(e),
                                                                path))
 
@@ -310,7 +310,7 @@ def generate_build_for_target(pkg_cfg, target, deps,
                              is_data=False):
         if section in cfg:
             dirnames = cfg[section]
-            if isinstance(dirnames, basestring):
+            if isinstance(dirnames, str):
                 # This is just for internal consistency within this
                 # function, it has nothing to do w/ a non-canonical
                 # configuration dict.
@@ -319,8 +319,8 @@ def generate_build_for_target(pkg_cfg, target, deps,
                 # ensure that package name is valid
                 try:
                     validate_resource_hostname(cfg.name)
-                except ValueError, err:
-                    print err
+                except ValueError as err:
+                    print(err)
                     sys.exit(1)
                 # ensure that this package has an entry
                 if not cfg.name in build.packages:
@@ -344,11 +344,11 @@ def generate_build_for_target(pkg_cfg, target, deps,
             if os.path.isfile(fullpath) and filename.endswith('.properties'):
                 language = filename[:-len('.properties')]
 
-                from property_parser import parse_file, MalformedLocaleFileError
+                from .property_parser import parse_file, MalformedLocaleFileError
                 try:
                     content = parse_file(fullpath)
-                except MalformedLocaleFileError, msg:
-                    print msg[0]
+                except MalformedLocaleFileError as msg:
+                    print(msg[0])
                     sys.exit(1)
 
                 # Merge current locales into global locale hashtable.
@@ -356,8 +356,8 @@ def generate_build_for_target(pkg_cfg, target, deps,
                 # that act as an hastable of:
                 # "keys to translate" => "translated keys"
                 if language in build.locale:
-                    merge = (build.locale[language].items() +
-                             content.items())
+                    merge = (list(build.locale[language].items()) +
+                             list(content.items()))
                     build.locale[language] = Bunch(merge)
                 else:
                     build.locale[language] = content
@@ -453,7 +453,7 @@ def call_plugins(pkg_cfg, deps):
 def call_cmdline_tool(env_root, pkg_name):
     pkg_cfg = build_config(env_root, Bunch(name='dummy'))
     if pkg_name not in pkg_cfg.packages:
-        print "This tool requires the '%s' package." % pkg_name
+        print("This tool requires the '%s' package." % pkg_name)
         sys.exit(1)
     cfg = pkg_cfg.packages[pkg_name]
     for dirname in resolve_dirs(cfg, cfg['python-lib']):

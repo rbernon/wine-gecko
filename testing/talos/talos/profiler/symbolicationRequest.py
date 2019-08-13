@@ -2,11 +2,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from symLogging import LogTrace, LogError
+from .symLogging import LogTrace, LogError
 
 import re
 import json
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 # Precompiled regex for validating lib names
 # Empty lib name means client couldn't associate frame with any lib
@@ -25,11 +25,11 @@ class ModuleV3:
 
 
 def getModuleV3(libName, breakpadId):
-    if not isinstance(libName, basestring) or not gLibNameRE.match(libName):
+    if not isinstance(libName, str) or not gLibNameRE.match(libName):
         LogTrace("Bad library name: " + str(libName))
         return None
 
-    if not isinstance(breakpadId, basestring):
+    if not isinstance(breakpadId, str):
         LogTrace("Bad breakpad id: " + str(breakpadId))
         return None
 
@@ -72,7 +72,7 @@ class SymbolicationRequest:
                 return
 
             if "forwarded" in rawRequests:
-                if not isinstance(rawRequests["forwarded"], (int, long)):
+                if not isinstance(rawRequests["forwarded"], int):
                     LogTrace("Invalid 'forwards' field: %s"
                              % rawRequests["forwarded"])
                     return
@@ -192,9 +192,9 @@ class SymbolicationRequest:
                 }
                 requestJson = json.dumps(requestObj)
                 headers = {"Content-Type": "application/json"}
-                requestHandle = urllib2.Request(url, requestJson, headers)
+                requestHandle = urllib.request.Request(url, requestJson, headers)
                 try:
-                    response = urllib2.urlopen(requestHandle)
+                    response = urllib.request.urlopen(requestHandle)
                 except Exception as e:
                     if requestVersion == 4:
                         # Try again with version 3

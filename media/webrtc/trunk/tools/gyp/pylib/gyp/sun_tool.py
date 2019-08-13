@@ -41,7 +41,7 @@ class SunTool(object):
     # where fcntl.flock(fd, LOCK_EX) always fails
     # with EBADF, that's why we use this F_SETLK
     # hack instead.
-    fd = os.open(lockfile, os.O_WRONLY|os.O_NOCTTY|os.O_CREAT, 0666)
+    fd = os.open(lockfile, os.O_WRONLY|os.O_NOCTTY|os.O_CREAT, 0o666)
     op = struct.pack('hhllhhl', fcntl.F_WRLCK, 0, 0, 0, 0, 0, 0)
     fcntl.fcntl(fd, fcntl.F_SETLK, op)
     return subprocess.call(cmd_list)

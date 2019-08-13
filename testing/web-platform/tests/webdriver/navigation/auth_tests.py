@@ -1,7 +1,7 @@
 import os
 import sys
 import unittest
-import ConfigParser
+import configparser
 
 sys.path.insert(1, os.path.abspath(os.path.join(__file__, "../..")))
 import base_test

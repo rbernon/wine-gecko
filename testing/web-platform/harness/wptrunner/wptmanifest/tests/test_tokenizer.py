@@ -7,7 +7,7 @@ import os
 import unittest
 
 sys.path.insert(0, os.path.abspath(".."))
-from cStringIO import StringIO
+from io import StringIO
 
 from .. import parser
 from ..parser import token_types
@@ -28,7 +28,7 @@ class TokenizerTest(unittest.TestCase):
     def compare(self, input_text, expected):
         expected = expected + [(token_types.eof, None)]
         actual = self.tokenize(input_text)
-        self.assertEquals(actual, expected)
+        self.assertEqual(actual, expected)
 
     def test_heading_0(self):
         self.compare("""[Heading text]""",

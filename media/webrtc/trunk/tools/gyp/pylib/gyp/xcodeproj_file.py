@@ -314,7 +314,7 @@ class XCObject(object):
     """
 
     that = self.__class__(id=self.id, parent=self.parent)
-    for key, value in self._properties.iteritems():
+    for key, value in self._properties.items():
       is_strong = self._schema[key][2]
 
       if isinstance(value, XCObject):
@@ -324,7 +324,7 @@ class XCObject(object):
           that._properties[key] = new_value
         else:
           that._properties[key] = value
-      elif isinstance(value, str) or isinstance(value, unicode) or \
+      elif isinstance(value, str) or isinstance(value, str) or \
            isinstance(value, int):
         that._properties[key] = value
       elif isinstance(value, list):
@@ -341,13 +341,13 @@ class XCObject(object):
       elif isinstance(value, dict):
         # dicts are never strong.
         if is_strong:
-          raise TypeError, 'Strong dict for key ' + key + ' in ' + \
-                           self.__class__.__name__
+          raise TypeError('Strong dict for key ' + key + ' in ' + \
+                           self.__class__.__name__)
         else:
           that._properties[key] = value.copy()
       else:
-        raise TypeError, 'Unexpected type ' + value.__class__.__name__ + \
-                         ' for key ' + key + ' in ' + self.__class__.__name__
+        raise TypeError('Unexpected type ' + value.__class__.__name__ + \
+                         ' for key ' + key + ' in ' + self.__class__.__name__)
 
     return that
 
@@ -366,8 +366,7 @@ class XCObject(object):
         ('name' in self._schema and self._schema['name'][3]):
       return self._properties['name']
 
-    raise NotImplementedError, \
-          self.__class__.__name__ + ' must implement Name'
+    raise NotImplementedError(self.__class__.__name__ + ' must implement Name')
 
   def Comment(self):
     """Return a comment string for the object.
@@ -453,7 +452,7 @@ class XCObject(object):
       digest_int_count = hash.digest_size / 4
       digest_ints = struct.unpack('>' + 'I' * digest_int_count, hash.digest())
       id_ints = [0, 0, 0]
-      for index in xrange(0, digest_int_count):
+      for index in range(0, digest_int_count):
         id_ints[index % 3] ^= digest_ints[index]
       self.id = '%08X%08X%08X' % tuple(id_ints)
 
@@ -466,17 +465,16 @@ class XCObject(object):
     for descendant in descendants:
       if descendant.id in ids:
         other = ids[descendant.id]
-        raise KeyError, \
-              'Duplicate ID %s, objects "%s" and "%s" in "%s"' % \
+        raise KeyError('Duplicate ID %s, objects "%s" and "%s" in "%s"' % \
               (descendant.id, str(descendant._properties),
-               str(other._properties), self._properties['rootObject'].Name())
+               str(other._properties), self._properties['rootObject'].Name()))
       ids[descendant.id] = descendant
 
   def Children(self):
     """Returns a list of all of this object's owned (strong) children."""
 
     children = []
-    for property, attributes in self._schema.iteritems():
+    for property, attributes in self._schema.items():
       (is_list, property_type, is_strong) = attributes[0:3]
       if is_strong and property in self._properties:
         if not is_list:
@@ -604,7 +602,7 @@ class XCObject(object):
       comment = value.Comment()
     elif isinstance(value, str):
       printable += self._EncodeString(value)
-    elif isinstance(value, unicode):
+    elif isinstance(value, str):
       printable += self._EncodeString(value.encode('utf-8'))
     elif isinstance(value, int):
       printable += str(value)
@@ -623,14 +621,14 @@ class XCObject(object):
         printable += end_tabs + ')'
     elif isinstance(value, dict):
       printable = '{' + sep
-      for item_key, item_value in sorted(value.iteritems()):
+      for item_key, item_value in sorted(value.items()):
         printable += element_tabs + \
             self._XCPrintableValue(tabs + 1, item_key, flatten_list) + ' = ' + \
             self._XCPrintableValue(tabs + 1, item_value, flatten_list) + ';' + \
             sep
       printable += end_tabs + '}'
     else:
-      raise TypeError, "Can't make " + value.__class__.__name__ + ' printable'
+      raise TypeError("Can't make " + value.__class__.__name__ + ' printable')
 
     if comment != None:
       printable += ' ' + self._EncodeComment(comment)
@@ -692,7 +690,7 @@ class XCObject(object):
           printable_value[0] == '"' and printable_value[-1] == '"':
         printable_value = printable_value[1:-1]
       printable += printable_key + ' = ' + printable_value + ';' + after_kv
-    except TypeError, e:
+    except TypeError as e:
       gyp.common.ExceptionAppend(e,
                                  'while printing key "%s"' % key)
       raise
@@ -731,7 +729,7 @@ class XCObject(object):
     self._XCKVPrint(file, 3, 'isa', self.__class__.__name__)
 
     # The remaining elements of an object dictionary are sorted alphabetically.
-    for property, value in sorted(self._properties.iteritems()):
+    for property, value in sorted(self._properties.items()):
       self._XCKVPrint(file, 3, property, value)
 
     # End the object.
@@ -753,34 +751,31 @@ class XCObject(object):
     if properties is None:
       return
 
-    for property, value in properties.iteritems():
+    for property, value in properties.items():
       # Make sure the property is in the schema.
       if not property in self._schema:
-        raise KeyError, property + ' not in ' + self.__class__.__name__
+        raise KeyError(property + ' not in ' + self.__class__.__name__)
 
       # Make sure the property conforms to the schema.
       (is_list, property_type, is_strong) = self._schema[property][0:3]
       if is_list:
         if value.__class__ != list:
-          raise TypeError, \
-                property + ' of ' + self.__class__.__name__ + \
-                ' must be list, not ' + value.__class__.__name__
+          raise TypeError(property + ' of ' + self.__class__.__name__ + \
+                ' must be list, not ' + value.__class__.__name__)
         for item in value:
           if not isinstance(item, property_type) and \
-             not (item.__class__ == unicode and property_type == str):
+             not (item.__class__ == str and property_type == str):
             # Accept unicode where str is specified.  str is treated as
             # UTF-8-encoded.
-            raise TypeError, \
-                  'item of ' + property + ' of ' + self.__class__.__name__ + \
+            raise TypeError('item of ' + property + ' of ' + self.__class__.__name__ + \
                   ' must be ' + property_type.__name__ + ', not ' + \
-                  item.__class__.__name__
+                  item.__class__.__name__)
       elif not isinstance(value, property_type) and \
-           not (value.__class__ == unicode and property_type == str):
+           not (value.__class__ == str and property_type == str):
         # Accept unicode where str is specified.  str is treated as
         # UTF-8-encoded.
-        raise TypeError, \
-              property + ' of ' + self.__class__.__name__ + ' must be ' + \
-              property_type.__name__ + ', not ' + value.__class__.__name__
+        raise TypeError(property + ' of ' + self.__class__.__name__ + ' must be ' + \
+              property_type.__name__ + ', not ' + value.__class__.__name__)
 
       # Checks passed, perform the assignment.
       if do_copy:
@@ -789,7 +784,7 @@ class XCObject(object):
             self._properties[property] = value.Copy()
           else:
             self._properties[property] = value
-        elif isinstance(value, str) or isinstance(value, unicode) or \
+        elif isinstance(value, str) or isinstance(value, str) or \
              isinstance(value, int):
           self._properties[property] = value
         elif isinstance(value, list):
@@ -804,9 +799,9 @@ class XCObject(object):
         elif isinstance(value, dict):
           self._properties[property] = value.copy()
         else:
-          raise TypeError, "Don't know how to copy a " + \
+          raise TypeError("Don't know how to copy a " + \
                            value.__class__.__name__ + ' object for ' + \
-                           property + ' in ' + self.__class__.__name__
+                           property + ' in ' + self.__class__.__name__)
       else:
         self._properties[property] = value
 
@@ -837,15 +832,15 @@ class XCObject(object):
 
     # Schema validation.
     if not key in self._schema:
-      raise KeyError, key + ' not in ' + self.__class__.__name__
+      raise KeyError(key + ' not in ' + self.__class__.__name__)
 
     (is_list, property_type, is_strong) = self._schema[key][0:3]
     if not is_list:
-      raise TypeError, key + ' of ' + self.__class__.__name__ + ' must be list'
+      raise TypeError(key + ' of ' + self.__class__.__name__ + ' must be list')
     if not isinstance(value, property_type):
-      raise TypeError, 'item of ' + key + ' of ' + self.__class__.__name__ + \
+      raise TypeError('item of ' + key + ' of ' + self.__class__.__name__ + \
                        ' must be ' + property_type.__name__ + ', not ' + \
-                       value.__class__.__name__
+                       value.__class__.__name__)
 
     # If the property doesn't exist yet, create a new empty list to receive the
     # item.
@@ -866,17 +861,17 @@ class XCObject(object):
 
     # TODO(mark): A stronger verification mechanism is needed.  Some
     # subclasses need to perform validation beyond what the schema can enforce.
-    for property, attributes in self._schema.iteritems():
+    for property, attributes in self._schema.items():
       (is_list, property_type, is_strong, is_required) = attributes[0:4]
       if is_required and not property in self._properties:
-        raise KeyError, self.__class__.__name__ + ' requires ' + property
+        raise KeyError(self.__class__.__name__ + ' requires ' + property)
 
   def _SetDefaultsFromSchema(self):
     """Assign object default values according to the schema.  This will not
     overwrite properties that have already been set."""
 
     defaults = {}
-    for property, attributes in self._schema.iteritems():
+    for property, attributes in self._schema.items():
       (is_list, property_type, is_strong, is_required) = attributes[0:4]
       if is_required and len(attributes) >= 5 and \
           not property in self._properties:
@@ -1143,16 +1138,16 @@ class PBXGroup(XCHierarchicalElement):
     child_path = child.PathFromSourceTreeAndPath()
     if child_path:
       if child_path in self._children_by_path:
-        raise ValueError, 'Found multiple children with path ' + child_path
+        raise ValueError('Found multiple children with path ' + child_path)
       self._children_by_path[child_path] = child
 
     if isinstance(child, PBXVariantGroup):
       child_name = child._properties.get('name', None)
       key = (child_name, child_path)
       if key in self._variant_children_by_name_and_path:
-        raise ValueError, 'Found multiple PBXVariantGroup children with ' + \
+        raise ValueError('Found multiple PBXVariantGroup children with ' + \
                           'name ' + str(child_name) + ' and path ' + \
-                          str(child_path)
+                          str(child_path))
       self._variant_children_by_name_and_path[key] = child
 
   def AppendChild(self, child):
@@ -1427,7 +1422,7 @@ class XCFileLikeElement(XCHierarchicalElement):
     xche = self
     while xche != None and isinstance(xche, XCHierarchicalElement):
       xche_hashables = xche.Hashables()
-      for index in xrange(0, len(xche_hashables)):
+      for index in range(0, len(xche_hashables)):
         hashables.insert(index, xche_hashables[index])
       xche = xche.parent
     return hashables
@@ -1592,7 +1587,7 @@ class XCConfigurationList(XCObject):
       if configuration._properties['name'] == name:
         return configuration
 
-    raise KeyError, name
+    raise KeyError(name)
 
   def DefaultConfiguration(self):
     """Convenience accessor to obtain the default XCBuildConfiguration."""
@@ -1649,7 +1644,7 @@ class XCConfigurationList(XCObject):
         value = configuration_value
       else:
         if value != configuration_value:
-          raise ValueError, 'Variant values for ' + key
+          raise ValueError('Variant values for ' + key)
 
     return value
 
@@ -1756,8 +1751,7 @@ class XCBuildPhase(XCObject):
     # added, either as a child or deeper descendant.  The second item should
     # be a boolean indicating whether files should be added into hierarchical
     # groups or one single flat group.
-    raise NotImplementedError, \
-          self.__class__.__name__ + ' must implement FileGroup'
+    raise NotImplementedError(self.__class__.__name__ + ' must implement FileGroup')
 
   def _AddPathToDict(self, pbxbuildfile, path):
     """Adds path to the dict tracking paths belonging to this build phase.
@@ -1766,7 +1760,7 @@ class XCBuildPhase(XCObject):
     """
 
     if path in self._files_by_path:
-      raise ValueError, 'Found multiple build files with path ' + path
+      raise ValueError('Found multiple build files with path ' + path)
     self._files_by_path[path] = pbxbuildfile
 
   def _AddBuildFileToDicts(self, pbxbuildfile, path=None):
@@ -1821,8 +1815,8 @@ class XCBuildPhase(XCObject):
     # problem.
     if xcfilelikeelement in self._files_by_xcfilelikeelement and \
        self._files_by_xcfilelikeelement[xcfilelikeelement] != pbxbuildfile:
-      raise ValueError, 'Found multiple build files for ' + \
-                        xcfilelikeelement.Name()
+      raise ValueError('Found multiple build files for ' + \
+                        xcfilelikeelement.Name())
     self._files_by_xcfilelikeelement[xcfilelikeelement] = pbxbuildfile
 
   def AppendBuildFile(self, pbxbuildfile, path=None):
@@ -1986,8 +1980,8 @@ class PBXCopyFilesBuildPhase(XCBuildPhase):
       subfolder = 0
       relative_path = path[1:]
     else:
-      raise ValueError, 'Can\'t use path %s in a %s' % \
-                        (path, self.__class__.__name__)
+      raise ValueError('Can\'t use path %s in a %s' % \
+                        (path, self.__class__.__name__))
 
     self._properties['dstPath'] = relative_path
     self._properties['dstSubfolderSpec'] = subfolder
@@ -2370,7 +2364,7 @@ class PBXNativeTarget(XCTarget):
       # The headers phase should come before the resources, sources, and
       # frameworks phases, if any.
       insert_at = len(self._properties['buildPhases'])
-      for index in xrange(0, len(self._properties['buildPhases'])):
+      for index in range(0, len(self._properties['buildPhases'])):
         phase = self._properties['buildPhases'][index]
         if isinstance(phase, PBXResourcesBuildPhase) or \
            isinstance(phase, PBXSourcesBuildPhase) or \
@@ -2391,7 +2385,7 @@ class PBXNativeTarget(XCTarget):
       # The resources phase should come before the sources and frameworks
       # phases, if any.
       insert_at = len(self._properties['buildPhases'])
-      for index in xrange(0, len(self._properties['buildPhases'])):
+      for index in range(0, len(self._properties['buildPhases'])):
         phase = self._properties['buildPhases'][index]
         if isinstance(phase, PBXSourcesBuildPhase) or \
            isinstance(phase, PBXFrameworksBuildPhase):
@@ -2768,7 +2762,7 @@ class PBXProject(XCContainerPortal):
       # determine the sort order.
       return cmp(x_index, y_index)
 
-    for other_pbxproject, ref_dict in self._other_pbxprojects.iteritems():
+    for other_pbxproject, ref_dict in self._other_pbxprojects.items():
       # Build up a list of products in the remote project file, ordered the
       # same as the targets that produce them.
       remote_products = []
@@ -2830,7 +2824,7 @@ class XCProjectFile(XCObject):
       self._XCPrint(file, 0, '{ ')
     else:
       self._XCPrint(file, 0, '{\n')
-    for property, value in sorted(self._properties.iteritems(),
+    for property, value in sorted(iter(self._properties.items()),
                                   cmp=lambda x, y: cmp(x, y)):
       if property == 'objects':
         self._PrintObjects(file)

@@ -1,7 +1,7 @@
 import os, json, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-import subresource
+from . import subresource
 
 def generate_payload(server_data):
     return subresource.get_template("document.html.template") % server_data

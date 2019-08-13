@@ -69,4 +69,4 @@ for view in views:
     with open(template, 'rU') as input:
         with open(dest, 'wt') as output:
             pp.processFile(input=input, output=output)
-            print('%s' % dest)
+            print(('%s' % dest))

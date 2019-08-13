@@ -1,5 +1,5 @@
 import datetime
-from from_now import value_of
+from .from_now import value_of
 
 def json_time_from_now(input_str, now=None):
     '''

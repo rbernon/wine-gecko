@@ -4,7 +4,7 @@
 
 import os, unittest, shutil
 import zipfile
-from StringIO import StringIO
+from io import StringIO
 from cuddlefish import initializer
 from cuddlefish.templates import TEST_MAIN_JS, PACKAGE_JSON
 
@@ -57,7 +57,7 @@ class TestInit(unittest.TestCase):
         out, err = StringIO(), StringIO()
         init_run = initializer(None, ["init"], out, err)
         out, err = out.getvalue(), err.getvalue()
-        self.failIfEqual(init_run["result"],0)
+        self.assertNotEqual(init_run["result"],0)
         self.assertTrue("This command must be run in an empty directory." in err)
 
     def test_initializer(self):
@@ -68,7 +68,7 @@ class TestInit(unittest.TestCase):
         out,err = StringIO(), StringIO()
         init_run = initializer(None, ["init", "specified-dirname", "extra-arg"], out, err)
         out, err = out.getvalue(), err.getvalue()
-        self.failIfEqual(init_run["result"], 0)
+        self.assertNotEqual(init_run["result"], 0)
         self.assertTrue("Too many arguments" in err)
 
     def test_args(self):
@@ -82,9 +82,9 @@ class TestInit(unittest.TestCase):
         rc = initializer(None, ["init"], out, err)
         out, err = out.getvalue(), err.getvalue()
         self.assertEqual(rc["result"], 1)
-        self.failUnless("This command must be run in an empty directory" in err,
+        self.assertTrue("This command must be run in an empty directory" in err,
                         err)
-        self.failIf(os.path.exists("lib"))
+        self.assertFalse(os.path.exists("lib"))
 
     def test_existing_files(self):
         self.run_init_in_subdir("existing_files", self._test_existing_files)
@@ -158,7 +158,7 @@ class TestCfxQuits(unittest.TestCase):
             # if --binary option is given:
             args.extend(sys.argv[1:])
             cuddlefish.run(arguments=args)
-        except SystemExit, e:
+        except SystemExit as e:
             if "code" in e:
                 rc = e.code
             elif "args" in e and len(e.args)>0:

@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, unicode_literals
+
 
 from . import _base
 
@@ -23,7 +23,7 @@ class Filter(_base.Filter):
                 if token["name"].lower() == "meta":
                     # replace charset with actual encoding
                     has_http_equiv_content_type = False
-                    for (namespace, name), value in token["data"].items():
+                    for (namespace, name), value in list(token["data"].items()):
                         if namespace is not None:
                             continue
                         elif name.lower() == 'charset':

@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import
+
 
 from ctypes import c_void_p, POINTER, sizeof, Structure, windll, WinError, WINFUNCTYPE, addressof, c_size_t, c_ulong
 from ctypes.wintypes import BOOL, BYTE, DWORD, HANDLE, LARGE_INTEGER
@@ -79,7 +79,7 @@ class JobObjectInfo(object):
                    9: JOBOBJECT_EXTENDED_LIMIT_INFORMATION
                    }
     def __init__(self, _class):
-        if isinstance(_class, basestring):
+        if isinstance(_class, str):
             assert _class in self.mapping, 'Class should be one of %s; you gave %s' % (self.mapping, _class)
             _class = self.mapping[_class]
         assert _class in self.structures, 'Class should be one of %s; you gave %s' % (self.structures, _class)

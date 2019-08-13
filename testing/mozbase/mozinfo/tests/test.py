@@ -12,10 +12,11 @@ import sys
 import tempfile
 import unittest
 import mozinfo
+import imp
 
 class TestMozinfo(unittest.TestCase):
     def setUp(self):
-        reload(mozinfo)
+        imp.reload(mozinfo)
         self.tempdir = os.path.abspath(tempfile.mkdtemp())
 
         # When running from an objdir mozinfo will use a build generated json file

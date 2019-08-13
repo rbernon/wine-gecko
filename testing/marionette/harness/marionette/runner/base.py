@@ -21,13 +21,13 @@ import mozprofile
 from manifestparser import TestManifest
 from manifestparser.filters import tags
 from marionette_driver.marionette import Marionette
-from mixins.b2g import B2GTestResultMixin, get_b2g_pid, get_dm
+from .mixins.b2g import B2GTestResultMixin, get_b2g_pid, get_dm
 from mozlog import get_default_logger
 from moztest.adapters.unit import StructuredTestRunner, StructuredTestResult
 from moztest.results import TestResultCollection, TestResult, relevant_line
 import mozversion
 
-import httpd
+from . import httpd
 
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -379,7 +379,7 @@ class BaseMarionetteArguments(ArgumentParser):
                         help='run tests in a random order')
         self.add_argument('--shuffle-seed',
                         type=int,
-                        default=random.randint(0, sys.maxint),
+                        default=random.randint(0, sys.maxsize),
                         help='Use given seed to shuffle tests')
         self.add_argument('--total-chunks',
                         type=int,
@@ -471,20 +471,20 @@ class BaseMarionetteArguments(ArgumentParser):
 
     def verify_usage(self, args):
         if not args.tests:
-            print 'must specify one or more test files, manifests, or directories'
+            print('must specify one or more test files, manifests, or directories')
             sys.exit(1)
 
         for path in args.tests:
             if not os.path.exists(path):
-                print '{0} does not exist'.format(path)
+                print('{0} does not exist'.format(path))
                 sys.exit(1)
 
         if not args.emulator and not args.address and not args.binary:
-            print 'must specify --binary, --emulator or --address'
+            print('must specify --binary, --emulator or --address')
             sys.exit(1)
 
         if args.emulator and args.binary:
-            print 'can\'t specify both --emulator and --binary'
+            print('can\'t specify both --emulator and --binary')
             sys.exit(1)
 
         # check for valid resolution string, strip whitespaces
@@ -541,7 +541,7 @@ class BaseMarionetteTestRunner(object):
                  logger=None, no_window=False, logdir=None, logcat_stdout=False,
                  repeat=0, testvars=None, tree=None, type=None,
                  device_serial=None, symbols_path=None, timeout=None,
-                 shuffle=False, shuffle_seed=random.randint(0, sys.maxint),
+                 shuffle=False, shuffle_seed=random.randint(0, sys.maxsize),
                  sdcard=None, this_chunk=1, total_chunks=1, sources=None,
                  server_root=None, gecko_log=None, result_callbacks=None,
                  adb_host=None, adb_port=None, prefs=None, test_tags=None,
@@ -619,7 +619,7 @@ class BaseMarionetteTestRunner(object):
 
         def update(d, u):
             """ Update a dictionary that may contain nested dictionaries. """
-            for k, v in u.iteritems():
+            for k, v in u.items():
                 o = d.get(k, {})
                 if isinstance(v, dict) and isinstance(o, dict):
                     d[k] = update(d.get(k, {}), v)
@@ -777,7 +777,7 @@ class BaseMarionetteTestRunner(object):
                     connection = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
                     connection.connect((host,int(port)))
                     connection.close()
-                except Exception, e:
+                except Exception as e:
                     raise Exception("Connection attempt to %s:%s failed with error: %s" %(host,port,e))
         elif self.emulator:
             kwargs.update({
@@ -943,7 +943,7 @@ setReq.onerror = function() {
         finally:
             # reraise previous interruption now
             if interrupted:
-                raise interrupted[0], interrupted[1], interrupted[2]
+                raise interrupted[0](interrupted[1]).with_traceback(interrupted[2])
 
     def _print_summary(self, tests):
         self.logger.info('\nSUMMARY\n-------')

@@ -2,10 +2,10 @@ import json
 import os
 from collections import defaultdict
 
-from item import item_types, ManualTest, WebdriverSpecTest, Stub, RefTest, TestharnessTest
-from log import get_logger
-from sourcefile import SourceFile
-from utils import from_os_path, to_os_path
+from .item import item_types, ManualTest, WebdriverSpecTest, Stub, RefTest, TestharnessTest
+from .log import get_logger
+from .sourcefile import SourceFile
+from .utils import from_os_path, to_os_path
 
 
 CURRENT_VERSION = 2
@@ -37,7 +37,7 @@ class Manifest(object):
         for item_type in include_types:
             paths = self._data[item_type].copy()
             for local_types, local_paths in self.local_changes.itertypes(item_type):
-                for path, items in local_paths.iteritems():
+                for path, items in local_paths.items():
                     paths[path] = items
                 for path in self.local_changes.iterdeleted():
                     if path in paths:
@@ -104,7 +104,7 @@ class Manifest(object):
     def _committed_with_path(self, rel_path):
         rv = set()
 
-        for paths_items in self._data.itervalues():
+        for paths_items in self._data.values():
             rv |= paths_items.get(rel_path, set())
 
         if rel_path in self.reftest_nodes:
@@ -114,7 +114,7 @@ class Manifest(object):
 
     def _committed_paths(self):
         rv = set()
-        for paths_items in self._data.itervalues():
+        for paths_items in self._data.values():
             rv |= set(paths_items.keys())
         return rv
 
@@ -143,7 +143,7 @@ class Manifest(object):
         self.local_changes = LocalChanges(self)
 
         local_paths = set()
-        for rel_path, status in local_changes.iteritems():
+        for rel_path, status in local_changes.items():
             local_paths.add(rel_path)
 
             if status == "modified":
@@ -171,16 +171,16 @@ class Manifest(object):
 
     def update_reftests(self):
         reftest_nodes = self.reftest_nodes.copy()
-        for path, items in self.local_changes.reftest_nodes.iteritems():
+        for path, items in self.local_changes.reftest_nodes.items():
             reftest_nodes[path] |= items
 
         #TODO: remove locally deleted files
         tests = set()
-        for items in reftest_nodes.values():
+        for items in list(reftest_nodes.values()):
             tests |= set(item for item in items if not item.is_reference)
 
         has_inbound = set()
-        for path, items in reftest_nodes.iteritems():
+        for path, items in reftest_nodes.items():
             for item in items:
                 for ref_url, ref_type in item.references:
                     has_inbound.add(ref_url)
@@ -192,7 +192,7 @@ class Manifest(object):
 
         #TODO: Warn if there exist unreachable reftest nodes
 
-        for path, items in reftest_nodes.iteritems():
+        for path, items in reftest_nodes.items():
             for item in items:
                 if item.url in has_inbound:
                     continue
@@ -202,14 +202,14 @@ class Manifest(object):
         out_items = {
             item_type: sorted(
                 test.to_json()
-                for _, tests in items.iteritems()
+                for _, tests in items.items()
                 for test in tests
             )
-            for item_type, items in self._data.iteritems()
+            for item_type, items in self._data.items()
         }
 
         reftest_nodes = {from_os_path(key): [v.to_json() for v in value]
-                         for key, value in self.reftest_nodes.iteritems()}
+                         for key, value in self.reftest_nodes.items()}
 
         rv = {"url_base": self.url_base,
               "rev": self.rev,
@@ -238,7 +238,7 @@ class Manifest(object):
 
         source_files = {}
 
-        for k, values in obj["items"].iteritems():
+        for k, values in obj["items"].items():
             if k not in item_types:
                 raise ManifestError
             for v in values:
@@ -246,7 +246,7 @@ class Manifest(object):
                                                           source_files=source_files)
                 self._add(manifest_item)
 
-        for path, values in obj["reftest_nodes"].iteritems():
+        for path, values in obj["reftest_nodes"].items():
             path = to_os_path(path)
             for v in values:
                 item = RefTest.from_json(self, tests_root, v,
@@ -309,14 +309,14 @@ class LocalChanges(object):
 
     def to_json(self):
         reftest_nodes = {from_os_path(key): [v.to_json() for v in value]
-                         for key, value in self.reftest_nodes.iteritems()}
+                         for key, value in self.reftest_nodes.items()}
 
         rv = {"items": defaultdict(dict),
               "reftest_nodes": reftest_nodes,
               "deleted": [from_os_path(path) for path in self._deleted]}
 
-        for test_type, paths in self._data.iteritems():
-            for path, tests in paths.iteritems():
+        for test_type, paths in self._data.items():
+            for path, tests in paths.items():
                 path = from_os_path(path)
                 rv["items"][test_type][path] = [test.to_json() for test in tests]
 
@@ -334,8 +334,8 @@ class LocalChanges(object):
                         "stub": Stub,
                         "wdspec": WebdriverSpecTest}
 
-        for test_type, paths in obj["items"].iteritems():
-            for path, tests in paths.iteritems():
+        for test_type, paths in obj["items"].items():
+            for path, tests in paths.items():
                 for test in tests:
                     manifest_item = item_classes[test_type].from_json(manifest,
                                                                       tests_root,
@@ -343,7 +343,7 @@ class LocalChanges(object):
                                                                       source_files=source_files)
                     self.add(manifest_item)
 
-        for path, values in obj["reftest_nodes"].iteritems():
+        for path, values in obj["reftest_nodes"].items():
             path = to_os_path(path)
             for v in values:
                 item = RefTest.from_json(self.manifest, tests_root, v,
@@ -360,7 +360,7 @@ def load(tests_root, manifest):
     logger = get_logger()
 
     # "manifest" is a path or file-like object.
-    if isinstance(manifest, basestring):
+    if isinstance(manifest, str):
         if os.path.exists(manifest):
             logger.debug("Opening manifest at %s" % manifest)
         else:

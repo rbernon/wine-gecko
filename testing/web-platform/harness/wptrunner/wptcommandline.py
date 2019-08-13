@@ -9,7 +9,7 @@ import sys
 from collections import OrderedDict
 from distutils.spawn import find_executable
 
-import config
+from . import config
 
 
 def abs_path(path):
@@ -17,9 +17,9 @@ def abs_path(path):
 
 
 def url_or_path(path):
-    import urlparse
+    import urllib.parse
 
-    parsed = urlparse.urlparse(path)
+    parsed = urllib.parse.urlparse(path)
     if len(parsed.scheme) > 2:
         return path
     else:
@@ -30,14 +30,14 @@ def require_arg(kwargs, name, value_func=None):
         value_func = lambda x: x is not None
 
     if not name in kwargs or not value_func(kwargs[name]):
-        print >> sys.stderr, "Missing required argument %s" % name
+        print("Missing required argument %s" % name, file=sys.stderr)
         sys.exit(1)
 
 
 def create_parser(product_choices=None):
     from mozlog import commandline
 
-    import products
+    from . import products
 
     if product_choices is None:
         config_data = config.load()
@@ -199,7 +199,7 @@ def set_from_config(kwargs):
                     ("host_cert_path", "host_cert_path", True),
                     ("host_key_path", "host_key_path", True)]}
 
-    for section, values in keys.iteritems():
+    for section, values in keys.items():
         for config_value, kw_value, is_path in values:
             if kw_value in kwargs and kwargs[kw_value] is None:
                 if not is_path:
@@ -227,7 +227,7 @@ def get_test_paths(config):
     # Set up test_paths
     test_paths = OrderedDict()
 
-    for section in config.iterkeys():
+    for section in config.keys():
         if section.startswith("manifest:"):
             manifest_opts = config.get(section)
             url_base = manifest_opts.get("url_base", "/")
@@ -250,20 +250,20 @@ def exe_path(name):
 def check_args(kwargs):
     set_from_config(kwargs)
 
-    for test_paths in kwargs["test_paths"].itervalues():
+    for test_paths in kwargs["test_paths"].values():
         if not ("tests_path" in test_paths and
                 "metadata_path" in test_paths):
-            print "Fatal: must specify both a test path and metadata path"
+            print("Fatal: must specify both a test path and metadata path")
             sys.exit(1)
-        for key, path in test_paths.iteritems():
+        for key, path in test_paths.items():
             name = key.split("_", 1)[0]
 
             if not os.path.exists(path):
-                print "Fatal: %s path %s does not exist" % (name, path)
+                print("Fatal: %s path %s does not exist" % (name, path))
                 sys.exit(1)
 
             if not os.path.isdir(path):
-                print "Fatal: %s path %s is not a directory" % (name, path)
+                print("Fatal: %s path %s is not a directory" % (name, path))
                 sys.exit(1)
 
     if kwargs["product"] is None:
@@ -306,7 +306,7 @@ def check_args(kwargs):
 
     if kwargs["binary"] is not None:
         if not os.path.exists(kwargs["binary"]):
-            print >> sys.stderr, "Binary path %s does not exist" % kwargs["binary"]
+            print("Binary path %s does not exist" % kwargs["binary"], file=sys.stderr)
             sys.exit(1)
 
     if kwargs["ssl_type"] is None:
@@ -325,14 +325,14 @@ def check_args(kwargs):
     elif kwargs["ssl_type"] == "openssl":
         path = exe_path(kwargs["openssl_binary"])
         if path is None:
-            print >> sys.stderr, "openssl-binary argument missing or not a valid executable"
+            print("openssl-binary argument missing or not a valid executable", file=sys.stderr)
             sys.exit(1)
         kwargs["openssl_binary"] = path
 
     if kwargs["ssl_type"] != "none" and kwargs["product"] == "firefox":
         path = exe_path(kwargs["certutil_binary"])
         if path is None:
-            print >> sys.stderr, "certutil-binary argument missing or not a valid executable"
+            print("certutil-binary argument missing or not a valid executable", file=sys.stderr)
             sys.exit(1)
         kwargs["certutil_binary"] = path
 
@@ -347,7 +347,7 @@ def check_args_update(kwargs):
 def create_parser_update(product_choices=None):
     from mozlog.structured import commandline
 
-    import products
+    from . import products
 
     if product_choices is None:
         config_data = config.load()

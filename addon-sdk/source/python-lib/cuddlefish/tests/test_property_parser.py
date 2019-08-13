@@ -49,7 +49,7 @@ class TestParser(unittest.TestCase):
         ]
         # Ensure that all lines end with a `\n`
         # And that strings are unicode ones (parser code relies on it)
-        lines = [unicode(l + "\n") for l in lines]
+        lines = [str(l + "\n") for l in lines]
         pairs = parse(lines)
         expected = {
           "sharp": "#can be in value",
@@ -78,15 +78,15 @@ class TestParser(unittest.TestCase):
         self.assertEqual(pairs, expected)
 
     def test_exceptions(self):
-        self.failUnlessRaises(MalformedLocaleFileError, parse,
+        self.assertRaises(MalformedLocaleFileError, parse,
                               ["invalid line with no key value"])
-        self.failUnlessRaises(MalformedLocaleFileError, parse,
+        self.assertRaises(MalformedLocaleFileError, parse,
                               ["plural[one]=plural with no [other] value"])
-        self.failUnlessRaises(MalformedLocaleFileError, parse,
+        self.assertRaises(MalformedLocaleFileError, parse,
                               ["multiline with no last empty line=\\"])
-        self.failUnlessRaises(MalformedLocaleFileError, parse,
+        self.assertRaises(MalformedLocaleFileError, parse,
                               ["=no key"])
-        self.failUnlessRaises(MalformedLocaleFileError, parse,
+        self.assertRaises(MalformedLocaleFileError, parse,
                               ["   =only spaces in key"])
 
 if __name__ == "__main__":

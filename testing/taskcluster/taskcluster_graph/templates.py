@@ -14,7 +14,7 @@ def merge_to(source, dest):
     :param dict dest: to copy to.
     '''
 
-    for key, value in source.items():
+    for key, value in list(source.items()):
         # Override mismatching or empty types
         if type(value) != type(dest.get(key)):
             dest[key] = source[key]

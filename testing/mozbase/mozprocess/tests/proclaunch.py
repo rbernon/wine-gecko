@@ -2,7 +2,7 @@
 
 import argparse
 import collections
-import ConfigParser
+import configparser
 import multiprocessing
 import time
 
@@ -88,7 +88,7 @@ class ProcessLauncher(object):
         self.children = {}
 
 
-        cfgparser = ConfigParser.ConfigParser()
+        cfgparser = configparser.ConfigParser()
 
         if not cfgparser.read(manifest):
             raise IOError('The manifest %s could not be found/opened', manifest)
@@ -98,7 +98,7 @@ class ProcessLauncher(object):
             # Maxtime is a mandatory option
             # ConfigParser.NoOptionError is raised if maxtime does not exist
             if '*' in section or ',' in section:
-                raise ConfigParser.ParsingError('%s is not a valid section name. Section names cannot contain a \'*\' or \',\'.' % section)
+                raise configparser.ParsingError('%s is not a valid section name. Section names cannot contain a \'*\' or \',\'.' % section)
             m_time = cfgparser.get(section, 'maxtime')
             try:
                 m_time = int(m_time)
@@ -126,11 +126,11 @@ class ProcessLauncher(object):
                                 children[i][0] = int(child[0])
 
                             if children[i][1] not in sections:
-                                raise ConfigParser.ParsingError('No section corresponding to child %s' % child[1])
+                                raise configparser.ParsingError('No section corresponding to child %s' % child[1])
                     except ValueError:
                         raise ValueError('Expected process count to be an integer, specified %s' % child[0])
 
-            except ConfigParser.NoOptionError:
+            except configparser.NoOptionError:
                 children = None
             pn = ProcessNode(maxtime=m_time,
                              children=children)
@@ -150,12 +150,12 @@ class ProcessLauncher(object):
         :param proc_name: File name of the manifest as a string.
         :param level: Depth of the current process in the tree.
         """
-        if proc_name not in self.children.keys():
+        if proc_name not in list(self.children.keys()):
             raise IOError("%s is not a valid process" % proc_name)
 
         maxtime = self.children[proc_name].maxtime
         if self.verbose:
-            print "%sLaunching %s for %d*%d seconds" % (" "*level, proc_name, maxtime, self.UNIT_TIME)
+            print("%sLaunching %s for %d*%d seconds" % (" "*level, proc_name, maxtime, self.UNIT_TIME))
 
         while self.children[proc_name].children:
             child = self.children[proc_name].children.pop()
@@ -167,7 +167,7 @@ class ProcessLauncher(object):
 
         self._launch(maxtime)
         if self.verbose:
-            print "%sFinished %s" % (" "*level, proc_name)
+            print("%sFinished %s" % (" "*level, proc_name))
 
     def _launch(self, running_time):
         """

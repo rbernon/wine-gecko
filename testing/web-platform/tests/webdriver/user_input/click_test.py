@@ -31,7 +31,7 @@ class ClickTest(base_test.WebDriverBaseTest):
         value = alert.get_text()
         alert.accept()
 
-        self.assertEquals(value, "div")
+        self.assertEqual(value, "div")
 
     def test_click_p(self):
         self.driver.get(self.webserver.where_is("user_input/res/click.html"))
@@ -43,7 +43,7 @@ class ClickTest(base_test.WebDriverBaseTest):
         value = alert.get_text()
         alert.accept()
 
-        self.assertEquals(value, "p")
+        self.assertEqual(value, "p")
 
     def test_click_h1(self):
         self.driver.get(self.webserver.where_is("user_input/res/click.html"))
@@ -55,7 +55,7 @@ class ClickTest(base_test.WebDriverBaseTest):
         value = alert.get_text()
         alert.accept()
 
-        self.assertEquals(value, "h1")
+        self.assertEqual(value, "h1")
 
     def test_click_pre(self):
         self.driver.get(self.webserver.where_is("user_input/res/click.html"))
@@ -67,7 +67,7 @@ class ClickTest(base_test.WebDriverBaseTest):
         value = alert.get_text()
         alert.accept()
 
-        self.assertEquals(value, "pre")
+        self.assertEqual(value, "pre")
 
     def test_click_ol(self):
         self.driver.get(self.webserver.where_is("user_input/res/click.html"))
@@ -79,7 +79,7 @@ class ClickTest(base_test.WebDriverBaseTest):
         value = alert.get_text()
         alert.accept()
 
-        self.assertEquals(value, "ol")
+        self.assertEqual(value, "ol")
 
     def test_click_ul(self):
         self.driver.get(self.webserver.where_is("user_input/res/click.html"))
@@ -91,7 +91,7 @@ class ClickTest(base_test.WebDriverBaseTest):
         value = alert.get_text()
         alert.accept()
 
-        self.assertEquals(value, "ul")
+        self.assertEqual(value, "ul")
 
     def test_click_a(self):
         self.driver.get(self.webserver.where_is("user_input/res/click.html"))
@@ -103,7 +103,7 @@ class ClickTest(base_test.WebDriverBaseTest):
         value = alert.get_text()
         alert.accept()
 
-        self.assertEquals(value, "a")
+        self.assertEqual(value, "a")
 
     def test_click_img(self):
         self.driver.get(self.webserver.where_is("user_input/res/click.html"))
@@ -115,7 +115,7 @@ class ClickTest(base_test.WebDriverBaseTest):
         value = alert.get_text()
         alert.accept()
 
-        self.assertEquals(value, "img")
+        self.assertEqual(value, "img")
 
     def test_click_video(self):
         self.driver.get(self.webserver.where_is("user_input/res/click.html"))
@@ -127,7 +127,7 @@ class ClickTest(base_test.WebDriverBaseTest):
         value = alert.get_text()
         alert.accept()
 
-        self.assertEquals(value, "video")
+        self.assertEqual(value, "video")
 
     def test_click_canvas(self):
         self.driver.get(self.webserver.where_is("user_input/res/click.html"))
@@ -139,7 +139,7 @@ class ClickTest(base_test.WebDriverBaseTest):
         value = alert.get_text()
         alert.accept()
 
-        self.assertEquals(value, "canvas")
+        self.assertEqual(value, "canvas")
 
     def test_click_progress(self):
         self.driver.get(self.webserver.where_is("user_input/res/click.html"))
@@ -151,7 +151,7 @@ class ClickTest(base_test.WebDriverBaseTest):
         value = alert.get_text()
         alert.accept()
 
-        self.assertEquals(value, "progress")
+        self.assertEqual(value, "progress")
 
     def test_click_textarea(self):
         self.driver.get(self.webserver.where_is("user_input/res/click.html"))
@@ -163,7 +163,7 @@ class ClickTest(base_test.WebDriverBaseTest):
         value = alert.get_text()
         alert.accept()
 
-        self.assertEquals(value, "textarea")
+        self.assertEqual(value, "textarea")
 
     def test_click_button(self):
         self.driver.get(self.webserver.where_is("user_input/res/click.html"))
@@ -175,7 +175,7 @@ class ClickTest(base_test.WebDriverBaseTest):
         value = alert.get_text()
         alert.accept()
 
-        self.assertEquals(value, "button")
+        self.assertEqual(value, "button")
 
     def test_click_svg(self):
         self.driver.get(self.webserver.where_is("user_input/res/click.html"))
@@ -187,7 +187,7 @@ class ClickTest(base_test.WebDriverBaseTest):
         value = alert.get_text()
         alert.accept()
 
-        self.assertEquals(value, "svg")
+        self.assertEqual(value, "svg")
 
     def test_click_input_range(self):
         self.driver.get(self.webserver.where_is("user_input/res/click.html"))
@@ -199,7 +199,7 @@ class ClickTest(base_test.WebDriverBaseTest):
         value = alert.get_text()
         alert.accept()
 
-        self.assertEquals(value, "input_range")
+        self.assertEqual(value, "input_range")
 
     def test_click_input_button(self):
         self.driver.get(self.webserver.where_is("user_input/res/click.html"))
@@ -211,7 +211,7 @@ class ClickTest(base_test.WebDriverBaseTest):
         value = alert.get_text()
         alert.accept()
 
-        self.assertEquals(value, "input_button")
+        self.assertEqual(value, "input_button")
 
     def test_click_input_submit(self):
         self.driver.get(self.webserver.where_is("user_input/res/click.html"))
@@ -223,7 +223,7 @@ class ClickTest(base_test.WebDriverBaseTest):
         value = alert.get_text()
         alert.accept()
 
-        self.assertEquals(value, "input_submit")
+        self.assertEqual(value, "input_submit")
 
     def test_click_input_reset(self):
         self.driver.get(self.webserver.where_is("user_input/res/click.html"))
@@ -235,7 +235,7 @@ class ClickTest(base_test.WebDriverBaseTest):
         value = alert.get_text()
         alert.accept()
 
-        self.assertEquals(value, "input_reset")
+        self.assertEqual(value, "input_reset")
 
     def test_click_input_checkbox(self):
         self.driver.get(self.webserver.where_is("user_input/res/click.html"))
@@ -247,7 +247,7 @@ class ClickTest(base_test.WebDriverBaseTest):
         value = alert.get_text()
         alert.accept()
 
-        self.assertEquals(value, "input_checkbox")
+        self.assertEqual(value, "input_checkbox")
 
     def test_click_input_radio(self):
         self.driver.get(self.webserver.where_is("user_input/res/click.html"))
@@ -259,7 +259,7 @@ class ClickTest(base_test.WebDriverBaseTest):
         value = alert.get_text()
         alert.accept()
 
-        self.assertEquals(value, "input_radio")
+        self.assertEqual(value, "input_radio")
 
     def test_click_input_text(self):
         self.driver.get(self.webserver.where_is("user_input/res/click.html"))
@@ -271,7 +271,7 @@ class ClickTest(base_test.WebDriverBaseTest):
         value = alert.get_text()
         alert.accept()
 
-        self.assertEquals(value, "input_text")
+        self.assertEqual(value, "input_text")
 
     def test_click_input_number(self):
         self.driver.get(self.webserver.where_is("user_input/res/click.html"))
@@ -283,7 +283,7 @@ class ClickTest(base_test.WebDriverBaseTest):
         value = alert.get_text()
         alert.accept()
 
-        self.assertEquals(value, "input_number")
+        self.assertEqual(value, "input_number")
 
     def test_click_input_tel(self):
         self.driver.get(self.webserver.where_is("user_input/res/click.html"))
@@ -295,7 +295,7 @@ class ClickTest(base_test.WebDriverBaseTest):
         value = alert.get_text()
         alert.accept()
 
-        self.assertEquals(value, "input_tel")
+        self.assertEqual(value, "input_tel")
 
     def test_click_input_url(self):
         self.driver.get(self.webserver.where_is("user_input/res/click.html"))
@@ -307,7 +307,7 @@ class ClickTest(base_test.WebDriverBaseTest):
         value = alert.get_text()
         alert.accept()
 
-        self.assertEquals(value, "input_url")
+        self.assertEqual(value, "input_url")
 
     def test_click_input_email(self):
         self.driver.get(self.webserver.where_is("user_input/res/click.html"))
@@ -319,7 +319,7 @@ class ClickTest(base_test.WebDriverBaseTest):
         value = alert.get_text()
         alert.accept()
 
-        self.assertEquals(value, "input_email")
+        self.assertEqual(value, "input_email")
 
     def test_click_input_search(self):
         self.driver.get(self.webserver.where_is("user_input/res/click.html"))
@@ -331,7 +331,7 @@ class ClickTest(base_test.WebDriverBaseTest):
         value = alert.get_text()
         alert.accept()
 
-        self.assertEquals(value, "input_search")
+        self.assertEqual(value, "input_search")
 
     def test_click_input_image(self):
         self.driver.get(self.webserver.where_is("user_input/res/click.html"))
@@ -343,7 +343,7 @@ class ClickTest(base_test.WebDriverBaseTest):
         value = alert.get_text()
         alert.accept()
 
-        self.assertEquals(value, "input_image")
+        self.assertEqual(value, "input_image")
 
 if __name__ == "__main__":
     unittest.main()

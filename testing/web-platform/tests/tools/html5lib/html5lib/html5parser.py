@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, unicode_literals
+
 from six import with_metaclass
 
 import types
@@ -38,7 +38,7 @@ def parseFragment(doc, container="div", treebuilder="etree", encoding=None,
 def method_decorator_metaclass(function):
     class Decorated(type):
         def __new__(meta, classname, bases, classDict):
-            for attributeName, attribute in classDict.items():
+            for attributeName, attribute in list(classDict.items()):
                 if isinstance(attribute, types.FunctionType):
                     attribute = function(attribute)
 
@@ -75,7 +75,7 @@ class HTMLParser(object):
         self.errors = []
 
         self.phases = dict([(name, cls(self, self.tree)) for name, cls in
-                            getPhases(debug).items()])
+                            list(getPhases(debug).items())])
 
     def _parse(self, stream, innerHTML=False, container="div",
                encoding=None, parseMeta=True, useChardet=True, **kwargs):
@@ -268,7 +268,7 @@ class HTMLParser(object):
 
     def adjustMathMLAttributes(self, token):
         replacements = {"definitionurl": "definitionURL"}
-        for k, v in replacements.items():
+        for k, v in list(replacements.items()):
             if k in token["data"]:
                 token["data"][v] = token["data"][k]
                 del token["data"][k]
@@ -347,7 +347,7 @@ class HTMLParser(object):
     def adjustForeignAttributes(self, token):
         replacements = adjustForeignAttributesMap
 
-        for originalName in token["data"].keys():
+        for originalName in list(token["data"].keys()):
             if originalName in replacements:
                 foreignName = replacements[originalName]
                 token["data"][foreignName] = token["data"][originalName]
@@ -422,7 +422,7 @@ def getPhases(debug):
     def log(function):
         """Logger that records which phase processes each token"""
         type_names = dict((value, key) for key, value in
-                          constants.tokenTypes.items())
+                          list(constants.tokenTypes.items()))
 
         def wrapped(self, *args, **kwargs):
             if function.__name__.startswith("process") and len(args) > 0:
@@ -483,7 +483,7 @@ def getPhases(debug):
                 self.parser.parseError("non-html-root")
             # XXX Need a check here to see if the first start tag token emitted is
             # this token... If it's not, invoke self.parser.parseError().
-            for attr, value in token["data"].items():
+            for attr, value in list(token["data"].items()):
                 if attr not in self.tree.openElements[0].attributes:
                     self.tree.openElements[0].attributes[attr] = value
             self.parser.firstStartTag = False
@@ -1020,7 +1020,7 @@ def getPhases(debug):
                 assert self.parser.innerHTML
             else:
                 self.parser.framesetOK = False
-                for attr, value in token["data"].items():
+                for attr, value in list(token["data"].items()):
                     if attr not in self.tree.openElements[1].attributes:
                         self.tree.openElements[1].attributes[attr] = value
 

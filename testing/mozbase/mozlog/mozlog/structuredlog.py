@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import unicode_literals
+
 
 from multiprocessing import current_process
 from threading import current_thread, Lock
@@ -11,8 +11,8 @@ import sys
 import time
 import traceback
 
-from logtypes import Unicode, TestId, Status, SubStatus, Dict, List, Int, Any
-from logtypes import log_action, convertor_registry
+from .logtypes import Unicode, TestId, Status, SubStatus, Dict, List, Int, Any
+from .logtypes import log_action, convertor_registry
 
 """Structured Logging for recording test results.
 
@@ -175,7 +175,7 @@ class StructuredLogger(object):
 
         action = raw_data["action"]
         converted_data = convertor_registry[action].convert_known(**raw_data)
-        for k, v in raw_data.iteritems():
+        for k, v in raw_data.items():
             if k not in converted_data:
                 converted_data[k] = v
 
@@ -416,7 +416,7 @@ def _log_func(level_name):
                 exc_info = sys.exc_info()
             if exc_info != (None, None, None):
                 bt = traceback.format_exception(*exc_info)
-                data["stack"] = u"\n".join(bt)
+                data["stack"] = "\n".join(bt)
 
         data["level"] = level_name
         self._log_data("log", data)

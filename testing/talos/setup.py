@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 try:
     here = os.path.dirname(os.path.abspath(__file__))
     description = file(os.path.join(here, 'README.txt')).read()
-except IOError, OSError:
+except IOError as OSError:
     description = ''
 
 version = "0.0"

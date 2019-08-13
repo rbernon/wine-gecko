@@ -93,12 +93,12 @@ class TestScreenOrientation(MarionetteTestCase):
 
     @skip_if_desktop
     def test_set_invalid_orientation(self):
-        with self.assertRaisesRegexp(errors.MarionetteException, unknown_orientation % "cheese"):
+        with self.assertRaisesRegex(errors.MarionetteException, unknown_orientation % "cheese"):
             self.marionette.set_orientation("cheese")
 
     @skip_if_desktop
     def test_set_null_orientation(self):
-        with self.assertRaisesRegexp(errors.MarionetteException, unknown_orientation % "null"):
+        with self.assertRaisesRegex(errors.MarionetteException, unknown_orientation % "null"):
             self.marionette.set_orientation(None)
 
     @skip_if_b2g

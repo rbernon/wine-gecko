@@ -1,7 +1,7 @@
-from __future__ import absolute_import, division, unicode_literals
+
 
 try:
-    chr = unichr # flake8: noqa
+    chr = chr # flake8: noqa
 except NameError:
     pass
 

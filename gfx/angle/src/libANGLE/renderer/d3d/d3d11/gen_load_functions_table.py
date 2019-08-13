@@ -112,7 +112,7 @@ def get_unknown_format_string(dxgi_to_type_map, dxgi_unknown_string):
 
 # Making map from dxgi to type map for a particular internalFormat
 def create_dxgi_to_type_map(dst, json_data, internal_format_str):
-    for type_item in sorted(json_data[internal_format_str].iteritems()):
+    for type_item in sorted(json_data[internal_format_str].items()):
         for entry_in_type_item in type_item[1]:
             dxgi_format_str = entry_in_type_item['dxgiFormat']
 
@@ -136,7 +136,7 @@ def get_load_function_map_snippet(insert_map_string):
 
 def parse_json_into_switch_string(json_data):
     table_data = ''
-    for internal_format_item in sorted(json_data.iteritems()):
+    for internal_format_item in sorted(json_data.items()):
         internal_format_str = internal_format_item[0]
         table_data += '        case ' + internal_format_str + ':\n'
         table_data += '        {\n'
@@ -148,7 +148,7 @@ def parse_json_into_switch_string(json_data):
 
         dxgi_unknown_str = get_unknown_format_string(dxgi_to_type_map, dxgi_format_unknown);
 
-        for dxgi_format_item in sorted(dxgi_to_type_map.iteritems()):
+        for dxgi_format_item in sorted(dxgi_to_type_map.items()):
             dxgi_format_str = dxgi_format_item[0]
 
             # Main case statements

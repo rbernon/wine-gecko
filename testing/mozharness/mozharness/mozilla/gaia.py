@@ -340,7 +340,7 @@ class GaiaMixin(object):
         self.info('Sending environment as make vars because of bug 1028816')
 
         cmd = self.query_exe('make', return_type="list")
-        for key, value in env.iteritems():
+        for key, value in env.items():
             cmd.append('%s=%s' % (key, value))
         self.run_command(cmd,
                          cwd=gaia_dir,

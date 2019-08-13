@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, unicode_literals
+
 
 import re
 from xml.sax.saxutils import escape, unescape

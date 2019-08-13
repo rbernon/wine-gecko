@@ -28,7 +28,7 @@ class Entry:
             elif self.func:
                 return self.func
             else:
-                print("No clue what my id is:"+self)
+                print(("No clue what my id is:"+self))
            
     def call(self, timetaken):
         self.calls += 1
@@ -85,20 +85,20 @@ def frequency(ls):
             stat = dict[id]
         stat.call(item.timetaken)
 
-    ls = dict.items()
+    ls = list(dict.items())
     ls.sort(compare)
-    ls = filter(lambda (_,item): item.duration > 20, ls)
+    ls = [__item for __item in ls if __item[1].duration > 20]
 #    ls = filter(lambda (_,item): item.file and item.file.find("browser.js") != -1 and item.linenum <= 1223 and item.linenum >1067, ls)
     for key, item in ls:
-        print(item.calls,key, str(item.duration)+"ms")
+        print((item.calls,key, str(item.duration)+"ms"))
 
 def go():
     file = sys.argv[1]
     
-    ls = filter(lambda x: x != None, map(parse_line, open(file).readlines()))
+    ls = [x for x in map(parse_line, open(file).readlines()) if x != None]
     
     frequency(ls)
-    print ls[0]
+    print(ls[0])
 
 go()
 

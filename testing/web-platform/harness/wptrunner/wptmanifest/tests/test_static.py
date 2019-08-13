@@ -4,7 +4,7 @@
 
 import unittest
 
-from cStringIO import StringIO
+from io import StringIO
 
 from ..backends import static
 
@@ -32,14 +32,14 @@ key: value
 
         manifest = self.compile(data, {"a": 2})
 
-        self.assertEquals(manifest.get("key"), "value")
+        self.assertEqual(manifest.get("key"), "value")
         children = list(item for item in manifest.iterchildren())
-        self.assertEquals(len(children), 1)
+        self.assertEqual(len(children), 1)
         section = children[0]
-        self.assertEquals(section.name, "Heading 1")
+        self.assertEqual(section.name, "Heading 1")
 
-        self.assertEquals(section.get("other_key"), "value_2")
-        self.assertEquals(section.get("key"), "value")
+        self.assertEqual(section.get("other_key"), "value_2")
+        self.assertEqual(section.get("key"), "value")
 
     def test_get_1(self):
         data = """
@@ -55,7 +55,7 @@ key: value
 
         children = list(item for item in manifest.iterchildren())
         section = children[0]
-        self.assertEquals(section.get("other_key"), "value_3")
+        self.assertEqual(section.get("other_key"), "value_3")
 
     def test_get_3(self):
         data = """key:
@@ -63,10 +63,10 @@ key: value
   if a[0] == "ab"[0]: value_2
 """
         manifest = self.compile(data, {"a": "1"})
-        self.assertEquals(manifest.get("key"), "value_1")
+        self.assertEqual(manifest.get("key"), "value_1")
 
         manifest = self.compile(data, {"a": "ac"})
-        self.assertEquals(manifest.get("key"), "value_2")
+        self.assertEqual(manifest.get("key"), "value_2")
 
     def test_get_4(self):
         data = """key:
@@ -74,10 +74,10 @@ key: value
   value_2
 """
         manifest = self.compile(data, {"a": True})
-        self.assertEquals(manifest.get("key"), "value_2")
+        self.assertEqual(manifest.get("key"), "value_2")
 
         manifest = self.compile(data, {"a": False})
-        self.assertEquals(manifest.get("key"), "value_1")
+        self.assertEqual(manifest.get("key"), "value_1")
 
     def test_api(self):
         data = """key:
@@ -88,12 +88,12 @@ key_1: other_value
         manifest = self.compile(data, {"a": 1.5})
 
         self.assertFalse(manifest.is_empty)
-        self.assertEquals(manifest.root, manifest)
-        self.assertTrue(manifest.has_key("key_1"))
-        self.assertFalse(manifest.has_key("key_2"))
+        self.assertEqual(manifest.root, manifest)
+        self.assertTrue("key_1" in manifest)
+        self.assertFalse("key_2" in manifest)
 
-        self.assertEquals(set(manifest.iterkeys()), set(["key", "key_1"]))
-        self.assertEquals(set(manifest.itervalues()), set(["value_1", "other_value"]))
+        self.assertEqual(set(manifest.keys()), set(["key", "key_1"]))
+        self.assertEqual(set(manifest.values()), set(["value_1", "other_value"]))
 
     def test_is_empty_1(self):
         data = """

@@ -2,19 +2,19 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import cStringIO
+import io
 import hashlib
 import json
 import os
 import platform
 import re
 import subprocess
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import zipfile
 from distutils import spawn
-from symFileManager import SymFileManager
-from symbolicationRequest import SymbolicationRequest
-from symLogging import LogMessage
+from .symFileManager import SymFileManager
+from .symbolicationRequest import SymbolicationRequest
+from .symLogging import LogMessage
 
 
 class SymbolError(Exception):
@@ -134,8 +134,8 @@ class ProfileSymbolicator:
         LogMessage("Retrieving symbol zip from {symbol_zip_url}...".format(
             symbol_zip_url=symbol_zip_url))
         try:
-            io = urllib2.urlopen(symbol_zip_url, None, 30)
-            with zipfile.ZipFile(cStringIO.StringIO(io.read())) as zf:
+            io = urllib.request.urlopen(symbol_zip_url, None, 30)
+            with zipfile.ZipFile(io.StringIO(io.read())) as zf:
                 self.integrate_symbol_zip(zf)
             self._create_file_if_not_exists(self._marker_file(symbol_zip_url))
         except IOError:
@@ -249,7 +249,7 @@ class ProfileSymbolicator:
         else:
             self.symbolicate_profile_v2(profile_json)
         for i, thread in enumerate(profile_json["threads"]):
-            if isinstance(thread, basestring):
+            if isinstance(thread, str):
                 thread_json = json.loads(thread)
                 self.symbolicate_profile(thread_json)
                 profile_json["threads"][i] = json.dumps(thread_json)
@@ -276,7 +276,7 @@ class ProfileSymbolicator:
     def _find_addresses_v3(self, profile_json):
         addresses = set()
         for thread in profile_json["threads"]:
-            if isinstance(thread, basestring):
+            if isinstance(thread, str):
                 continue
             for s in thread["stringTable"]:
                 if s[0:2] == "0x":
@@ -285,7 +285,7 @@ class ProfileSymbolicator:
 
     def _substitute_symbols_v3(self, profile_json, symbolication_table):
         for thread in profile_json["threads"]:
-            if isinstance(thread, basestring):
+            if isinstance(thread, str):
                 continue
             for i, s in enumerate(thread["stringTable"]):
                 thread["stringTable"][i] = symbolication_table.get(s, s)
@@ -325,7 +325,7 @@ class ProfileSymbolicator:
                 libs_with_symbols[lib["start"]] = {
                     "library": lib, "symbols": set()}
             libs_with_symbols[lib["start"]]["symbols"].add(address)
-        return libs_with_symbols.values()
+        return list(libs_with_symbols.values())
 
     def _module_from_lib(self, lib):
         if "breakpadId" in lib:
@@ -352,7 +352,7 @@ class ProfileSymbolicator:
         if not request.isValidRequest:
             return {}
         symbolicated_stack = request.Symbolicate(0)
-        return dict(zip(all_symbols, symbolicated_stack))
+        return dict(list(zip(all_symbols, symbolicated_stack)))
 
     def _substitute_symbols_v2(self, profile_json, symbolication_table):
         for thread in profile_json["threads"]:

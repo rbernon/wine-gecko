@@ -44,7 +44,7 @@ _PACKAGE_NAME = 'mod_pywebsocket'
 _USE_FAST_MASKING = False
 
 if sys.version < '2.3':
-    print >> sys.stderr, '%s requires Python 2.3 or later.' % _PACKAGE_NAME
+    print('%s requires Python 2.3 or later.' % _PACKAGE_NAME, file=sys.stderr)
     sys.exit(1)
 
 if _USE_FAST_MASKING:

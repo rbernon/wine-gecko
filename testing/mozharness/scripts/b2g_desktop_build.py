@@ -55,7 +55,7 @@ class B2GDesktopBuild(FxDesktopBuild, GaiaLocalesMixin, VCSMixin, object):
             env['LOCALE_BASEDIR'] = l10n_base_dir
             env['LOCALES_FILE'] = languages_file
 
-            self.pull_gaia_locale_source(l10n_config, parse_config_file(languages_file).keys(), l10n_base_dir)
+            self.pull_gaia_locale_source(l10n_config, list(parse_config_file(languages_file).keys()), l10n_base_dir)
 
         except Exception:
             self.exception("failed to clone gaia l10n repos")

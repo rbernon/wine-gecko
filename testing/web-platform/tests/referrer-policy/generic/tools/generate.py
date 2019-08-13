@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import os, sys, json
-from common_paths import *
-import spec_validator
+from .common_paths import *
+from . import spec_validator
 import argparse
 
 
@@ -157,7 +157,7 @@ def generate_test_source_files(spec_json, target):
                                        subresource_path,
                                        html_template)
                 else:
-                    print 'Excluding selection:', selection_path
+                    print('Excluding selection:', selection_path)
 
 
 def main(target):

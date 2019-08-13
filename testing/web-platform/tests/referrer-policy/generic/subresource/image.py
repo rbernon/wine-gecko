@@ -1,6 +1,6 @@
-import os, sys, array, json, math, cStringIO
+import os, sys, array, json, math, io
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import subresource
+from . import subresource
 
 class Image:
     """This class partially implements the interface of the PIL.Image.Image.
@@ -82,7 +82,7 @@ def encode_string_as_bmp_image(string_data):
     img.putdata(color_data)
 
     # Flush image to string.
-    f = cStringIO.StringIO()
+    f = io.StringIO()
     img.save(f, "BMP")
     f.seek(0)
 

@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, unicode_literals
+
 from six import text_type
 
 from ..constants import scopingElements, tableInsertModeElements, namespaces
@@ -42,7 +42,7 @@ class Node(object):
     def __str__(self):
         attributesStr = " ".join(["%s=\"%s\"" % (name, value)
                                   for name, value in
-                                  self.attributes.items()])
+                                  list(self.attributes.items())])
         if attributesStr:
             return "<%s %s>" % (self.name, attributesStr)
         else:

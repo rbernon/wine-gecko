@@ -13,8 +13,8 @@ import mozfile
 import os
 import re
 import tokenize
-from ConfigParser import SafeConfigParser as ConfigParser
-from StringIO import StringIO
+from configparser import SafeConfigParser as ConfigParser
+from io import StringIO
 
 class PreferencesReadError(Exception):
     """read error for prefrences files"""
@@ -35,7 +35,7 @@ class Preferences(object):
         """
         # wants a list of 2-tuples
         if isinstance(prefs, dict):
-            prefs = prefs.items()
+            prefs = list(prefs.items())
         if cast:
             prefs = [(i, self.cast(j)) for i, j in prefs]
         self._prefs += prefs
@@ -62,7 +62,7 @@ class Preferences(object):
         - anything enclosed in single quotes will be treated as a string with the ''s removed from both sides
         """
 
-        if not isinstance(value, basestring):
+        if not isinstance(value, str):
             return value # no op
         quote = "'"
         if value == 'true':
@@ -96,16 +96,16 @@ class Preferences(object):
                 return cls.read_ini(path, section)
             except PreferencesReadError:
                 raise
-            except Exception, e:
+            except Exception as e:
                 raise PreferencesReadError(str(e))
 
         # try both JSON and .ini format
         try:
             return cls.read_json(path)
-        except Exception, e:
+        except Exception as e:
             try:
                 return cls.read_ini(path)
-            except Exception, f:
+            except Exception as f:
                 for exception in e, f:
                     if isinstance(exception, PreferencesReadError):
                         raise exception
@@ -125,7 +125,7 @@ class Preferences(object):
                 raise PreferencesReadError("No section '%s' in %s" % (section, path))
             retval = parser.items(section, raw=True)
         else:
-            retval = parser.defaults().items()
+            retval = list(parser.defaults().items())
 
         # cast the preferences since .ini is just strings
         return [(i, cls.cast(j)) for i, j in retval]
@@ -143,10 +143,10 @@ class Preferences(object):
                 raise PreferencesReadError("Malformed preferences: %s" % path)
             values = [i[1] for i in prefs]
         elif isinstance(prefs, dict):
-            values = prefs.values()
+            values = list(prefs.values())
         else:
             raise PreferencesReadError("Malformed preferences: %s" % path)
-        types = (bool, basestring, int)
+        types = (bool, str, int)
         if [i for i in values
             if not [isinstance(i, j) for j in types]]:
             raise PreferencesReadError("Only bool, string, and int values allowed")
@@ -186,7 +186,7 @@ class Preferences(object):
 
         retval = []
         def pref(a, b):
-            if interpolation and isinstance(b, basestring):
+            if interpolation and isinstance(b, str):
                 b = b.format(**interpolation)
             retval.append((a, b))
         lines = [i.strip().rstrip(';') for i in string.split('\n') if i.strip()]
@@ -197,12 +197,12 @@ class Preferences(object):
             try:
                 eval(line, _globals, {})
             except SyntaxError:
-                print line
+                print(line)
                 raise
 
         # de-magic the marker
         for index, (key, value) in enumerate(retval):
-            if isinstance(value, basestring) and marker in value:
+            if isinstance(value, str) and marker in value:
                 retval[index] = (key, value.replace(marker, '//'))
 
         return retval
@@ -211,14 +211,14 @@ class Preferences(object):
     def write(cls, _file, prefs, pref_string='user_pref(%s, %s);'):
         """write preferences to a file"""
 
-        if isinstance(_file, basestring):
+        if isinstance(_file, str):
             f = file(_file, 'a')
         else:
             f = _file
 
         if isinstance(prefs, dict):
             # order doesn't matter
-            prefs = prefs.items()
+            prefs = list(prefs.items())
 
         # serialize -> JSON
         _prefs = [(json.dumps(k), json.dumps(v) )
@@ -226,8 +226,8 @@ class Preferences(object):
 
         # write the preferences
         for _pref in _prefs:
-            print >> f, pref_string % _pref
+            print(pref_string % _pref, file=f)
 
         # close the file if opened internally
-        if isinstance(_file, basestring):
+        if isinstance(_file, str):
             f.close()

@@ -9,8 +9,8 @@ import os
 import sys
 import time
 import traceback
-import urllib
-import utils
+import urllib.request, urllib.parse, urllib.error
+from . import utils
 import mozhttpd
 
 from mozlog import get_proxy_logger
@@ -40,9 +40,9 @@ def buildCommandLine(test):
 
     # sanity check pageloader values
     # mandatory options: tpmanifest, tpcycles
-    if test['tpcycles'] not in range(1, 1000):
+    if test['tpcycles'] not in list(range(1, 1000)):
         raise TalosError('pageloader cycles must be int 1 to 1,000')
-    if test.get('tpdelay') and test['tpdelay'] not in range(1, 10000):
+    if test.get('tpdelay') and test['tpdelay'] not in list(range(1, 10000)):
         raise TalosError('pageloader delay must be int 1 to 10,000')
     if 'tpmanifest' not in test:
         raise TalosError("tpmanifest not found in test: %s" % test)
@@ -93,7 +93,7 @@ def run_tests(config, browser_config):
                 test[path] = utils.interpolate(test[path])
         if test.get('tpmanifest'):
             test['tpmanifest'] = \
-                os.path.normpath('file:/%s' % (urllib.quote(test['tpmanifest'],
+                os.path.normpath('file:/%s' % (urllib.parse.quote(test['tpmanifest'],
                                                '/\\t:\\')))
         if not test.get('url'):
             # build 'url' for tptest
@@ -138,7 +138,7 @@ def run_tests(config, browser_config):
         browser_config['sourcestamp'] = version_info['application_changeset']
     except KeyError:
         if not browser_config['develop']:
-            print "unable to find changeset or repository: %s" % version_info
+            print("unable to find changeset or repository: %s" % version_info)
             sys.exit()
         else:
             browser_config['repository'] = 'develop'
@@ -189,14 +189,14 @@ def run_tests(config, browser_config):
         LOG.error("Detected a regression for %s" % testname)
         # by returning 1, we report an orange to buildbot
         # http://docs.buildbot.net/latest/developer/results.html
-        LOG.test_end(testname, status='FAIL', message=unicode(exc),
+        LOG.test_end(testname, status='FAIL', message=str(exc),
                      stack=traceback.format_exc())
         return 1
     except Exception as exc:
         # NOTE: if we get into this condition, talos has an internal
         # problem and cannot continue
         #       this will prevent future tests from running
-        LOG.test_end(testname, status='ERROR', message=unicode(exc),
+        LOG.test_end(testname, status='ERROR', message=str(exc),
                      stack=traceback.format_exc())
         # indicate a failure to buildbot, turn the job red
         return 2
@@ -210,9 +210,9 @@ def run_tests(config, browser_config):
     if results_urls:
         talos_results.output(results_urls)
         if browser_config['develop']:
-            print
-            print ("Thanks for running Talos locally. Results are in"
-                   " %s and %s" % (results_urls['datazilla_urls']))
+            print()
+            print(("Thanks for running Talos locally. Results are in"
+                   " %s and %s" % (results_urls['datazilla_urls'])))
 
     # we will stop running tests on a failed test, or we will return 0 for
     # green
@@ -222,7 +222,7 @@ def run_tests(config, browser_config):
 def main(args=sys.argv[1:]):
     try:
         config, browser_config = get_configs()
-    except ConfigurationError, exc:
+    except ConfigurationError as exc:
         sys.exit("ERROR: %s" % exc)
     sys.exit(run_tests(config, browser_config))
 

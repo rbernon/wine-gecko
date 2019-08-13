@@ -141,8 +141,8 @@ def main(platform):
 
 if __name__ == '__main__':
     if 2 != len(sys.argv):
-        print("""Usage:
+        print(("""Usage:
   python {0} MOZ_PKG_PLATFORM
-""".format(sys.argv[0]))
+""".format(sys.argv[0])))
         sys.exit(1)
     main(*sys.argv[1:])

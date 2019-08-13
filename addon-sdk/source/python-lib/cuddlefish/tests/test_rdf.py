@@ -15,11 +15,11 @@ template_dir = os.path.join(parent(test_dir), "../../app-extension")
 class RDFTests(unittest.TestCase):
     def testBug567660(self):
         obj = rdf.RDF()
-        data = u'\u2026'.encode('utf-8')
+        data = '\u2026'.encode('utf-8')
         x = '<?xml version="1.0" encoding="utf-8"?><blah>%s</blah>' % data
         obj.dom = xml.dom.minidom.parseString(x)
         self.assertEqual(obj.dom.documentElement.firstChild.nodeValue,
-                         u'\u2026')
+                         '\u2026')
         self.assertEqual(str(obj).replace("\n",""), x.replace("\n",""))
 
     def failUnlessIn(self, substring, s, msg=""):
@@ -34,11 +34,11 @@ class RDFTests(unittest.TestCase):
             m = rdf.gen_manifest(template_dir, cfg, jid="JID")
             if n.endswith("-pack"):
                 # these ones should remain packed
-                self.failUnlessEqual(m.get("em:unpack"), "false")
+                self.assertEqual(m.get("em:unpack"), "false")
                 self.failUnlessIn("<em:unpack>false</em:unpack>", str(m), n)
             else:
                 # and these should be unpacked
-                self.failUnlessEqual(m.get("em:unpack"), "true")
+                self.assertEqual(m.get("em:unpack"), "true")
                 self.failUnlessIn("<em:unpack>true</em:unpack>", str(m), n)
 
     def testTitle(self):
@@ -46,7 +46,7 @@ class RDFTests(unittest.TestCase):
         for n in ['title', 'fullName', 'none']:
             cfg = packaging.get_config_in_dir(os.path.join(basedir, n))
             m = rdf.gen_manifest(template_dir, cfg, jid='JID')
-            self.failUnlessEqual(m.get('em:name'), 'a long ' + n)
+            self.assertEqual(m.get('em:name'), 'a long ' + n)
             self.failUnlessIn('<em:name>a long ' + n + '</em:name>', str(m), n)
 
 

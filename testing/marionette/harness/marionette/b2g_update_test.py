@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from cStringIO import StringIO
+from io import StringIO
 import imp
 import os
 import re
@@ -105,7 +105,7 @@ class B2GUpdateTestRunner(MarionetteTestRunner):
 
         for name in dir(test_mod):
             testcase = getattr(test_mod, name)
-            if not isinstance(testcase, (type, types.ClassType)):
+            if not isinstance(testcase, type):
                 continue
 
             # Support both B2GUpdateTestCase and MarionetteTestCase
@@ -179,13 +179,13 @@ class B2GUpdateTestCase(MarionetteTestCase):
 
     def print_status(self, status, message=None):
         if self.status_newline:
-            print ''
+            print('')
             self.status_newline = False
 
         status_msg = 'UPDATE-TEST-' + status
         if message:
             status_msg += ': ' + message
-        print status_msg
+        print(status_msg)
 
     def setUp(self):
         MarionetteTestCase.setUp(self)

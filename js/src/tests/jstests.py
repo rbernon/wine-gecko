@@ -5,7 +5,7 @@ The JS Shell Test Harness.
 See the adjacent README.txt for more details.
 """
 
-from __future__ import print_function
+
 
 import os, sys, textwrap, platform
 from os.path import abspath, dirname, isfile, realpath
@@ -164,7 +164,7 @@ def parse_args():
         op.error('missing JS_SHELL argument')
 
     # Valgrind, gdb, and rr are mutually exclusive.
-    if sum(map(lambda e: 1 if e else 0, [options.valgrind, options.debug, options.rr])) > 1:
+    if sum([1 if e else 0 for e in [options.valgrind, options.debug, options.rr]]) > 1:
         op.error("--valgrind, --debug, and --rr are mutually exclusive.")
 
     # Fill the debugger field, as needed.

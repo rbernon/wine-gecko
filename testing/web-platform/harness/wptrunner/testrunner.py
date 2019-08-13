@@ -2,13 +2,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import unicode_literals
+
 
 import multiprocessing
 import sys
 import threading
 import traceback
-from Queue import Empty
+from queue import Empty
 from multiprocessing import Process, current_process, Queue
 
 from mozlog import structuredlog
@@ -147,7 +147,7 @@ def start_runner(test_queue, runner_command_queue, runner_result_queue,
                 stop_flag.set()
     except Exception:
         runner_result_queue.put(("log", ("critical", {"message": traceback.format_exc()})))
-        print >> sys.stderr, traceback.format_exc()
+        print(traceback.format_exc(), file=sys.stderr)
         stop_flag.set()
     finally:
         runner_command_queue = None
