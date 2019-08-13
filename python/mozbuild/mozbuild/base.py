@@ -748,7 +748,7 @@ class MachCommandBase(MozbuildObject):
             self._ensure_state_subdir_exists('.')
             logfile = self._get_state_filename('last_log.json')
             try:
-                fd = open(logfile, "wb")
+                fd = open(logfile, "w")
                 self.log_manager.add_json_handler(fd)
             except Exception as e:
                 self.log(logging.WARNING, 'mach', {'error': e},

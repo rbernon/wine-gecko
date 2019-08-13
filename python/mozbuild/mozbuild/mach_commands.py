@@ -707,7 +707,7 @@ class Logs(MachCommandBase):
     def show_log(self, log_file=None):
         if not log_file:
             path = self._get_state_filename('last_log.json')
-            log_file = open(path, 'rb')
+            log_file = open(path, 'r')
 
         if self.log_manager.terminal:
             env = dict(os.environ)
