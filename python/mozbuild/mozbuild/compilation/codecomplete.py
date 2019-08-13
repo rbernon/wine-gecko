@@ -4,7 +4,7 @@
 
 # This modules provides functionality for dealing with code completion.
 
-from __future__ import absolute_import
+
 
 import os
 
@@ -54,5 +54,5 @@ class Introspection(MachCommandBase):
         if name not in build_vars:
             return
 
-        print(' '.join(shell_quote(arg)
-                       for arg in util.sanitize_cflags(shell_split(build_vars[name]))))
+        print((' '.join(shell_quote(arg)
+                       for arg in util.sanitize_cflags(shell_split(build_vars[name])))))

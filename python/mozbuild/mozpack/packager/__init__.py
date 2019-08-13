@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import
+
 
 from mozbuild.preprocessor import Preprocessor
 import re
@@ -50,7 +50,7 @@ class Component(object):
         '''
         Split [1, 2, 3, 4, 5, 6, 7] into [(1, 2, 3), (4, 5, 6)].
         '''
-        return zip(*[iter(lst)] * 3)
+        return list(zip(*[iter(lst)] * 3))
 
     KEY_VALUE_RE = re.compile(r'''
         \s*                 # optional whitespace.
@@ -118,7 +118,7 @@ class Component(object):
         destdir = options.pop('destdir', '')
         if options:
             errors.fatal('Malformed manifest: options %s not recognized'
-                         % options.keys())
+                         % list(options.keys()))
         return Component(name, destdir=destdir)
 
 
@@ -328,7 +328,7 @@ class SimplePackager(object):
 
         bases = self.get_bases()
         broken_bases = sorted(
-            m for m, includer in self._included_manifests.iteritems()
+            m for m, includer in self._included_manifests.items()
             if mozpath.basedir(m, bases) != mozpath.basedir(includer, bases))
         for m in broken_bases:
             errors.fatal('"%s" is included from "%s", which is outside "%s"' %

@@ -6,7 +6,7 @@
 # to a given compilation unit. This is used as a helper to find a bug in some
 # versions of GNU ld.
 
-from __future__ import absolute_import
+
 
 import subprocess
 import sys
@@ -59,4 +59,4 @@ def main(bin, compilation_unit):
 
 
 if __name__ == '__main__':
-    print main(*sys.argv[1:])
+    print(main(*sys.argv[1:]))

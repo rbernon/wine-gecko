@@ -5,7 +5,7 @@
 from collections import defaultdict
 import json
 import os
-import urlparse
+import urllib.parse
 
 from mach.config import ConfigSettings
 from mach.logging import LoggingManager
@@ -42,7 +42,7 @@ class ChromeManifestHandler(object):
         if isinstance(entry, (ManifestChrome, ManifestResource)):
             if isinstance(entry, ManifestResource):
                 dest = entry.target
-                url = urlparse.urlparse(dest)
+                url = urllib.parse.urlparse(dest)
                 if not url.scheme:
                     dest = mozpath.normpath(mozpath.join(entry.base, dest))
                 if url.scheme == 'file':
@@ -99,7 +99,7 @@ class ChromeMapBackend(CommonBackend):
             chrome_mapping = self.manifest_handler.chrome_mapping
             overrides = self.manifest_handler.overrides
             json.dump([
-                {k: list(v) for k, v in chrome_mapping.iteritems()},
+                {k: list(v) for k, v in chrome_mapping.items()},
                 overrides,
                 self._install_mapping,
             ], fh, sort_keys=True, indent=2)

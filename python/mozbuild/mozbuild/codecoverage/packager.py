@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import, print_function
+
 
 import argparse
 import sys
@@ -12,7 +12,7 @@ from mozpack.copier import Jarrer
 
 def package_gcno_tree(root, output_file):
     # XXX JarWriter doesn't support unicode strings, see bug 1056859
-    if isinstance(root, unicode):
+    if isinstance(root, str):
         root = root.encode('utf-8')
 
     finder = FileFinder(root)

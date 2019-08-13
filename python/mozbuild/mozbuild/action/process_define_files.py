@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import, print_function, unicode_literals
+
 
 import argparse
 import os
@@ -55,7 +55,7 @@ def process_define_file(output, input):
                                 'CONFIGURE_DEFINE_FILE')
                         defines = '\n'.join(sorted(
                             '#define %s %s' % (name, val)
-                            for name, val in config.defines.iteritems()
+                            for name, val in config.defines.items()
                             if name not in config.non_global_defines))
                         l = l[:m.start('cmd') - 1] \
                             + defines + l[m.end('name'):]

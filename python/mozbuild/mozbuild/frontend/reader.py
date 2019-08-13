@@ -16,7 +16,7 @@ The BuildReader contains basic logic for traversing a tree of mozbuild files.
 It does this by examining specific variables populated during execution.
 """
 
-from __future__ import absolute_import, print_function, unicode_literals
+
 
 import ast
 import inspect
@@ -80,11 +80,12 @@ from .context import (
 )
 
 from mozbuild.base import ExecutionSummary
+from functools import reduce
 
 
 if sys.version_info.major == 2:
-    text_type = unicode
-    type_type = types.TypeType
+    text_type = str
+    type_type = type
 else:
     text_type = str
     type_type = type
@@ -126,7 +127,7 @@ class EmptyConfig(object):
             b'JS_STANDALONE': b'1',
         })
         udict = {}
-        for k, v in self.substs.items():
+        for k, v in list(self.substs.items()):
             if isinstance(v, str):
                 udict[k.decode('utf-8')] = v.decode('utf-8')
             else:
@@ -338,7 +339,7 @@ class MozbuildSandbox(Sandbox):
             raise Exception('`template` is a function decorator. You must '
                 'use it as `@template` preceding a function declaration.')
 
-        name = func.func_name
+        name = func.__name__
 
         if name in self.templates:
             raise KeyError(
@@ -417,7 +418,7 @@ class MozbuildSandbox(Sandbox):
             klass = self._context.__class__
             self._context.__class__ = TemplateContext
             # The sandbox will do all the necessary checks for these merges.
-            for key, value in context.items():
+            for key, value in list(context.items()):
                 if isinstance(value, dict):
                     self[key].update(value)
                 elif isinstance(value, (list, HierarchicalStringList)):
@@ -434,10 +435,10 @@ class MozbuildSandbox(Sandbox):
 
 class TemplateFunction(object):
     def __init__(self, func, sandbox):
-        self.path = func.func_code.co_filename
-        self.name = func.func_name
+        self.path = func.__code__.co_filename
+        self.name = func.__name__
 
-        code = func.func_code
+        code = func.__code__
         firstlineno = code.co_firstlineno
         lines = sandbox._current_source.splitlines(True)
         lines = inspect.getblock(lines[firstlineno - 1:])
@@ -476,8 +477,8 @@ class TemplateFunction(object):
             compile(func_ast, self.path, 'exec'),
             glob,
             self.name,
-            func.func_defaults,
-            func.func_closure,
+            func.__defaults__,
+            func.__closure__,
         )
         func()
 
@@ -491,11 +492,11 @@ class TemplateFunction(object):
             '__builtins__': sandbox._builtins
         }
         func = types.FunctionType(
-            self._func.func_code,
+            self._func.__code__,
             glob,
             self.name,
-            self._func.func_defaults,
-            self._func.func_closure
+            self._func.__defaults__,
+            self._func.__closure__
         )
         sandbox.exec_function(func, args, kwargs, self.path,
                               becomes_current_path=False)
@@ -511,7 +512,7 @@ class TemplateFunction(object):
         def visit_Str(self, node):
             # String nodes we got from the AST parser are str, but we want
             # unicode literals everywhere, so transform them.
-            node.s = unicode(node.s)
+            node.s = str(node.s)
             return node
 
         def visit_Name(self, node):
@@ -644,7 +645,7 @@ class BuildReaderError(Exception):
 
             for l in traceback.format_exception(type(self.other), self.other,
                 self.trace):
-                s.write(unicode(l))
+                s.write(str(l))
 
         return s.getvalue()
 
@@ -794,7 +795,7 @@ class BuildReaderError(Exception):
             s.write('    %s\n' % inner.args[2])
             s.write('\n')
             close_matches = difflib.get_close_matches(inner.args[2],
-                                                      VARIABLES.keys(), 2)
+                                                      list(VARIABLES.keys()), 2)
             if close_matches:
                 s.write('Maybe you meant %s?\n' % ' or '.join(close_matches))
                 s.write('\n')
@@ -1196,7 +1197,7 @@ class BuildReader(object):
 
                 recurse_info[d][key] = dict(sandbox.metadata[key])
 
-        for path, child_metadata in recurse_info.items():
+        for path, child_metadata in list(recurse_info.items()):
             child_path = path.join('moz.build').full_path
 
             # Ensure we don't break out of the topsrcdir. We don't do realpath
@@ -1288,7 +1289,7 @@ class BuildReader(object):
         # There is room to improve this code (and the code in
         # _find_relevant_mozbuilds) to better handle multiple files in the same
         # directory. Bug 1136966 tracks.
-        for path, mbpaths in relevants.items():
+        for path, mbpaths in list(relevants.items()):
             path_mozbuilds[path] = [mozpath.join(topsrcdir, p) for p in mbpaths]
 
             for i, mbpath in enumerate(mbpaths[0:-1]):
@@ -1325,7 +1326,7 @@ class BuildReader(object):
             all_contexts.append(context)
 
         result = {}
-        for path, paths in path_mozbuilds.items():
+        for path, paths in list(path_mozbuilds.items()):
             result[path] = reduce(lambda x, y: x + y, (contexts[p] for p in paths), [])
 
         return result, all_contexts
@@ -1353,7 +1354,7 @@ class BuildReader(object):
         r = {}
         test_ctx_reader = TestContextReader(self.config)
 
-        for path, ctxs in paths.items():
+        for path, ctxs in list(paths.items()):
             flags = Files(Context())
 
             for ctx in ctxs:

@@ -5,7 +5,7 @@
 # This file contains a build backend for generating Visual Studio project
 # files.
 
-from __future__ import absolute_import, unicode_literals
+
 
 import errno
 import os
@@ -206,7 +206,7 @@ class VisualStudioBackend(CommonBackend):
             includes = [os.path.normpath(i) for i in includes]
 
             defines = []
-            for k, v in self._paths_to_defines.get(path, {}).items():
+            for k, v in list(self._paths_to_defines.get(path, {}).items()):
                 if v is True:
                     defines.append(k)
                 else:

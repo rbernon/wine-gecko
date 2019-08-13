@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import, unicode_literals
+
 
 import gyp
 import sys
@@ -69,7 +69,7 @@ class GypContext(TemplateContext):
 
 
 def encode(value):
-    if isinstance(value, unicode):
+    if isinstance(value, str):
         return value.encode('utf-8')
     return value
 
@@ -87,7 +87,7 @@ def read_from_gyp(config, path, output, vars, non_unified_sources = set()):
     # gyp expects plain str instead of unicode. The frontend code gives us
     # unicode strings, so convert them.
     path = encode(path)
-    str_vars = dict((name, encode(value)) for name, value in vars.items())
+    str_vars = dict((name, encode(value)) for name, value in list(vars.items()))
 
     params = {
         b'parallel': False,
@@ -221,7 +221,7 @@ def read_from_gyp(config, path, output, vars, non_unified_sources = set()):
                         if not f:
                             continue
                         # the result may be a string or a list.
-                        if isinstance(f, types.StringTypes):
+                        if isinstance(f, (str,)):
                             context[var].append(f)
                         else:
                             context[var].extend(f)

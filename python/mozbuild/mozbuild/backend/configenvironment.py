@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import
+
 
 import os
 import sys
@@ -17,7 +17,7 @@ from mozbuild.shellutil import quote as shell_quote
 
 
 if sys.version_info.major == 2:
-    text_type = unicode
+    text_type = str
 else:
     text_type = str
 
@@ -168,7 +168,7 @@ class ConfigEnvironment(object):
                 except UnicodeDecodeError:
                     return v.decode('utf-8', 'replace')
 
-        for k, v in self.substs.items():
+        for k, v in list(self.substs.items()):
             if not isinstance(v, StringTypes):
                 if isinstance(v, Iterable):
                     type(v)(decode(i) for i in v)

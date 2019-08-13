@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import
+
 
 import os
 import re
@@ -66,7 +66,7 @@ class _SimpleOrderedSet(object):
         self._list = []
         self._set = set()
 
-    def __nonzero__(self):
+    def __bool__(self):
         return bool(self._set)
 
     def __iter__(self):

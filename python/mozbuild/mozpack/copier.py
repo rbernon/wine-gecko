@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import
+
 
 import os
 import stat
@@ -109,7 +109,7 @@ class FileRegistry(object):
         '''
         Return all paths stored in the container, in the order they were added.
         '''
-        return self._files.keys()
+        return list(self._files.keys())
 
     def __len__(self):
         '''
@@ -142,7 +142,7 @@ class FileRegistry(object):
             for path, file in registry:
                 (...)
         '''
-        return self._files.iteritems()
+        return iter(self._files.items())
 
     def required_directories(self):
         '''
@@ -151,7 +151,7 @@ class FileRegistry(object):
         unspecified (virtual) root directory (and do not include said root
         directory).
         '''
-        return set(k for k, v in self._required_directories.items() if v > 0)
+        return set(k for k, v in list(self._required_directories.items()) if v > 0)
 
 
 class FileRegistrySubtree(object):
@@ -263,7 +263,7 @@ class FileCopier(FileRegistry):
 
         Returns a FileCopyResult that details what changed.
         '''
-        assert isinstance(destination, basestring)
+        assert isinstance(destination, str)
         assert not os.path.exists(destination) or os.path.isdir(destination)
 
         result = FileCopyResult()
@@ -324,9 +324,9 @@ class FileCopier(FileRegistry):
                     os.mkdir(d)
 
             if not os.access(d, os.W_OK):
-                umask = os.umask(0077)
+                umask = os.umask(0o077)
                 os.umask(umask)
-                os.chmod(d, 0777 & ~umask)
+                os.chmod(d, 0o777 & ~umask)
 
         if isinstance(remove_unaccounted, FileRegistry):
             existing_files = set(os.path.normpath(os.path.join(destination, p))
@@ -412,7 +412,7 @@ class FileCopier(FileRegistry):
                 if os.name == 'nt' and not os.access(f, os.W_OK):
                     # It doesn't matter what we set permissions to since we
                     # will remove this file shortly.
-                    os.chmod(f, 0600)
+                    os.chmod(f, 0o600)
 
                 os.remove(f)
                 result.removed_files.add(f)
@@ -454,7 +454,7 @@ class FileCopier(FileRegistry):
                     if e.errno in (errno.EPERM, errno.EACCES):
                         # Permissions may not allow deletion. So ensure write
                         # access is in place before attempting to rmdir again.
-                        os.chmod(d, 0700)
+                        os.chmod(d, 0o700)
                         os.rmdir(d)
                     else:
                         raise
@@ -525,7 +525,7 @@ class Jarrer(FileRegistry, BaseFile):
             def exists(self):
                 return self.deflater is not None
 
-        if isinstance(dest, basestring):
+        if isinstance(dest, str):
             dest = Dest(dest)
         assert isinstance(dest, Dest)
 

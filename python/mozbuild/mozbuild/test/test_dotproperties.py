@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
+
 
 import os
 import unittest
 
-from StringIO import StringIO
+from io import StringIO
 
 import mozpack.path as mozpath
 

@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, # You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import
+
 
 import os
 import subprocess
@@ -91,7 +91,7 @@ class Doctor(object):
         valid = False
         while not valid and limit > 0:
             try:
-                choice = strtobool(raw_input(prompt + '[Y/N]\n'))
+                choice = strtobool(input(prompt + '[Y/N]\n'))
                 valid = True
             except ValueError:
                 print("ERROR! Please enter a valid option!")
@@ -111,11 +111,11 @@ class Doctor(object):
             if status == 'SKIPPED':
                 continue
             self.results.append(result)
-            print('%s...\t%s\n' % (
+            print(('%s...\t%s\n' % (
                    result.get('desc', ''),
                    status
                 )
-            ).expandtabs(40)
+            ).expandtabs(40))
 
     @property
     def platform(self):
@@ -220,7 +220,7 @@ class Doctor(object):
                     fsutil_output = subprocess.check_output(command)
                     status = 'GOOD, FIXED'
                     desc = '8dot3 disabled systemwide'
-                except subprocess.CalledProcessError, e:
+                except subprocess.CalledProcessError as e:
                     desc = '8dot3 enabled systemwide'
                     if e.output.find('denied') != -1:
                         status = 'BAD, FIX DENIED'
@@ -297,7 +297,7 @@ class Doctor(object):
                         fsutil_output = subprocess.check_output(command)
                         status = 'GOOD, FIXED'
                         desc = 'lastaccess disabled systemwide'
-                    except subprocess.CalledProcessError, e:
+                    except subprocess.CalledProcessError as e:
                         desc = 'lastaccess enabled systemwide'
                         if e.output.find('denied') != -1:
                             status = 'BAD, FIX DENIED'

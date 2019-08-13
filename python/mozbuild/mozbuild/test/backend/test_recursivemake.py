@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import unicode_literals
+
 
 import json
 import os
@@ -330,7 +330,7 @@ class TestRecursiveMakeBackend(BackendTester):
             ],
         }
 
-        for var, val in expected.items():
+        for var, val in list(expected.items()):
             # print("test_variable_passthru[%s]" % (var))
             found = [str for str in lines if str.startswith(var)]
             self.assertEqual(found, val)
@@ -369,7 +369,7 @@ class TestRecursiveMakeBackend(BackendTester):
             ],
         }
 
-        for var, val in expected.items():
+        for var, val in list(expected.items()):
             found = [str for str in lines if str.startswith(var)]
             self.assertEqual(found, val)
 
@@ -531,7 +531,7 @@ class TestRecursiveMakeBackend(BackendTester):
 
         # This is not the most robust test in the world, but it gets the job
         # done.
-        entries = [e for e in m._dests.keys() if '**' in e]
+        entries = [e for e in list(m._dests.keys()) if '**' in e]
         self.assertEqual(len(entries), 1)
         self.assertIn('support/**', entries[0])
 
@@ -705,7 +705,7 @@ class TestRecursiveMakeBackend(BackendTester):
         expected[mozpath.join(env.topobjdir, 'final-target')] = [
             'FINAL_TARGET = $(DEPTH)/random-final-target'
         ]
-        for key, expected_rules in expected.iteritems():
+        for key, expected_rules in expected.items():
             backend_path = mozpath.join(key, 'backend.mk')
             lines = [l.strip() for l in open(backend_path, 'rt').readlines()[2:]]
             found = [str for str in lines if

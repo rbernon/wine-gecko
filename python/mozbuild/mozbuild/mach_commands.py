@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, # You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import, print_function, unicode_literals
+
 
 import argparse
 import errno
@@ -136,7 +136,7 @@ class BuildProgressFooter(object):
         # terminal is a blessings.Terminal.
         self._t = terminal
         self._fh = sys.stdout
-        self.tiers = monitor.tiers.tier_status.viewitems()
+        self.tiers = monitor.tiers.tier_status.items()
 
     def clear(self):
         """Removes the footer from the current terminal."""
@@ -792,7 +792,7 @@ class Warnings(MachCommandBase):
             dirpath = None
 
         type_counts = database.type_counts(dirpath)
-        sorted_counts = sorted(type_counts.iteritems(),
+        sorted_counts = sorted(iter(type_counts.items()),
             key=operator.itemgetter(1))
 
         total = 0
@@ -947,7 +947,7 @@ class GTestCommands(MachCommandBase):
             processes[i].run()
 
         exit_code = 0
-        for process in processes.values():
+        for process in list(processes.values()):
             status = process.wait()
             if status:
                 exit_code = status
@@ -1407,16 +1407,16 @@ class MachDebug(MachCommandBase):
                     quoted_arg = quote(arg)
                     print("echo '  %s'" % quoted_arg, file=out)
                     print("""set -- "$@" '%s'""" % quoted_arg, file=out)
-            for key, value in self.mozconfig['env']['added'].items():
+            for key, value in list(self.mozconfig['env']['added'].items()):
                 print("export %s='%s'" % (key, quote(value)), file=out)
-            for key, (old, value) in self.mozconfig['env']['modified'].items():
+            for key, (old, value) in list(self.mozconfig['env']['modified'].items()):
                 print("export %s='%s'" % (key, quote(value)), file=out)
-            for key, value in self.mozconfig['vars']['added'].items():
+            for key, value in list(self.mozconfig['vars']['added'].items()):
                 print("%s='%s'" % (key, quote(value)), file=out)
-            for key, (old, value) in self.mozconfig['vars']['modified'].items():
+            for key, (old, value) in list(self.mozconfig['vars']['modified'].items()):
                 print("%s='%s'" % (key, quote(value)), file=out)
-            for key in self.mozconfig['env']['removed'].keys() + \
-                    self.mozconfig['vars']['removed'].keys():
+            for key in list(self.mozconfig['env']['removed'].keys()) + \
+                    list(self.mozconfig['vars']['removed'].keys()):
                 print("unset %s" % key, file=out)
 
     def _environment_json(self, out, verbose):

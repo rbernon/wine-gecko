@@ -27,7 +27,7 @@
 # do not wish to do so, delete this exception statement from your
 # version.
 
-from __future__ import absolute_import
+
 
 import mercurial.error as error
 import mercurial.hg as hg
@@ -56,7 +56,7 @@ class MercurialNativeRevisionFinder(BaseFinder):
 
         Accepts a Mercurial localrepo and changectx instance.
         """
-        if isinstance(repo, (str, unicode)):
+        if isinstance(repo, str):
             path = repo
             repo = hg.repository(hgui.ui(), repo)
         else:
@@ -85,7 +85,7 @@ class MercurialNativeRevisionFinder(BaseFinder):
         return self._get(path)
 
     def _get(self, path):
-        if isinstance(path, unicode):
+        if isinstance(path, str):
             path = path.encode('utf-8', 'replace')
 
         try:

@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import unicode_literals
+
 
 import json
 import os
@@ -89,7 +89,7 @@ class TestMozbuildObject(unittest.TestCase):
             mozconfig = os.path.join(d, 'mozconfig')
             with open(mozconfig, 'wt') as fh:
                 fh.write('mk_add_options MOZ_OBJDIR=@TOPSRCDIR@/foo/@CONFIG_GUESS@')
-            print('Wrote mozconfig %s' % mozconfig)
+            print(('Wrote mozconfig %s' % mozconfig))
 
             topobjdir = os.path.join(d, 'foo', guess)
             os.makedirs(topobjdir)

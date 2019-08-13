@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import, print_function, unicode_literals
+
 
 import argparse
 import errno
@@ -44,7 +44,7 @@ def explode(aar, destdir):
     assets = mozpath.join(destdir, 'assets')
     try:
         os.rmdir(assets)
-    except OSError, e:
+    except OSError as e:
         if e.errno in (errno.ENOTEMPTY, errno.ENOENT):
             pass
         else:

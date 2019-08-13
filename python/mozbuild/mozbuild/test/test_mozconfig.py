@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import unicode_literals
+
 
 import os
 import unittest
@@ -476,9 +476,9 @@ class TestMozconfigLoader(unittest.TestCase):
 
             self.assertTrue(e.exception.message.startswith(
                 'Evaluation of your mozconfig exited with an error'))
-            self.assertEquals(e.exception.path,
+            self.assertEqual(e.exception.path,
                 mozconfig.name.replace(os.sep, '/'))
-            self.assertEquals(e.exception.output, ['hello world'])
+            self.assertEqual(e.exception.output, ['hello world'])
 
 
 if __name__ == '__main__':

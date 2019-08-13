@@ -17,7 +17,7 @@ KeyError are machine parseable. This machine-friendly data is used to present
 user-friendly error messages in the case of errors.
 """
 
-from __future__ import absolute_import, unicode_literals
+
 
 import os
 import sys
@@ -178,7 +178,7 @@ class Sandbox(dict):
                 # following error:
                 # SyntaxError: unqualified exec is not allowed in function
                 # 'execute' it is a nested function.
-                exec code in self
+                exec(code, self)
             finally:
                 self._current_source = old_source
 

@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import
+
 
 import errno
 import os
@@ -54,7 +54,7 @@ else:
 
     def _copyfile(src, dest):
         # False indicates `dest` should be overwritten if it exists already.
-        if isinstance(src, unicode) and isinstance(dest, unicode):
+        if isinstance(src, str) and isinstance(dest, str):
             _CopyFileW(src, dest, False)
         elif isinstance(src, str) and isinstance(dest, str):
             _CopyFileA(src, dest, False)
@@ -145,7 +145,7 @@ class BaseFile(object):
         disabled when skip_if_older is False.
         Returns whether a copy was actually performed (True) or not (False).
         '''
-        if isinstance(dest, basestring):
+        if isinstance(dest, str):
             dest = Dest(dest)
         else:
             assert isinstance(dest, Dest)
@@ -228,13 +228,13 @@ class File(BaseFile):
         # - keep file type (e.g. S_IFREG)
         ret = stat.S_IFMT(mode)
         # - expand user read and execute permissions to everyone
-        if mode & 0400:
-            ret |= 0444
-        if mode & 0100:
-            ret |= 0111
+        if mode & 0o400:
+            ret |= 0o444
+        if mode & 0o100:
+            ret |= 0o111
         # - keep user write permissions
-        if mode & 0200:
-            ret |= 0200
+        if mode & 0o200:
+            ret |= 0o200
         # - leave away sticky bit, setuid, setgid
         return ret
 
@@ -251,11 +251,11 @@ class ExecutableFile(File):
     '''
     def copy(self, dest, skip_if_older=True):
         real_dest = dest
-        if not isinstance(dest, basestring):
+        if not isinstance(dest, str):
             fd, dest = mkstemp()
             os.close(fd)
             os.remove(dest)
-        assert isinstance(dest, basestring)
+        assert isinstance(dest, str)
         # If File.copy didn't actually copy because dest is newer, check the
         # file sizes. If dest is smaller, it means it is already stripped and
         # elfhacked, so we can skip.
@@ -292,7 +292,7 @@ class AbsoluteSymlinkFile(File):
         File.__init__(self, path)
 
     def copy(self, dest, skip_if_older=True):
-        assert isinstance(dest, basestring)
+        assert isinstance(dest, str)
 
         # The logic in this function is complicated by the fact that symlinks
         # aren't universally supported. So, where symlinks aren't supported, we
@@ -393,7 +393,7 @@ class ExistingFile(BaseFile):
         self.required = required
 
     def copy(self, dest, skip_if_older=True):
-        if isinstance(dest, basestring):
+        if isinstance(dest, str):
             dest = Dest(dest)
         else:
             assert isinstance(dest, Dest)
@@ -425,7 +425,7 @@ class PreprocessedFile(BaseFile):
         '''
         Invokes the preprocessor to create the destination file.
         '''
-        if isinstance(dest, basestring):
+        if isinstance(dest, str):
             dest = Dest(dest)
         else:
             assert isinstance(dest, Dest)
@@ -539,7 +539,7 @@ class XPTFile(GeneratedFile):
         the individual XPTs to link.
         skip_if_older is ignored.
         '''
-        if isinstance(dest, basestring):
+        if isinstance(dest, str):
             dest = Dest(dest)
         assert isinstance(dest, Dest)
 
@@ -966,7 +966,7 @@ class ComposedFinder(BaseFinder):
         from mozpack.copier import FileRegistry
         self.files = FileRegistry()
 
-        for base, finder in sorted(finders.iteritems()):
+        for base, finder in sorted(finders.items()):
             if self.files.contains(base):
                 self.files.remove(base)
             for p, f in finder.find(''):

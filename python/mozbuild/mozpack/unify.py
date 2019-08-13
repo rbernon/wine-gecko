@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import
+
 
 from mozpack.files import (
     BaseFinder,
@@ -72,7 +72,7 @@ class UnifiedExecutableFile(BaseFile):
         creating the instance.
         skip_if_older is ignored.
         '''
-        assert isinstance(dest, basestring)
+        assert isinstance(dest, str)
         tmpfiles = []
         try:
             for e in self._executables:

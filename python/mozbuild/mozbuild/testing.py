@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import, unicode_literals
+
 
 import json
 import os
@@ -55,7 +55,7 @@ class TestMetadata(object):
             with open(filename, 'rt') as fh:
                 d = json.load(fh)
 
-                for path, tests in d.items():
+                for path, tests in list(d.items()):
                     for metadata in tests:
                         self._tests_by_path[path].append(metadata)
                         self._test_dirs.add(os.path.dirname(path))
@@ -285,6 +285,6 @@ REFTEST_FLAVORS = ('crashtest', 'reftest')
 WEB_PATFORM_TESTS_FLAVORS = ('web-platform-tests',)
 
 def all_test_flavors():
-    return ([v[0] for v in TEST_MANIFESTS.values()] +
+    return ([v[0] for v in list(TEST_MANIFESTS.values())] +
             list(REFTEST_FLAVORS) +
             list(WEB_PATFORM_TESTS_FLAVORS))

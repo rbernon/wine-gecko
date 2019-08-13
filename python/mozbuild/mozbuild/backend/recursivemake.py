@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import, unicode_literals
+
 
 import logging
 import os
@@ -13,7 +13,7 @@ from collections import (
     defaultdict,
     namedtuple,
 )
-from StringIO import StringIO
+from io import StringIO
 from itertools import chain
 
 from reftest import ReftestManifest
@@ -76,6 +76,7 @@ from ..util import (
 )
 from ..makeutil import Makefile
 from mozbuild.shellutil import quote as shell_quote
+from functools import reduce
 
 MOZBUILD_VARIABLES = [
     b'ANDROID_APK_NAME',
@@ -218,7 +219,7 @@ class BackendMakeFile(object):
         self.fh.write(buf)
 
     def write_once(self, buf):
-        if isinstance(buf, unicode):
+        if isinstance(buf, str):
             buf = buf.encode('utf-8')
         if b'\n' + buf not in self.fh.getvalue():
             self.write(buf)
@@ -289,8 +290,8 @@ class RecursiveMakeTraversal(object):
         Helper function to call a filter from compute_dependencies and
         traverse.
         """
-        return filter(current, self._traversal.get(current,
-            self.SubDirectories()))
+        return list(filter(current, self._traversal.get(current,
+            self.SubDirectories())))
 
     def compute_dependencies(self, filter=None):
         """
@@ -624,7 +625,7 @@ class RecursiveMakeBackend(CommonBackend):
         convenience variables, and the other dependency definitions for a
         hopefully proper directory traversal.
         """
-        for tier, no_skip in self._no_skip.items():
+        for tier, no_skip in list(self._no_skip.items()):
             self.log(logging.DEBUG, 'fill_root_mk', {
                 'number': len(no_skip), 'tier': tier
                 }, 'Using {number} directories during {tier}')
@@ -670,7 +671,7 @@ class RecursiveMakeBackend(CommonBackend):
         for tier, filter in filters:
             main, all_deps = \
                 self._traversal.compute_dependencies(filter)
-            for dir, deps in all_deps.items():
+            for dir, deps in list(all_deps.items()):
                 if deps is not None or (dir in self._idl_dirs \
                                         and tier == 'export'):
                     rule = root_deps_mk.create_rule(['%s/%s' % (dir, tier)])
@@ -683,7 +684,7 @@ class RecursiveMakeBackend(CommonBackend):
                 rule.add_dependencies('%s/%s' % (d, tier) for d in main)
 
         all_compile_deps = reduce(lambda x,y: x|y,
-            self._compile_graph.values()) if self._compile_graph else set()
+            list(self._compile_graph.values())) if self._compile_graph else set()
         compile_roots = set(self._compile_graph.keys()) - all_compile_deps
 
         rule = root_deps_mk.create_rule(['recurse_compile'])
@@ -825,7 +826,7 @@ class RecursiveMakeBackend(CommonBackend):
         self._fill_root_mk()
 
         # Make the master test manifest files.
-        for flavor, t in self._test_manifests.items():
+        for flavor, t in list(self._test_manifests.items()):
             install_prefix, manifests = t
             manifest_stem = mozpath.join(install_prefix, '%s.ini' % flavor)
             self._write_master_test_manifest(mozpath.join(
@@ -910,16 +911,16 @@ class RecursiveMakeBackend(CommonBackend):
             backend_file.write_once('%s += %s\n' % (which, defines))
 
     def _process_test_harness_files(self, obj, backend_file):
-        for path, files in obj.srcdir_files.iteritems():
+        for path, files in obj.srcdir_files.items():
             for source in files:
                 dest = '%s/%s' % (path, mozpath.basename(source))
                 self._install_manifests['_tests'].add_symlink(source, dest)
 
-        for path, patterns in obj.srcdir_pattern_files.iteritems():
+        for path, patterns in obj.srcdir_pattern_files.items():
             for p in patterns:
                 self._install_manifests['_tests'].add_pattern_symlink(p[0], p[1], path)
 
-        for path, files in obj.objdir_files.iteritems():
+        for path, files in obj.objdir_files.items():
             self._no_skip['misc'].add(backend_file.relobjdir)
             prefix = 'TEST_HARNESS_%s' % path.replace('/', '_')
             backend_file.write("""
@@ -954,7 +955,7 @@ INSTALL_TARGETS += %(prefix)s
         for p in ('Makefile', 'backend.mk', '.deps/.mkdir.done'):
             build_files.add_optional_exists(p)
 
-        for idl in manager.idls.values():
+        for idl in list(manager.idls.values()):
             self._install_manifests['dist_idl'].add_symlink(idl['source'],
                 idl['basename'])
             self._install_manifests['dist_include'].add_optional_exists('%s.h'
@@ -1001,7 +1002,7 @@ INSTALL_TARGETS += %(prefix)s
 
         interfaces_manifests = []
         dist_dir = mozpath.join(self.environment.topobjdir, 'dist')
-        for manifest, entries in manager.interface_manifests.items():
+        for manifest, entries in list(manager.interface_manifests.items()):
             interfaces_manifests.append(mozpath.join('$(DEPTH)', manifest))
             for xpt in sorted(entries):
                 registered_xpt_files.add(mozpath.join(
@@ -1061,7 +1062,7 @@ INSTALL_TARGETS += %(prefix)s
         # Don't allow files to be defined multiple times unless it is allowed.
         # We currently allow duplicates for non-test files or test files if
         # the manifest is listed as a duplicate.
-        for source, (dest, is_test) in obj.installs.items():
+        for source, (dest, is_test) in list(obj.installs.items()):
             try:
                 self._install_manifests['_tests'].add_symlink(source, dest)
             except ValueError:
@@ -1324,7 +1325,7 @@ INSTALL_TARGETS += %(prefix)s
         man_dir = mozpath.join(self.environment.topobjdir, '_build_manifests',
             dest)
 
-        for k, manifest in manifests.items():
+        for k, manifest in list(manifests.items()):
             with self._write_file(mozpath.join(man_dir, k)) as fh:
                 manifest.write(fileobj=fh)
 

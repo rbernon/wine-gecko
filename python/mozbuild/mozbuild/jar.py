@@ -8,7 +8,7 @@ processing jar.mn files.
 See the documentation for jar.mn on MDC for further details on the format.
 '''
 
-from __future__ import absolute_import
+
 
 import sys
 import os
@@ -17,7 +17,7 @@ import re
 import logging
 from time import localtime
 from MozZipFile import ZipFile
-from cStringIO import StringIO
+from io import StringIO
 from collections import defaultdict
 
 from mozbuild.preprocessor import Preprocessor
@@ -302,9 +302,9 @@ class JarMaker(object):
         '''updateManifest replaces the % in the chrome registration entries
         with the given chrome base path, and updates the given manifest file.
         '''
-        myregister = dict.fromkeys(map(lambda s: s.replace('%',
-            chromebasepath), register))
-        addEntriesToListFile(manifestPath, myregister.iterkeys())
+        myregister = dict.fromkeys([s.replace('%',
+            chromebasepath) for s in register])
+        addEntriesToListFile(manifestPath, iter(myregister.keys()))
 
     def makeJar(self, infile, jardir):
         '''makeJar is the main entry point to JarMaker.
@@ -322,7 +322,7 @@ class JarMaker(object):
         elif self.relativesrcdir:
             self.localedirs = \
                 self.generateLocaleDirs(self.relativesrcdir)
-        if isinstance(infile, basestring):
+        if isinstance(infile, str):
             logging.info('processing ' + infile)
             self.sourcedirs.append(_normpath(os.path.dirname(infile)))
         pp = self.pp.clone()
@@ -372,7 +372,7 @@ class JarMaker(object):
             jarfilepath = jarfile + '.jar'
             try:
                 os.makedirs(os.path.dirname(jarfilepath))
-            except OSError, error:
+            except OSError as error:
                 if error.errno != errno.EEXIST:
                     raise
             jf = ZipFile(jarfilepath, 'a', lock=True)
@@ -514,7 +514,7 @@ class JarMaker(object):
             # remove previous link or file
             try:
                 os.remove(out)
-            except OSError, e:
+            except OSError as e:
                 if e.errno != errno.ENOENT:
                     raise
             return open(out, 'wb')
@@ -525,7 +525,7 @@ class JarMaker(object):
             if not os.path.isdir(outdir):
                 try:
                     os.makedirs(outdir)
-                except OSError, error:
+                except OSError as error:
                     if error.errno != errno.EEXIST:
                         raise
             return out
@@ -541,7 +541,7 @@ class JarMaker(object):
             # remove previous link or file
             try:
                 os.remove(out)
-            except OSError, e:
+            except OSError as e:
                 if e.errno != errno.ENOENT:
                     raise
             if sys.platform != 'win32':

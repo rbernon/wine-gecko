@@ -27,7 +27,8 @@ import os
 import re
 from optparse import OptionParser
 import errno
-from makeutil import Makefile
+from .makeutil import Makefile
+from functools import reduce
 
 # hack around win32 mangling our line endings
 # http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/65443
@@ -56,7 +57,7 @@ class Expression:
         self.__ignore_whitespace()
         self.e = self.__get_logical_or()
         if self.content:
-            raise Expression.ParseError, self
+            raise Expression.ParseError(self)
 
     def __get_logical_or(self):
         """
@@ -157,7 +158,7 @@ class Expression:
                 if word_len:
                     rv = Expression.__ASTLeaf('string', self.content[:word_len])
                 else:
-                    raise Expression.ParseError, self
+                    raise Expression.ParseError(self)
         self.__strip(word_len)
         self.__ignore_whitespace()
         return rv
@@ -196,7 +197,7 @@ class Expression:
                 return left and right
             elif tok[1].value == '||':
                 return left or right
-            raise Expression.ParseError, self
+            raise Expression.ParseError(self)
 
         # Mapping from token types to evaluator functions
         # Apart from (non-)equality, all these can be simple lambda forms.
@@ -230,7 +231,7 @@ class Expression:
         def __repr__(self):
             return self.value.__repr__()
 
-    class ParseError(StandardError):
+    class ParseError(Exception):
         """
         Error raised when parsing fails.
         It has two members, offset and content, which give the offset of the
@@ -278,7 +279,7 @@ class Preprocessor:
         self.context = Context()
         for k,v in {'FILE': '',
                     'LINE': 0,
-                    'DIRECTORY': os.path.abspath('.')}.iteritems():
+                    'DIRECTORY': os.path.abspath('.')}.items():
             self.context[k] = v
         self.actionLevel = 0
         self.disableLevel = 0
@@ -292,21 +293,21 @@ class Preprocessor:
         self.cmds = {}
         for cmd, level in {'define': 0,
                            'undef': 0,
-                           'if': sys.maxint,
-                           'ifdef': sys.maxint,
-                           'ifndef': sys.maxint,
+                           'if': sys.maxsize,
+                           'ifdef': sys.maxsize,
+                           'ifndef': sys.maxsize,
                            'else': 1,
                            'elif': 1,
                            'elifdef': 1,
                            'elifndef': 1,
-                           'endif': sys.maxint,
+                           'endif': sys.maxsize,
                            'expand': 0,
                            'literal': 0,
                            'filter': 0,
                            'unfilter': 0,
                            'include': 0,
                            'includesubst': 0,
-                           'error': 0}.iteritems():
+                           'error': 0}.items():
             self.cmds[cmd] = (level, getattr(self, 'do_' + cmd))
         self.out = sys.stdout
         self.setMarker(marker)
@@ -469,7 +470,7 @@ class Preprocessor:
                 raise Preprocessor.Error(self, "--depend doesn't work with stdout",
                                          None)
             try:
-                from makeutil import Makefile
+                from .makeutil import Makefile
             except:
                 raise Preprocessor.Error(self, "--depend requires the "
                                                "mozbuild.makeutil module", None)
@@ -684,7 +685,7 @@ class Preprocessor:
         current = dict(self.filters)
         for f in filters:
             current[f] = getattr(self, 'filter_' + f)
-        filterNames = current.keys()
+        filterNames = list(current.keys())
         filterNames.sort()
         self.filters = [(fn, current[fn]) for fn in filterNames]
         return
@@ -694,7 +695,7 @@ class Preprocessor:
         for f in filters:
             if f in current:
                 del current[f]
-        filterNames = current.keys()
+        filterNames = list(current.keys())
         filterNames.sort()
         self.filters = [(fn, current[fn]) for fn in filterNames]
         return
@@ -739,7 +740,7 @@ class Preprocessor:
         args can either be a file name, or a file-like object.
         Files should be opened, and will be closed after processing.
         """
-        isName = type(args) == str or type(args) == unicode
+        isName = type(args) == str or type(args) == str
         oldCheckLineNumbers = self.checkLineNumbers
         self.checkLineNumbers = False
         if isName:

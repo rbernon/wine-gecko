@@ -127,7 +127,7 @@ class TestFileRegistry(BaseTestFileRegistry, unittest.TestCase):
             'bar': [],
         }
         reg = FileRegistry()
-        for path, parts in cases.iteritems():
+        for path, parts in cases.items():
             self.assertEqual(reg._partial_paths(path), parts)
 
     def test_file_registry(self):
@@ -337,8 +337,8 @@ class TestFileCopier(TestWithTmpDir):
         # Make file and directory unwritable. Reminder: making a directory
         # unwritable prevents modifications (including deletes) from the list
         # of files in that directory.
-        os.chmod(p, 0400)
-        os.chmod(self.tmpdir, 0400)
+        os.chmod(p, 0o400)
+        os.chmod(self.tmpdir, 0o400)
 
         copier = FileCopier()
         copier.add('dummy', GeneratedFile('content'))
@@ -414,7 +414,7 @@ class TestFileCopier(TestWithTmpDir):
         self.assertTrue(stat.S_ISDIR(st.st_mode))
 
         # What's worse, we have no record that dest was created.
-        self.assertEquals(len(result.updated_files), 0)
+        self.assertEqual(len(result.updated_files), 0)
 
         # But we do have an erroneous record of an optional file
         # existing when it does not.

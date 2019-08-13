@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import unicode_literals
+
 
 import os
 import shutil
@@ -345,7 +345,7 @@ class TestMozbuildSandbox(unittest.TestCase):
         sandbox = MozbuildSandbox(Context(VARIABLES, config))
 
         self.assertEqual(sandbox['CONFIG']['BAD_UTF8'],
-            u'\ufffd\ufffd\ufffd\ufffd:')
+            '\ufffd\ufffd\ufffd\ufffd:')
 
     def test_invalid_exports_set_base(self):
         sandbox = self.sandbox()
@@ -525,7 +525,7 @@ def Template():
             source = 'a = foo(1, 2)'
             sandbox.exec_source(source, 'foo.mozbuild')
 
-            self.assertEquals(sandbox['a'], (Foo, int))
+            self.assertEqual(sandbox['a'], (Foo, int))
         finally:
             del FUNCTIONS['foo']
 

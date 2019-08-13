@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import unicode_literals
+
 
 from mach.logging import LoggingManager
 
@@ -34,7 +34,7 @@ class MockConfig(object):
         }, **extra_substs)
 
         self.substs_unicode = ReadOnlyDict({k.decode('utf-8'): v.decode('utf-8',
-            'replace') for k, v in self.substs.items()})
+            'replace') for k, v in list(self.substs.items())})
 
         self.defines = self.substs
 

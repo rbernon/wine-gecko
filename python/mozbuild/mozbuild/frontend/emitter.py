@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import, unicode_literals
+
 
 import itertools
 import logging
@@ -117,8 +117,8 @@ class TreeMetadataEmitter(LoggingMixin):
         # arguments. This gross hack works around the problem until we
         # rid ourselves of 2.6.
         self.info = {}
-        for k, v in mozinfo.info.items():
-            if isinstance(k, unicode):
+        for k, v in list(mozinfo.info.items()):
+            if isinstance(k, str):
                 k = k.encode('ascii')
             self.info[k] = v
 
@@ -192,7 +192,7 @@ class TreeMetadataEmitter(LoggingMixin):
 
     def _emit_libs_derived(self, contexts):
         # First do FINAL_LIBRARY linkage.
-        for lib in (l for libs in self._libs.values() for l in libs):
+        for lib in (l for libs in list(self._libs.values()) for l in libs):
             if not isinstance(lib, StaticLibrary) or not lib.link_into:
                 continue
             if lib.link_into not in self._libs:
@@ -252,12 +252,12 @@ class TreeMetadataEmitter(LoggingMixin):
                         lib.link_into == outerlib.basename):
                     propagate_defines(lib, defines)
 
-        for lib in (l for libs in self._libs.values() for l in libs):
+        for lib in (l for libs in list(self._libs.values()) for l in libs):
             if isinstance(lib, Library):
                 propagate_defines(lib, lib.lib_defines)
             yield lib
 
-        for obj in self._binaries.values():
+        for obj in list(self._binaries.values()):
             yield obj
 
     LIBRARY_NAME_VAR = {
@@ -316,7 +316,7 @@ class TreeMetadataEmitter(LoggingMixin):
                             libs[key] = l
                         if key not in libs:
                             libs[key] = l
-                candidates = libs.values()
+                candidates = list(libs.values())
                 if force_static and not candidates:
                     if dir:
                         raise SandboxValidationError(
@@ -623,7 +623,7 @@ class TreeMetadataEmitter(LoggingMixin):
         assert not gen_sources['UNIFIED_SOURCES']
 
         no_pgo = context.get('NO_PGO')
-        no_pgo_sources = [f for f, flags in all_flags.iteritems()
+        no_pgo_sources = [f for f, flags in all_flags.items()
                           if flags.no_pgo]
         if no_pgo:
             if no_pgo_sources:
@@ -651,7 +651,7 @@ class TreeMetadataEmitter(LoggingMixin):
 
         # The inverse of the above, mapping suffixes to their canonical suffix.
         canonicalized_suffix_map = {}
-        for suffix, alternatives in suffix_map.iteritems():
+        for suffix, alternatives in suffix_map.items():
             alternatives.add(suffix)
             for a in alternatives:
                 canonicalized_suffix_map[a] = suffix
@@ -668,7 +668,7 @@ class TreeMetadataEmitter(LoggingMixin):
             UNIFIED_SOURCES=(UnifiedSources, None, ['.c', '.mm', '.cpp']),
         )
 
-        for variable, (klass, gen_klass, suffixes) in varmap.items():
+        for variable, (klass, gen_klass, suffixes) in list(varmap.items()):
             allowed_suffixes = set().union(*[suffix_map[s] for s in suffixes])
 
             # First ensure that we haven't been given filetypes that we don't
@@ -691,7 +691,7 @@ class TreeMetadataEmitter(LoggingMixin):
                         arglist.append(context['FILES_PER_UNIFIED_FILE'])
                     yield cls(*arglist)
 
-        for f, flags in all_flags.iteritems():
+        for f, flags in all_flags.items():
             if flags.flags:
                 ext = mozpath.splitext(f)[1]
                 yield PerSourceFlag(context, f, flags.flags)
@@ -912,10 +912,10 @@ class TreeMetadataEmitter(LoggingMixin):
         for obj in self._process_jar_manifests(context):
             yield obj
 
-        for name, jar in context.get('JAVA_JAR_TARGETS', {}).items():
+        for name, jar in list(context.get('JAVA_JAR_TARGETS', {}).items()):
             yield ContextWrapped(context, jar)
 
-        for name, data in context.get('ANDROID_ECLIPSE_PROJECT_TARGETS', {}).items():
+        for name, data in list(context.get('ANDROID_ECLIPSE_PROJECT_TARGETS', {}).items()):
             yield ContextWrapped(context, data)
 
         for (symbol, cls) in [
@@ -976,7 +976,7 @@ class TreeMetadataEmitter(LoggingMixin):
             script = mozpath.join(mozpath.dirname(mozpath.dirname(__file__)),
                                   'action', 'process_define_files.py')
             yield GeneratedFile(context, script, 'process_define_file',
-                                unicode(path),
+                                str(path),
                                 [mozpath.join(context.srcdir, path + '.in')])
 
         generated_files = context.get('GENERATED_FILES')
@@ -1060,7 +1060,7 @@ class TreeMetadataEmitter(LoggingMixin):
                                srcdir_pattern_files, objdir_files)
 
     def _process_test_manifests(self, context):
-        for prefix, info in TEST_MANIFESTS.items():
+        for prefix, info in list(TEST_MANIFESTS.items()):
             for path in context.get('%s_MANIFESTS' % prefix, []):
                 for obj in self._process_test_manifest(context, info, path):
                     yield obj
@@ -1261,7 +1261,7 @@ class TreeMetadataEmitter(LoggingMixin):
             paths_file = os.path.join(context.config.topsrcdir, "testing",
                                       "web-platform", "tests", "tools", "localpaths.py")
             _globals = {"__file__": paths_file}
-            execfile(paths_file, _globals)
+            exec(compile(open(paths_file, "rb").read(), paths_file, 'exec'), _globals)
             import manifest as wptmanifest
         finally:
             sys.path = old_path

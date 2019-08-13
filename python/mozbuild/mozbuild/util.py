@@ -5,7 +5,7 @@
 # This file contains miscellaneous utility functions that don't belong anywhere
 # in particular.
 
-from __future__ import absolute_import, unicode_literals
+
 
 import argparse
 import collections
@@ -35,7 +35,7 @@ from io import (
 if sys.version_info[0] == 3:
     str_type = str
 else:
-    str_type = basestring
+    str_type = str
 
 if sys.platform == 'win32':
     _kernel32 = ctypes.windll.kernel32
@@ -61,7 +61,7 @@ def hash_file(path, hasher=None):
     return h.hexdigest()
 
 
-class EmptyValue(unicode):
+class EmptyValue(str):
     """A dummy type that behaves like an empty string and sequence.
 
     This type exists in order to support
@@ -112,7 +112,7 @@ def ensureParentDir(path):
     if d and not os.path.exists(path):
         try:
             os.makedirs(d)
-        except OSError, error:
+        except OSError as error:
             if error.errno != errno.EEXIST:
                 raise
 
@@ -184,7 +184,7 @@ class FileAvoidWrite(BytesIO):
         self.mode = mode
 
     def write(self, buf):
-        if isinstance(buf, unicode):
+        if isinstance(buf, str):
             buf = buf.encode('utf-8')
         BytesIO.write(self, buf)
 
@@ -337,7 +337,7 @@ class ListMixin(object):
     def __add__(self, other):
         # Allow None and EmptyValue is a special case because it makes undefined
         # variable references in moz.build behave better.
-        other = [] if isinstance(other, (types.NoneType, EmptyValue)) else other
+        other = [] if isinstance(other, (type(None), EmptyValue)) else other
         if not isinstance(other, list):
             raise ValueError('Only lists can be appended to lists.')
 
@@ -346,7 +346,7 @@ class ListMixin(object):
         return new_list
 
     def __iadd__(self, other):
-        other = [] if isinstance(other, (types.NoneType, EmptyValue)) else other
+        other = [] if isinstance(other, (type(None), EmptyValue)) else other
         if not isinstance(other, list):
             raise ValueError('Only lists can be appended to lists.')
 
@@ -449,14 +449,14 @@ def FlagsFactory(flags):
     functions below.
     """
     assert isinstance(flags, dict)
-    assert all(isinstance(v, type) for v in flags.values())
+    assert all(isinstance(v, type) for v in list(flags.values()))
 
     class Flags(object):
-        __slots__ = flags.keys()
+        __slots__ = list(flags.keys())
         _flags = flags
 
         def update(self, **kwargs):
-            for k, v in kwargs.iteritems():
+            for k, v in kwargs.items():
                 setattr(self, k, v)
 
         def __getattr__(self, name):
@@ -983,14 +983,14 @@ def group_unified_files(files, unified_prefix, unified_suffix,
     # issue.  So we do a little dance to filter it out ourselves.
     dummy_fill_value = ("dummy",)
     def filter_out_dummy(iterable):
-        return itertools.ifilter(lambda x: x != dummy_fill_value,
+        return filter(lambda x: x != dummy_fill_value,
                                  iterable)
 
     # From the itertools documentation, slightly modified:
     def grouper(n, iterable):
         "grouper(3, 'ABCDEFG', 'x') --> ABC DEF Gxx"
         args = [iter(iterable)] * n
-        return itertools.izip_longest(fillvalue=dummy_fill_value, *args)
+        return itertools.zip_longest(fillvalue=dummy_fill_value, *args)
 
     for i, unified_group in enumerate(grouper(files_per_unified_file,
                                               files)):
@@ -1007,7 +1007,7 @@ def pair(iterable):
         [(1,2), (3,4), (5,6)]
     '''
     i = iter(iterable)
-    return itertools.izip_longest(i, i)
+    return itertools.zip_longest(i, i)
 
 
 VARIABLES_RE = re.compile('\$\((\w+)\)')
@@ -1025,7 +1025,7 @@ def expand_variables(s, variables):
         value = variables.get(name)
         if not value:
             continue
-        if not isinstance(value, types.StringTypes):
+        if not isinstance(value, (str,)):
             value = ' '.join(value)
         result += value
     return result

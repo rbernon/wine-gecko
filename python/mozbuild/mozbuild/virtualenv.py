@@ -5,7 +5,7 @@
 # This file contains code for populating the virtualenv environment for
 # Mozilla's build system. It is typically called as part of configure.
 
-from __future__ import absolute_import, print_function, unicode_literals
+
 
 import distutils.sysconfig
 import os
@@ -405,8 +405,8 @@ class VirtualenvManager(object):
         and call .ensure() and .activate() to make the virtualenv active.
         """
 
-        execfile(self.activate_path, dict(__file__=self.activate_path))
-        if isinstance(os.environ['PATH'], unicode):
+        exec(compile(open(self.activate_path, "rb").read(), self.activate_path, 'exec'), dict(__file__=self.activate_path))
+        if isinstance(os.environ['PATH'], str):
             os.environ['PATH'] = os.environ['PATH'].encode('utf-8')
 
     def install_pip_package(self, package):

@@ -7,7 +7,7 @@
 # input IDL file(s). It's purpose is to directly support the build
 # system. The API will change to meet the needs of the build system.
 
-from __future__ import absolute_import
+
 
 import argparse
 import os
@@ -58,7 +58,7 @@ def process(input_dir, inc_paths, cache_dir, header_dir, xpt_dir, deps_dir, modu
 
     # TODO use FileAvoidWrite once it supports binary mode.
     xpt_path = os.path.join(xpt_dir, '%s.xpt' % module)
-    xpt_link(xpts.values()).write(xpt_path)
+    xpt_link(list(xpts.values())).write(xpt_path)
 
     rule.add_targets([xpt_path])
     if deps_dir:

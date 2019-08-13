@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import
+
 
 import mozpack.path as mozpath
 from mozpack.files import (
@@ -26,7 +26,7 @@ from mozpack.packager.formats import (
     FlatFormatter,
     STARTUP_CACHE_PATHS,
 )
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 
 class UnpackFinder(FileFinder):
@@ -137,7 +137,7 @@ class UnpackFinder(FileFinder):
         if jar.is_optimized:
             self.optimizedjars = True
         if jar.last_preloaded:
-            jarlog = jar.entries.keys()
+            jarlog = list(jar.entries.keys())
             self.jarlogs[path] = jarlog[:jarlog.index(jar.last_preloaded) + 1]
         return jar
 

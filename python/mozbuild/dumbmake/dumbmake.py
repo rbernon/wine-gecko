@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import, unicode_literals
+
 
 from collections import OrderedDict
 from itertools import groupby
@@ -36,7 +36,7 @@ def dependency_map(lines):
     deps = {}
 
     for i, (indent, target) in enumerate(pairs):
-        if not deps.has_key(target):
+        if target not in deps:
             deps[target] = []
 
         for j in range(i+1, len(pairs)):
@@ -68,7 +68,7 @@ def all_dependencies(*targets, **kwargs):
                     del all_targets[dependency]
                 all_targets[dependency] = True
 
-    return all_targets.keys()
+    return list(all_targets.keys())
 
 def get_components(path):
     """Take a path and return all the components of the path."""
@@ -114,7 +114,7 @@ def add_extra_dependencies(target_pairs, dependency_map):
                 make_dirs[make_dir] = True
 
     all_components = []
-    for make_dir in make_dirs.iterkeys():
+    for make_dir in make_dirs.keys():
         all_components.extend(get_components(make_dir))
 
     for i in all_dependencies(*all_components, dependency_map=dependency_map):

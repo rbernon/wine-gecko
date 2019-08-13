@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import
+
 
 import errno
 import random
@@ -218,12 +218,12 @@ class CppEclipseBackend(CommonBackend):
         cproject_header = cproject_header.replace('@MACH_COMMAND@', os.path.join(self.environment.topsrcdir, 'mach'))
         fh.write(cproject_header)
 
-        for path, defines in self._paths_to_defines.items():
+        for path, defines in list(self._paths_to_defines.items()):
             folderinfo = CPROJECT_TEMPLATE_FOLDER_INFO_HEADER
             folderinfo = folderinfo.replace('@FOLDER_ID@', str(random.randint(1000000, 99999999999)))
             folderinfo = folderinfo.replace('@FOLDER_NAME@', 'tree/' + path)
             fh.write(folderinfo)
-            for k, v in defines.items():
+            for k, v in list(defines.items()):
                 define = ET.Element('listOptionValue')
                 define.set('builtIn', 'false')
                 define.set('value', str(k) + "=" + str(v))
