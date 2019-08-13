@@ -9,7 +9,7 @@ dnl We honor the Python path defined in an environment variable. This is used
 dnl to pass the virtualenv's Python from the main configure to SpiderMonkey's
 dnl configure, for example.
 if test -z "$PYTHON"; then
-  MOZ_PATH_PROGS(PYTHON, $PYTHON python2.7 python)
+  MOZ_PATH_PROGS(PYTHON, $PYTHON python3 python)
   if test -z "$PYTHON"; then
       AC_MSG_ERROR([python was not found in \$PATH])
   fi
