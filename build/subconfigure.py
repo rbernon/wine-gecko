@@ -391,9 +391,9 @@ def subconfigure(args):
     args, others = parser.parse_known_args(args)
     subconfigures = args.subconfigures
     if args.list:
-        subconfigures.extend(open(args.list, 'rb').read().splitlines())
+        subconfigures.extend(open(args.list, 'r').read().splitlines())
     if args.skip:
-        skips = set(open(args.skip, 'rb').read().splitlines())
+        skips = set(open(args.skip, 'r').read().splitlines())
         subconfigures = [s for s in subconfigures if s not in skips]
 
     if not subconfigures:
