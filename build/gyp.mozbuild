@@ -69,6 +69,9 @@ gyp_vars = {
     # linker to throw away uneeded bits.
     'include_isac': 1,
     'include_pcm16b': 1,
+
+    # FIXME: How is this supposed to work?
+    'PYTHON': CONFIG['PYTHON'],
 }
 
 os = CONFIG['OS_TARGET']
