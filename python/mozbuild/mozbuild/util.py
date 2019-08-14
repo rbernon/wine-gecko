@@ -881,18 +881,15 @@ def TypedNamedTuple(name, fields):
             if len(args) == 1 and not kwargs and isinstance(args[0], tuple):
                 args = args[0]
 
-            return super(TypedTuple, klass).__new__(klass, *args, **kwargs)
-
-        def __init__(self, *args, **kwargs):
-            for i, (fname, ftype) in enumerate(self._fields):
-                value = self[i]
+            for i, (fname, ftype) in enumerate(klass._fields):
+                value = args[i]
 
                 if not isinstance(value, ftype):
                     raise TypeError('field in tuple not of proper type: %s; '
                                     'got %s, expected %s' % (fname,
                                     type(value), ftype))
 
-            super(TypedTuple, self).__init__(*args, **kwargs)
+            return super(TypedTuple, klass).__new__(klass, *args, **kwargs)
 
     TypedTuple._fields = fields
 
