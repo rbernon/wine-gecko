@@ -175,7 +175,7 @@ class FileAvoidWrite(BytesIO):
     out, but reports whether the file was existing and would have been updated
     still occur, as well as diff capture if requested.
     """
-    def __init__(self, filename, capture_diff=False, dry_run=False, mode='rU'):
+    def __init__(self, filename, capture_diff=False, dry_run=False, mode='r'):
         BytesIO.__init__(self)
         self.name = filename
         self._capture_diff = capture_diff
@@ -205,7 +205,7 @@ class FileAvoidWrite(BytesIO):
         old_content = None
 
         try:
-            existing = open(self.name, self.mode)
+            existing = open(self.name, 'rb')
             existed = True
         except IOError:
             pass
@@ -221,12 +221,7 @@ class FileAvoidWrite(BytesIO):
 
         if not self._dry_run:
             ensureParentDir(self.name)
-            # Maintain 'b' if specified.  'U' only applies to modes starting with
-            # 'r', so it is dropped.
-            writemode = 'w'
-            if 'b' in self.mode:
-                writemode += 'b'
-            with open(self.name, writemode) as file:
+            with open(self.name, 'wb') as file:
                 file.write(buf)
 
         if self._capture_diff:
