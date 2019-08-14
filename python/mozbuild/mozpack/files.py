@@ -243,6 +243,9 @@ class File(BaseFile):
         with open(self.path, 'rb') as fh:
             return fh.read()
 
+    def read_text(self):
+        return self.read().decode()
+
 
 class ExecutableFile(File):
     '''

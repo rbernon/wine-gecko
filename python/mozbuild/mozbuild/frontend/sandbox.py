@@ -147,7 +147,7 @@ class Sandbox(dict):
         assert os.path.isabs(path)
 
         try:
-            source = self._finder.get(path).read()
+            source = self._finder.get(path).read_text()
         except Exception as e:
             raise SandboxLoadError(self._context.source_stack,
                 sys.exc_info()[2], read_error=path)
@@ -164,6 +164,8 @@ class Sandbox(dict):
         does not perform extra path normalization. This can cause relative
         paths to behave weirdly.
         """
+        if not isinstance(source, str):
+            raise TypeError("source must be str")
         def execute():
             # compile() inherits the __future__ from the module by default. We
             # do want Unicode literals.
