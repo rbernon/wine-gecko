@@ -150,7 +150,7 @@ class VirtualenvManager(object):
         return self.virtualenv_root
 
     def packages(self):
-        with file(self.manifest_path, 'rU') as fh:
+        with open(self.manifest_path, 'r') as fh:
             packages = [line.rstrip().split(':')
                         for line in fh]
         return packages
