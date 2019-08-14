@@ -188,6 +188,12 @@ class FileAvoidWrite(BytesIO):
             buf = buf.encode('utf-8')
         BytesIO.write(self, buf)
 
+    def getvalue(self):
+        result = BytesIO.getvalue(self)
+        if 'b' not in self.mode:
+            result = result.decode('utf-8')
+        return result
+
     def close(self):
         """Stop accepting writes, compare file contents, and rewrite if needed.
 
@@ -199,7 +205,7 @@ class FileAvoidWrite(BytesIO):
         underlying file was changed, ``.diff`` will be populated with the diff
         of the result.
         """
-        buf = self.getvalue()
+        buf = BytesIO.getvalue(self)
         BytesIO.close(self)
         existed = False
         old_content = None
