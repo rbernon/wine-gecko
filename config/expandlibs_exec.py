@@ -344,7 +344,7 @@ def main(args, proc_callback=None):
         (stdout, stderr) = proc.communicate()
         if proc.returncode and not options.verbose:
             print_command(sys.stderr, args)
-        sys.stderr.write(stdout)
+        sys.stderr.write(stdout.decode())
         sys.stderr.flush()
         if proc.returncode:
             return proc.returncode
