@@ -8,6 +8,8 @@
 generate input suitable for graphviz to render a dependency graph of
 targets."""
 
+from __future__ import print_function
+
 import collections
 import json
 import sys
@@ -46,7 +48,7 @@ def WriteGraph(edges):
 
   # Bucket targets by file.
   files = collections.defaultdict(list)
-  for src, dst in list(edges.items()):
+  for src, dst in edges.items():
     build_file, target_name, toolset = ParseTarget(src)
     files[build_file].append(src)
 
@@ -57,7 +59,7 @@ def WriteGraph(edges):
   # Output nodes by file.  We must first write out each node within
   # its file grouping before writing out any edges that may refer
   # to those nodes.
-  for filename, targets in list(files.items()):
+  for filename, targets in files.items():
     if len(targets) == 1:
       # If there's only one node for this file, simplify
       # the display by making it a box without an internal node.
@@ -76,7 +78,7 @@ def WriteGraph(edges):
 
   # Now that we've placed all the nodes within subgraphs, output all
   # the edges between nodes.
-  for src, dsts in list(edges.items()):
+  for src, dsts in edges.items():
     for dst in dsts:
       print('  "%s" -> "%s"' % (src, dst))
 

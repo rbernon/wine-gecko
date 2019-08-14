@@ -8,7 +8,7 @@
 
 {
   'variables': {
-    'pi': 'import math; print math.pi',
+    'pi': 'import math; print(math.pi)',
     'third_letters': "<(other_letters)HIJK",
     'letters_list': 'ABCD',
     'other_letters': '<(letters_list)EFG',
@@ -41,9 +41,9 @@
       'type': 'none',
       'variables': {
         'var1': '<!(["python", "-c", "<(pi)"])',
-        'var2': '<!(python -c "print \'<!(python -c "<(pi)") <(letters_list)\'")',
-        'var3': '<!(python -c "print \'<(letters_list)\'")',
-        'var4': '<(<!(python -c "print \'letters_list\'"))',
+        'var2': '<!(python -c "print(\'<!(python -c "<(pi)") <(letters_list)\')")',
+        'var3': '<!(python -c "print(\'<(letters_list)\')")',
+        'var4': '<(<!(python -c "print(\'letters_list\')"))',
         'var5': 'letters_',
         'var6': 'list',
         'var7': '<(check_int)',
@@ -60,6 +60,11 @@
         'var18': '<(zero_int)',
         'var19': ['<!@(python test.py)'],
         'var20': '<!(python test.py)',
+        'var21': '<(default_str)',
+        'var22': '<(default_empty_str)',
+        'var23': '<(default_int)',
+        'var24': '<(default_empty_files)',
+        'var25': '<(default_int_files)',
       },
       'actions': [
         {

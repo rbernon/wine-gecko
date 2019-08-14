@@ -6,7 +6,10 @@
 
 """Unit tests for the MSVSSettings.py file."""
 
-import io
+try:
+  from StringIO import StringIO
+except ImportError:
+  from io import StringIO
 import unittest
 import gyp.MSVSSettings as MSVSSettings
 
@@ -14,7 +17,7 @@ import gyp.MSVSSettings as MSVSSettings
 class TestSequenceFunctions(unittest.TestCase):
 
   def setUp(self):
-    self.stderr = io.StringIO()
+    self.stderr = StringIO()
 
   def _ExpectedWarnings(self, expected):
     """Compares recorded lines to expected warnings."""
@@ -109,6 +112,7 @@ class TestSequenceFunctions(unittest.TestCase):
             'ZZXYZ': 'bogus'},
          'VCLinkerTool': {
              'AdditionalDependencies': 'file1;file2',
+             'AdditionalDependencies_excluded': 'file3',
              'AdditionalLibraryDirectories': 'folder1;folder2',
              'AdditionalManifestDependencies': 'file1;file2',
              'AdditionalOptions': 'a string1',
@@ -266,7 +270,7 @@ class TestSequenceFunctions(unittest.TestCase):
         'Warning: for VCCLCompilerTool/BrowseInformation, '
         "invalid literal for int() with base 10: 'fdkslj'",
         'Warning: for VCCLCompilerTool/CallingConvention, '
-        'index value (-1) not in expected range [0, 3)',
+        'index value (-1) not in expected range [0, 4)',
         'Warning: for VCCLCompilerTool/DebugInformationFormat, '
         'converted value for 2 not specified.',
         'Warning: unrecognized setting VCCLCompilerTool/Enableprefast',
@@ -295,7 +299,7 @@ class TestSequenceFunctions(unittest.TestCase):
             'BuildingInIDE': 'true',
             'CallingConvention': 'Cdecl',
             'CompileAs': 'CompileAsC',
-            'CompileAsManaged': 'Pure',
+            'CompileAsManaged': 'true',
             'CreateHotpatchableImage': 'true',
             'DebugInformationFormat': 'ProgramDatabase',
             'DisableLanguageExtensions': 'true',

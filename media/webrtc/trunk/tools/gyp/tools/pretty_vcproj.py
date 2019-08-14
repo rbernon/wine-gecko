@@ -12,6 +12,8 @@
    It outputs the resulting xml to stdout.
 """
 
+from __future__ import print_function
+
 __author__ = 'nsylvain (Nicolas Sylvain)'
 
 import os
@@ -19,6 +21,13 @@ import sys
 
 from xml.dom.minidom import parse
 from xml.dom.minidom import Node
+
+try:
+  # cmp was removed in python3.
+  cmp
+except NameError:
+  def cmp(a, b):
+    return (a > b) - (a < b)
 
 REPLACEMENTS = dict()
 ARGUMENTS = None
@@ -45,7 +54,7 @@ class CmpNode(object):
         node_string += node.getAttribute("Name")
 
         all_nodes = []
-        for (name, value) in list(node.attributes.items()):
+        for (name, value) in node.attributes.items():
           all_nodes.append((name, value))
 
         all_nodes.sort(CmpTuple())
@@ -78,9 +87,9 @@ def PrettyPrintNode(node, indent=0):
     print('%s<%s' % (' '*indent, node.nodeName))
 
     all_attributes = []
-    for (name, value) in list(node.attributes.items()):
+    for (name, value) in node.attributes.items():
       all_attributes.append((name, value))
-      all_attributes.sort(CmpTuple())
+      all_attributes.sort(key=(lambda attr: attr[0]))
     for (name, value) in all_attributes:
       print('%s  %s="%s"' % (' '*indent, name, value))
     print('%s>' % (' '*indent))
@@ -128,7 +137,7 @@ def FixFilenames(filenames, current_directory):
 def AbsoluteNode(node):
   """Makes all the properties we know about in this node absolute."""
   if node.attributes:
-    for (name, value) in list(node.attributes.items()):
+    for (name, value) in node.attributes.items():
       if name in ['InheritedPropertySheets', 'RelativePath',
                   'AdditionalIncludeDirectories',
                   'IntermediateDirectory', 'OutputDirectory',
@@ -157,7 +166,7 @@ def CleanupVcproj(node):
   # Fix all the semicolon separated attributes to be sorted, and we also
   # remove the dups.
   if node.attributes:
-    for (name, value) in list(node.attributes.items()):
+    for (name, value) in node.attributes.items():
       sorted_list = sorted(value.split(';'))
       unique_list = []
       for i in sorted_list:
@@ -246,7 +255,7 @@ def MergeAttributes(node1, node2):
   if not node2.attributes:
     return
 
-  for (name, value2) in list(node2.attributes.items()):
+  for (name, value2) in node2.attributes.items():
     # Don't merge the 'Name' attribute.
     if name == 'Name':
       continue
@@ -283,8 +292,8 @@ def main(argv):
 
   # check if we have exactly 1 parameter.
   if len(argv) < 2:
-    print(('Usage: %s "c:\\path\\to\\vcproj.vcproj" [key1=value1] '
-           '[key2=value2]' % argv[0]))
+    print('Usage: %s "c:\\path\\to\\vcproj.vcproj" [key1=value1] '
+          '[key2=value2]' % argv[0])
     return 1
 
   # Parse the keys
@@ -320,7 +329,6 @@ def main(argv):
 
   # Finally, we use the prett xml function to print the vcproj back to the
   # user.
-  #print dom.toprettyxml(newl="\n")
   PrettyPrintNode(dom.documentElement)
   return 0
 

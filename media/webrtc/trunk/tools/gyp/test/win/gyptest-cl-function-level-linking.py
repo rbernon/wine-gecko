@@ -8,6 +8,8 @@
 Make sure function-level linking setting is extracted properly.
 """
 
+from __future__ import print_function
+
 import TestGyp
 
 import sys

@@ -9,6 +9,7 @@ Test that environment variables are ignored when --ignore-environment is
 specified.
 """
 
+from __future__ import print_function
 import os
 
 import TestGyp

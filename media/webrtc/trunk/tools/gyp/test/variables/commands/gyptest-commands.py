@@ -8,6 +8,7 @@
 Test variable expansion of '<!()' syntax commands.
 """
 
+from __future__ import print_function
 import os
 
 import TestGyp

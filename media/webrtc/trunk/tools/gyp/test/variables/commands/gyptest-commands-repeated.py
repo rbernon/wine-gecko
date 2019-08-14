@@ -9,6 +9,8 @@ Test variable expansion of '<!()' syntax commands where they are evaluated
 more then once..
 """
 
+from __future__ import print_function
+
 import TestGyp
 
 test = TestGyp.TestGyp(format='gypd')

@@ -31,11 +31,16 @@ class Writer(object):
         if value is None:
             return
         if isinstance(value, list):
-            value = ' '.join([_f for _f in value if _f])  # Filter out empty strings.
+            value = ' '.join(filter(None, value))  # Filter out empty strings.
         self._line('%s = %s' % (key, value), indent)
 
+    def pool(self, name, depth):
+        self._line('pool %s' % name)
+        self.variable('depth', depth, indent=1)
+
     def rule(self, name, command, description=None, depfile=None,
-             generator=False, restat=False, rspfile=None, rspfile_content=None):
+             generator=False, pool=None, restat=False, rspfile=None,
+             rspfile_content=None, deps=None):
         self._line('rule %s' % name)
         self.variable('command', command, indent=1)
         if description:
@@ -44,12 +49,16 @@ class Writer(object):
             self.variable('depfile', depfile, indent=1)
         if generator:
             self.variable('generator', '1', indent=1)
+        if pool:
+            self.variable('pool', pool, indent=1)
         if restat:
             self.variable('restat', '1', indent=1)
         if rspfile:
             self.variable('rspfile', rspfile, indent=1)
         if rspfile_content:
             self.variable('rspfile_content', rspfile_content, indent=1)
+        if deps:
+            self.variable('deps', deps, indent=1)
 
     def build(self, outputs, rule, inputs=None, implicit=None, order_only=None,
               variables=None):
@@ -59,17 +68,16 @@ class Writer(object):
         all_inputs = list(map(escape_path, all_inputs))
 
         if implicit:
-            implicit = list(map(escape_path, self._as_list(implicit)))
+            implicit = map(escape_path, self._as_list(implicit))
             all_inputs.append('|')
             all_inputs.extend(implicit)
         if order_only:
-            order_only = list(map(escape_path, self._as_list(order_only)))
+            order_only = map(escape_path, self._as_list(order_only))
             all_inputs.append('||')
             all_inputs.extend(order_only)
 
-        self._line('build %s: %s %s' % (' '.join(out_outputs),
-                                        rule,
-                                        ' '.join(all_inputs)))
+        self._line('build %s: %s' % (' '.join(out_outputs),
+                                        ' '.join([rule] + all_inputs)))
 
         if variables:
             if isinstance(variables, dict):
@@ -141,6 +149,14 @@ class Writer(object):
             return []
         if isinstance(input, list):
             return input
+
+        # map is not a class in Python 2
+        try:
+            if isinstance(input, map):
+                return list(input)
+        except TypeError:
+            pass
+
         return [input]
 
 

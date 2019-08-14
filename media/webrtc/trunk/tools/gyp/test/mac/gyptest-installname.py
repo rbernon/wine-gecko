@@ -9,6 +9,8 @@ Verifies that LD_DYLIB_INSTALL_NAME and DYLIB_INSTALL_NAME_BASE are handled
 correctly.
 """
 
+from __future__ import print_function
+
 import TestGyp
 
 import re
@@ -16,10 +18,14 @@ import subprocess
 import sys
 
 if sys.platform == 'darwin':
+  print("This test is currently disabled: https://crbug.com/483696.")
+  sys.exit(0)
+
   test = TestGyp.TestGyp(formats=['ninja', 'make', 'xcode'])
 
   CHDIR = 'installname'
   test.run_gyp('test.gyp', chdir=CHDIR)
+
   test.build('test.gyp', test.ALL, chdir=CHDIR)
 
   def GetInstallname(p):
