@@ -218,7 +218,7 @@ def prepare(srcdir, objdir, shell, args):
         environ['PATH'] = os.environ['PATH']
         args = data['args']
     else:
-        environ = os.environ
+        environ = dict(os.environ)
 
     args, others = parser.parse_known_args(args)
 
