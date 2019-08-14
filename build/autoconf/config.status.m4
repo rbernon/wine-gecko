@@ -146,7 +146,7 @@ rm confdefs.pytmp confdefs.h
 cat >> $CONFIG_STATUS <<\EOF
 ] ]
 
-substs = [(name[1:-1], value[1:-1] if isinstance(value, types.StringTypes) else value) for name, value in [
+substs = [(name[1:-1], value[1:-1] if isinstance(value, str) else value) for name, value in [
 EOF
 
 dnl The MOZ_DIVERSION_SUBST output diversion contains AC_SUBSTs, in the
