@@ -45,7 +45,7 @@ def get_hg_info(workdir):
 def source_repo_header(output):
     # We allow the source repo and changeset to be specified via the
     # environment (see configure)
-    from . import buildconfig
+    import buildconfig
     repo = buildconfig.substs.get('MOZ_SOURCE_REPO')
     changeset = buildconfig.substs.get('MOZ_SOURCE_CHANGESET')
     source = ''
