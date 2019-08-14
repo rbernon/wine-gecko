@@ -384,6 +384,7 @@ class Preprocessor:
         ``output`` file are written to ``depfile`` in Makefile format.
         """
         self.out = output
+        self.out.write('') # make sure output expects text
 
         self.do_include(input, False)
         self.failUnused(input.name)
@@ -451,7 +452,7 @@ class Preprocessor:
                 except OSError as error:
                     if error.errno != errno.EEXIST:
                         raise
-            return open(path, 'wb')
+            return open(path, 'w')
 
         p = self.getCommandLineParser()
         options, args = p.parse_args(args=args)
@@ -478,7 +479,7 @@ class Preprocessor:
 
         if args:
             for f in args:
-                with open(f, 'rU') as input:
+                with open(f, 'r') as input:
                     self.processFile(input=input, output=out)
             if depfile:
                 mk = Makefile()
@@ -795,7 +796,7 @@ def preprocess(includes=[sys.stdin], defines={},
     pp = Preprocessor(defines=defines,
                       marker=marker)
     for f in includes:
-        with open(f, 'rU') as input:
+        with open(f, 'r') as input:
             pp.processFile(input=input, output=output)
     return pp.includes
 
