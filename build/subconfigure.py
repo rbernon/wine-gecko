@@ -162,7 +162,7 @@ def get_config_files(data):
     # it generates.
     config_status_output = subprocess.check_output(
         [data['shell'], '-c', '%s --help' % config_status],
-        stderr=subprocess.STDOUT).splitlines()
+        stderr=subprocess.STDOUT).decode().splitlines()
     state = None
     for line in config_status_output:
         if line.startswith('Configuration') and line.endswith(':'):
@@ -333,8 +333,8 @@ def run(objdir):
         print(prefix_lines('running %s' % ' '.join(command[:-1]), relobjdir))
         sys.stdout.flush()
         try:
-            output += subprocess.check_output(command,
-                stderr=subprocess.STDOUT, cwd=objdir, env=data['env'])
+            b = subprocess.check_output(command,
+                stderr=subprocess.STDOUT, cwd=objdir, env=data['env']).decode()
         except subprocess.CalledProcessError as e:
             return relobjdir, e.returncode, e.output
 
@@ -369,10 +369,10 @@ def run(objdir):
         try:
             output += subprocess.check_output([data['shell'], '-c',
                 './config.status'], stderr=subprocess.STDOUT, cwd=objdir,
-                env=data['env'])
+                env=data['env']).decode()
         except subprocess.CalledProcessError as e:
             ret = e.returncode
-            output += e.output
+            output += e.output.decode()
 
         for f in contents:
             f.update_time()
