@@ -44,7 +44,7 @@ generator_default_variables = {
 for dirname in ['INTERMEDIATE_DIR', 'SHARED_INTERMEDIATE_DIR', 'PRODUCT_DIR',
                 'LIB_DIR', 'SHARED_LIB_DIR']:
   # Some gyp steps fail if these are empty(!).
-  generator_default_variables[dirname] = b'dir'
+  generator_default_variables[dirname] = 'dir'
 
 for unused in ['RULE_INPUT_PATH', 'RULE_INPUT_ROOT', 'RULE_INPUT_NAME',
                'RULE_INPUT_DIRNAME', 'RULE_INPUT_EXT',
@@ -52,7 +52,7 @@ for unused in ['RULE_INPUT_PATH', 'RULE_INPUT_ROOT', 'RULE_INPUT_NAME',
                'STATIC_LIB_PREFIX', 'STATIC_LIB_SUFFIX',
                'SHARED_LIB_PREFIX', 'SHARED_LIB_SUFFIX',
                'LINKER_SUPPORTS_ICF']:
-  generator_default_variables[unused] = b''
+  generator_default_variables[unused] = ''
 
 
 class GypContext(TemplateContext):
@@ -68,12 +68,6 @@ class GypContext(TemplateContext):
             allowed_variables=VARIABLES, config=config)
 
 
-def encode(value):
-    if isinstance(value, str):
-        return value.encode('utf-8')
-    return value
-
-
 def read_from_gyp(config, path, output, vars, non_unified_sources = set()):
     """Read a gyp configuration and emits GypContexts for the backend to
     process.
@@ -86,33 +80,33 @@ def read_from_gyp(config, path, output, vars, non_unified_sources = set()):
 
     # gyp expects plain str instead of unicode. The frontend code gives us
     # unicode strings, so convert them.
-    path = encode(path)
-    str_vars = dict((name, encode(value)) for name, value in list(vars.items()))
+    path = path
+    str_vars = dict((name, value) for name, value in list(vars.items()))
 
     params = {
-        b'parallel': False,
-        b'generator_flags': {},
-        b'build_files': [path],
+        'parallel': False,
+        'generator_flags': {},
+        'build_files': [path],
     }
 
     # Files that gyp_chromium always includes
-    includes = [encode(mozpath.join(script_dir, 'common.gypi'))]
+    includes = [mozpath.join(script_dir, 'common.gypi')]
     finder = FileFinder(chrome_src, find_executables=False)
-    includes.extend(encode(mozpath.join(chrome_src, name))
+    includes.extend(mozpath.join(chrome_src, name)
         for name, _ in finder.find('*/supplement.gypi'))
 
     # Read the given gyp file and its dependencies.
     generator, flat_list, targets, data = \
-        gyp.Load([path], format=b'mozbuild',
+        gyp.Load([path], format='mozbuild',
             default_variables=str_vars,
             includes=includes,
-            depth=encode(mozpath.dirname(path)),
+            depth=mozpath.dirname(path),
             params=params)
 
     # Process all targets from the given gyp files and its dependencies.
     # The path given to AllTargets needs to use os.sep, while the frontend code
     # gives us paths normalized with forward slash separator.
-    for target in gyp.common.AllTargets(flat_list, targets, path.replace(b'/', os.sep)):
+    for target in gyp.common.AllTargets(flat_list, targets, path.replace('/', os.sep)):
         build_file, target_name, toolset = gyp.common.ParseQualifiedTarget(target)
 
         # Each target is given its own objdir. The base of that objdir
@@ -153,8 +147,7 @@ def read_from_gyp(config, path, output, vars, non_unified_sources = set()):
             name = spec['target_name']
             if name.startswith('lib'):
                 name = name[3:]
-            # The context expects an unicode string.
-            context['LIBRARY_NAME'] = name.decode('utf-8')
+            context['LIBRARY_NAME'] = name
             # gyp files contain headers and asm sources in sources lists.
             sources = []
             unified_sources = []
