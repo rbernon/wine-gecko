@@ -194,7 +194,7 @@ class ProcessHandlerMixin(object):
                 Returns the main process's exit code
             """
             # This call will be different for each OS
-            self.returncode = self._wait()
+            self.returncode = self._handler_wait()
             self._cleanup()
             return self.returncode
 
@@ -468,7 +468,7 @@ falling back to not using job objects for managing child processes""", file=sys.
                                 print("DBG::MOZPROC We got a message %s" % msgid.value)
                             pass
 
-            def _wait(self):
+            def _handler_wait(self):
 
                 # First, check to see if the process is still running
                 if self._handle:
@@ -581,7 +581,7 @@ falling back to not using job objects for managing child processes""", file=sys.
 
         elif isPosix:
 
-            def _wait(self):
+            def _handler_wait(self):
                 """ Haven't found any reason to differentiate between these platforms
                     so they all use the same wait callback.  If it is necessary to
                     craft different styles of wait, then a new _wait method
@@ -625,7 +625,7 @@ falling back to not using job objects for managing child processes""", file=sys.
             # An unrecognized platform, we will call the base class for everything
             print("Unrecognized platform, process groups may not be managed properly", file=sys.stderr)
 
-            def _wait(self):
+            def _handler_wait(self):
                 self.returncode = subprocess.Popen.wait(self)
                 return self.returncode
 
