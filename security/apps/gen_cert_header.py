@@ -12,12 +12,12 @@ def _file_byte_generator(filename):
     # a single-element array will fail cert verifcation just as an
     # empty array would.
     if not contents:
-      return ['\0']
+      return [0]
 
     return contents
 
 def _create_header(array_name, cert_bytes):
-  hexified = ["0x" + binascii.hexlify(byte) for byte in cert_bytes]
+  hexified = ["0x%02x" % byte for byte in cert_bytes]
   substs = { 'array_name': array_name, 'bytes': ', '.join(hexified) }
   return "const uint8_t %(array_name)s[] = {\n%(bytes)s\n};\n" % substs
 
