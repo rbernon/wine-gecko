@@ -979,7 +979,7 @@ class Interface(object):
             return False
         if self.name != other.name:
             return False
-        if self.namespacee != other.namespace:
+        if self.namespace != other.namespace:
             return False
         # names and IIDs are the same, check resolved
         if self.resolved != other.resolved:
@@ -1230,7 +1230,7 @@ class Typelib(object):
         referenced by methods exist in the array.
 
         """
-        self.interfaces.sort()
+        self.interfaces.sort(key=operator.attrgetter('iid'))
         for i in self.interfaces:
             if i.parent and i.parent not in self.interfaces:
                 raise DataError("Interface %s has parent %s not present in typelib!" % (i.name, i.parent.name))
@@ -1503,7 +1503,7 @@ def xpt_link(inputs):
     interfaces = list(required_interfaces)
 
     # Re-sort interfaces (by IID)
-    interfaces.sort()
+    interfaces.sort(key=operator.attrgetter('iid'))
     return Typelib(interfaces=interfaces)
 
 if __name__ == '__main__':
