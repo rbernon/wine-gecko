@@ -10,7 +10,10 @@
 import sys
 import os.path
 import re
-import xpidl
+if __name__ == 'xpidl.header':
+    from . import xpidl
+else:
+    import xpidl
 import itertools
 import glob
 
