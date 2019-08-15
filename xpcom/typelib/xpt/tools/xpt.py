@@ -72,7 +72,7 @@ import struct
 import operator
 
 # header magic
-XPT_MAGIC = "XPCOM\nTypeLib\r\n\x1a"
+XPT_MAGIC = b"XPCOM\nTypeLib\r\n\x1a"
 TYPELIB_VERSION = (1, 2)
 
 
@@ -153,13 +153,11 @@ class Type(object):
         if reference and not pointer:
             raise Exception("If reference is True pointer must be True too")
 
-    def __cmp__(self, other):
+    def __eq__(self, other):
         return (
-            # First make sure we have two Types of the same type (no pun intended!)
-            cmp(type(self), type(other)) or
-            cmp(self.pointer, other.pointer) or
-            cmp(self.reference, other.reference)
-        )
+            type(self) == type(other) and
+            self.pointer == other.pointer and
+            self.reference == other.reference)
 
     @staticmethod
     def decodeflags(byte):
@@ -241,11 +239,10 @@ class SimpleType(Type):
         Type.__init__(self, **kwargs)
         self.tag = tag
 
-    def __cmp__(self, other):
+    def __eq__(self, other):
         return (
-            Type.__cmp__(self, other) or
-            cmp(self.tag, other.tag)
-        )
+            Type.__eq__(self, other) and
+            self.tag == other.tag)
 
     @staticmethod
     def get(data, tag, flags):
@@ -293,13 +290,11 @@ class InterfaceType(Type):
         self.iface = iface
         self.tag = Type.Tags.Interface
 
-    def __cmp__(self, other):
+    def __eq__(self, other):
         return (
-            Type.__cmp__(self, other) or
-            # When comparing interface types, only look at the name.
-            cmp(self.iface.name, other.iface.name) or
-            cmp(self.tag, other.tag)
-        )
+            Type.__eq__(self, other) and
+            self.iface.name == other.iface.name and
+            self.tag == other.tag)
 
     @staticmethod
     def read(typelib, map, data_pool, offset, flags):
@@ -355,11 +350,11 @@ class InterfaceIsType(Type):
         self.param_index = param_index
         self.tag = Type.Tags.InterfaceIs
 
-    def __cmp__(self, other):
+    def __eq__(self, other):
         return (
-            Type.__cmp__(self, other) or
-            cmp(self.param_index, other.param_index) or
-            cmp(self.tag, other.tag)
+            Type.__eq__(self, other) and
+            self.param_index == other.param_index and
+            self.tag == other.tag
         )
 
     @staticmethod
@@ -414,14 +409,13 @@ class ArrayType(Type):
         self.length_is_arg_num = length_is_arg_num
         self.tag = Type.Tags.Array
 
-    def __cmp__(self, other):
+    def __eq__(self, other):
         return (
-            Type.__cmp__(self, other) or
-            cmp(self.element_type, other.element_type) or
-            cmp(self.size_is_arg_num, other.size_is_arg_num) or
-            cmp(self.length_is_arg_num, other.length_is_arg_num) or
-            cmp(self.tag, other.tag)
-        )
+            Type.__eq__(self, other) and
+            self.element_type == other.element_type and
+            self.size_is_arg_num == other.size_is_arg_num and
+            self.length_is_arg_num == other.length_is_arg_num and
+            self.tag == other.tag)
 
     @staticmethod
     def read(typelib, map, data_pool, offset, flags):
@@ -473,13 +467,12 @@ class StringWithSizeType(Type):
         self.length_is_arg_num = length_is_arg_num
         self.tag = Type.Tags.StringWithSize
 
-    def __cmp__(self, other):
+    def __eq__(self, other):
         return (
-            Type.__cmp__(self, other) or
-            cmp(self.size_is_arg_num, other.size_is_arg_num) or
-            cmp(self.length_is_arg_num, other.length_is_arg_num) or
-            cmp(self.tag, other.tag)
-        )
+            Type.__eq__(self, other) and
+            self.size_is_arg_num == other.size_is_arg_num and
+            self.length_is_arg_num == other.length_is_arg_num and
+            self.tag == other.tag)
 
     @staticmethod
     def read(typelib, map, data_pool, offset, flags):
@@ -529,13 +522,12 @@ class WideStringWithSizeType(Type):
         self.length_is_arg_num = length_is_arg_num
         self.tag = Type.Tags.WideStringWithSize
 
-    def __cmp__(self, other):
+    def __eq__(self, other):
         return (
-            Type.__cmp__(self, other) or
-            cmp(self.size_is_arg_num, other.size_is_arg_num) or
-            cmp(self.length_is_arg_num, other.length_is_arg_num) or
-            cmp(self.tag, other.tag)
-        )
+            Type.__eq__(self, other) and
+            self.size_is_arg_num == other.size_is_arg_num and
+            self.length_is_arg_num == other.length_is_arg_num and
+            self.tag == other.tag)
 
     @staticmethod
     def read(typelib, map, data_pool, offset, flags):
@@ -591,16 +583,15 @@ class Param(object):
         self.dipper = dipper
         self.optional = optional
 
-    def __cmp__(self, other):
+    def __eq__(self, other):
         return (
-            cmp(self.type, other.type) or
-            cmp(self.in_, other.in_) or
-            cmp(self.out, other.out) or
-            cmp(self.retval, other.retval) or
-            cmp(self.shared, other.shared) or
-            cmp(self.dipper, other.dipper) or
-            cmp(self.optional, other.optional)
-        )
+            self.type == other.type and
+            self.in_ == other.in_ and
+            self.out == other.out and
+            self.retval == other.retval and
+            self.shared == other.shared and
+            self.dipper == other.dipper and
+            self.optional == other.optional)
 
     @staticmethod
     def decodeflags(byte):
@@ -724,19 +715,18 @@ class Method(object):
             raise Exception("result must be a Param!")
         self.result = result
 
-    def __cmp__(self, other):
+    def __eq__(self, other):
         return (
-            cmp(self.name, other.name) or
-            cmp(self.getter, other.getter) or
-            cmp(self.setter, other.setter) or
-            cmp(self.notxpcom, other.notxpcom) or
-            cmp(self.constructor, other.constructor) or
-            cmp(self.hidden, other.hidden) or
-            cmp(self.optargc, other.optargc) or
-            cmp(self.implicit_jscontext, other.implicit_jscontext) or
-            cmp(self.params, other.params) or
-            cmp(self.result, other.result)
-        )
+            self.name == other.name and
+            self.getter == other.getter and
+            self.setter == other.setter and
+            self.notxpcom == other.notxpcom and
+            self.constructor == other.constructor and
+            self.hidden == other.hidden and
+            self.optargc == other.optargc and
+            self.implicit_jscontext == other.implicit_jscontext and
+            self.params == other.params and
+            self.result == other.result)
 
     def read_params(self, typelib, map, data_pool, offset, num_args):
         """
@@ -849,7 +839,7 @@ class Method(object):
         """
         if self.name:
             self._name_offset = file.tell() - data_pool_offset + 1
-            file.write(self.name + "\x00")
+            file.write(self.name.encode('ascii') + b"\x00")
         else:
             self._name_offset = 0
 
@@ -875,12 +865,11 @@ class Constant(object):
         self.type = type
         self.value = value
 
-    def __cmp__(self, other):
+    def __eq__(self, other):
         return (
-            cmp(self.name, other.name) or
-            cmp(self.type, other.type) or
-            cmp(self.value, other.value)
-        )
+            self.name == other.name and
+            self.type == other.type and
+            self.value == other.value)
 
     @staticmethod
     def read(typelib, map, data_pool, offset):
@@ -926,7 +915,7 @@ class Constant(object):
         """
         if self.name:
             self._name_offset = file.tell() - data_pool_offset + 1
-            file.write(self.name + "\x00")
+            file.write(self.name.encode('ascii') + b"\x00")
         else:
             self._name_offset = 0
 
@@ -985,44 +974,33 @@ class Interface(object):
     def __hash__(self):
         return hash((self.name, self.iid))
 
-    def __cmp__(self, other):
-        c = cmp(self.iid, other.iid)
-        if c != 0:
-            return c
-        c = cmp(self.name, other.name)
-        if c != 0:
-            return c
-        c = cmp(self.namespace, other.namespace)
-        if c != 0:
-            return c
+    def __eq__(self, other):
+        if self.iid != other.iid:
+            return False
+        if self.name != other.name:
+            return False
+        if self.namespacee != other.namespace:
+            return False
         # names and IIDs are the same, check resolved
         if self.resolved != other.resolved:
-            if self.resolved:
-                return -1
-            else:
-                return 1
+            return False
         else:
             if not self.resolved:
                 # both unresolved, but names and IIDs are the same, so equal
-                return 0
+                return True
         # When comparing parents, only look at the name.
         if (self.parent is None) != (other.parent is None):
-            if self.parent is None:
-                return -1
-            else:
-                return 1
+            return False
         elif self.parent is not None:
-            c = cmp(self.parent.name, other.parent.name)
-            if c != 0:
-                return c
+            if self.parent.name != other.parent.name:
+                return False
         return (
-            cmp(self.methods, other.methods) or
-            cmp(self.constants, other.constants) or
-            cmp(self.scriptable, other.scriptable) or
-            cmp(self.function, other.function) or
-            cmp(self.builtinclass, other.builtinclass) or
-            cmp(self.main_process_scriptable_only, other.main_process_scriptable_only)
-        )
+            self.methods == other.methods and
+            self.constants == other.constants and
+            self.scriptable == other.scriptable and
+            self.function == other.function and
+            self.builtinclass == other.builtinclass and
+            self.main_process_scriptable_only == other.main_process_scriptable_only)
 
     def read_descriptor(self, typelib, map, data_pool):
         offset = self._descriptor_offset
@@ -1112,12 +1090,12 @@ class Interface(object):
         """
         if self.name:
             self._name_offset = file.tell() - data_pool_offset + 1
-            file.write(self.name + "\x00")
+            file.write(self.name.encode('ascii') + b"\x00")
         else:
             self._name_offset = 0
         if self.namespace:
             self._namespace_offset = file.tell() - data_pool_offset + 1
-            file.write(self.namespace + "\x00")
+            file.write(self.namespace.encode('ascii') + b"\x00")
         else:
             self._namespace_offset = 0
         for m in self.methods:
@@ -1155,7 +1133,7 @@ class Typelib(object):
 
         """
         def hexify(s):
-            return ''.join(["%02x" % ord(x) for x in s])
+            return ''.join(["%02x" % x for x in s])
 
         return "%s-%s-%s-%s-%s" % (hexify(iid[:4]), hexify(iid[4:6]),
                                    hexify(iid[6:8]), hexify(iid[8:10]),
@@ -1168,16 +1146,16 @@ class Typelib(object):
 
         """
         s = iid_str.replace('-', '')
-        return ''.join([chr(int(s[i:i+2], 16)) for i in range(0, len(s), 2)])
+        return bytes(int(s[i:i+2], 16) for i in range(0, len(s), 2))
 
     @staticmethod
     def read_string(map, data_pool, offset):
         if offset == 0:
             return ""
-        sz = map.find('\x00', data_pool + offset - 1)
+        sz = map.find(b'\x00', data_pool + offset - 1)
         if sz == -1:
             return ""
-        return map[data_pool + offset - 1:sz]
+        return map[data_pool + offset - 1:sz].decode('ascii')
 
     @staticmethod
     def read(input_file):
@@ -1270,11 +1248,11 @@ class Typelib(object):
         headersize = (Typelib._header.size + 1)
         if headersize % 4:
             headersize += 4 - headersize % 4
-        fd.write("\x00" * headersize)
+        fd.write(b"\x00" * headersize)
         # save this offset, it's the interface directory offset.
         interface_directory_offset = fd.tell()
         # write out space for an interface directory
-        fd.write("\x00" * Interface._direntry.size * len(self.interfaces))
+        fd.write(b"\x00" * Interface._direntry.size * len(self.interfaces))
         # save this offset, it's the data pool offset.
         data_pool_offset = fd.tell()
         # write out all the interface descriptors to the data pool
