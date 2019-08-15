@@ -107,7 +107,7 @@ def preprocess(cxx, preprocessorOption, source, args = []):
   tmpOut = 'self-hosting-preprocessed.pp';
   outputArg = shlex.split(preprocessorOption + tmpOut)
 
-  with open(tmpIn, 'wb') as input:
+  with open(tmpIn, 'w') as input:
     input.write(source)
   print((' '.join(cxx + outputArg + args + [tmpIn])))
   result = subprocess.Popen(cxx + outputArg + args + [tmpIn]).wait()
