@@ -87,7 +87,7 @@ def embed(cxx, preprocessorOption, msgs, sources, c_out, js_out, namespace, env)
 
   js_out.write(processed)
   import zlib
-  compressed = zlib.compress(processed)
+  compressed = zlib.compress(processed.encode('utf8'))
   data = ToCArray(compressed)
   c_out.write(HEADER_TEMPLATE % {
     'sources_type': 'unsigned char',
