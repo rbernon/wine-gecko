@@ -6674,7 +6674,7 @@ def main():
     try:
         for filename in fileList:
             fullPath = os.path.normpath(os.path.join(baseDir, filename))
-            f = open(fullPath, 'rb')
+            f = open(fullPath, 'r')
             lines = f.readlines()
             f.close()
             print(fullPath)

@@ -325,7 +325,7 @@ class WebIDLCodegenManager(LoggingMixin):
             with open(path, 'rb') as fh:
                 data = fh.read()
                 hashes[path] = hashlib.sha1(data).hexdigest()
-                parser.parse(data, path)
+                parser.parse(data.decode(), path)
 
         self._parser_results = parser.finish()
         self._config = Configuration(self._config_path, self._parser_results,
@@ -542,7 +542,7 @@ def create_build_system_manager(topsrcdir, topobjdir, dist_dir):
     src_dir = os.path.join(topsrcdir, 'dom', 'bindings')
     obj_dir = os.path.join(topobjdir, 'dom', 'bindings')
 
-    with open(os.path.join(obj_dir, 'file-lists.json'), 'rb') as fh:
+    with open(os.path.join(obj_dir, 'file-lists.json'), 'r') as fh:
         files = json.load(fh)
 
     inputs = (files['webidls'], files['exported_stems'],
