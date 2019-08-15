@@ -43,17 +43,20 @@ import which
 import buildconfig
 
 def ToCAsciiArray(lines):
+  if isinstance(lines, str):
+    lines = lines.encode('ascii')
   result = []
-  for chr in lines:
-    value = ord(chr)
-    assert value < 128
-    result.append(str(value))
+  for byte in lines:
+    assert byte < 128
+    result.append(str(byte))
   return ", ".join(result)
 
 def ToCArray(lines):
+  if isinstance(lines, str):
+    lines = lines.encode('utf8')
   result = []
-  for chr in lines:
-    result.append(str(ord(chr)))
+  for byte in lines:
+    result.append(str(byte))
   return ", ".join(result)
 
 HEADER_TEMPLATE = """\
