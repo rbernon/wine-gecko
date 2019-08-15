@@ -1159,7 +1159,7 @@ class IDLParser(object):
                        doccomments=p.slice[1].doccomments)
 
     def p_native(self, p):
-        """native : attributes NATIVE IDENTIFIER afternativeid '(' NATIVEID ')' ';'"""
+        """native : attributes NATIVE IDENTIFIER '(' afternativeid NATIVEID ')' ';'"""
         p[0] = Native(name=p[3],
                       nativename=p[6],
                       attlist=p[1]['attlist'],
