@@ -42,7 +42,10 @@ def toStringBool(arg):
 
 
 def toBindingNamespace(arg):
-    return re.sub("((_workers)?$)", "Binding\\1", arg)
+    if arg.endswith('_workers'):
+        return arg[0:-8]+'Binding_workers'
+    else:
+        return arg+'Binding'
 
 
 def isTypeCopyConstructible(type):
