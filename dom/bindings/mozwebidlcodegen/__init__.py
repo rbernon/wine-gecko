@@ -511,7 +511,7 @@ class WebIDLCodegenManager(LoggingMixin):
         return False, current_hashes
 
     def _save_state(self):
-        with open(self._state_path, 'wb') as fh:
+        with open(self._state_path, 'w') as fh:
             self._state.dump(fh)
 
     def _maybe_write_codegen(self, obj, declare_path, define_path, result=None):
