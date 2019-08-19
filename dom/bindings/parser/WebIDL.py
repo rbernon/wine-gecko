@@ -1841,6 +1841,9 @@ class IDLType(IDLObject):
     def __eq__(self, other):
         return other and self.builtin == other.builtin and self.name == other.name
 
+    def __hash__(self):
+        return hash((self.builtin, self.name))
+
     def __ne__(self, other):
         return not self == other
 
@@ -2042,6 +2045,9 @@ class IDLNullableType(IDLType):
     def __eq__(self, other):
         return isinstance(other, IDLNullableType) and self.inner == other.inner
 
+    def __hash__(self):
+        return hash(('nullable', self.inner))
+
     def __str__(self):
         return self.inner.__str__() + "OrNull"
 
@@ -2186,6 +2192,9 @@ class IDLSequenceType(IDLType):
     def __eq__(self, other):
         return isinstance(other, IDLSequenceType) and self.inner == other.inner
 
+    def __hash__(self):
+        return hash(('sequence', self.inner))
+
     def __str__(self):
         return self.inner.__str__() + "Sequence"
 
@@ -2281,6 +2290,9 @@ class IDLMozMapType(IDLType):
 
     def __eq__(self, other):
         return isinstance(other, IDLMozMapType) and self.inner == other.inner
+
+    def __hash__(self):
+        return hash(('mozmap', self.inner))
 
     def __str__(self):
         return self.inner.__str__() + "MozMap"
@@ -2689,6 +2701,9 @@ class IDLWrapperType(IDLType):
         return (isinstance(other, IDLWrapperType) and
                 self._identifier == other._identifier and
                 self.builtin == other.builtin)
+
+    def __hash__(self):
+        return hash(('wrapper', self._identifier))
 
     def __str__(self):
         return str(self.name) + " (Wrapper)"
