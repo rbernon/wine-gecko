@@ -60,6 +60,8 @@ def genipdl(ast, outdir):
 
 
 def writeifmodified(contents, file):
+    if isinstance(contents, str):
+        contents = contents.encode()
     dir = os.path.dirname(file)
     os.path.exists(dir) or os.makedirs(dir)
 
