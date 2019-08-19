@@ -97,7 +97,7 @@ class Configuration:
                                                   []).append(d)
 
         # Keep the descriptor list sorted for determinism.
-        self.descriptors.sort(lambda x, y: cmp(x.name, y.name))
+        self.descriptors.sort(key=lambda x: x.name)
 
 
         self.descriptorsByFile = {}
