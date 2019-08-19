@@ -13,11 +13,11 @@ properties = [{"name":p[0], "prop":p[1], "id":p[2],
 # first, shorthand properties follow, then aliases appear last.  This matches
 # the order of the nsCSSProperty enum.
 
-def property_compare(x, y):
+def property_key(x):
     property_order = {"longhand": 0, "logical": 0, "shorthand": 1, "alias": 2}
-    return property_order[x["proptype"]] - property_order[y["proptype"]]
+    return property_order[x["proptype"]]
 
-properties = sorted(properties, cmp=property_compare)
+properties = sorted(properties, key=property_key)
 
 for i, p in enumerate(properties):
     p["index"] = i
