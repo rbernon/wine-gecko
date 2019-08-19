@@ -31,7 +31,7 @@ def dependentlibs_dumpbin(lib):
     deps = []
     for line in proc.stdout:
         # Each line containing an imported library name starts with 4 spaces
-        match = re.match('    (\S+)', line)
+        match = re.match('    (\S+)', line.decode())
         if match:
              deps.append(match.group(1))
         elif len(deps):
@@ -46,7 +46,7 @@ def dependentlibs_mingw_objdump(lib):
     proc = subprocess.Popen(['objdump', '-x', lib], stdout = subprocess.PIPE)
     deps = []
     for line in proc.stdout:
-        match = re.match('\tDLL Name: (\S+)', line)
+        match = re.match('\tDLL Name: (\S+)', line.decode())
         if match:
             deps.append(match.group(1))
     proc.wait()
@@ -60,6 +60,7 @@ def dependentlibs_readelf(lib):
         # Each line has the following format:
         #  tag (TYPE)          value
         # Looking for NEEDED type entries
+        line = line.decode()
         tmp = line.split(' ', 3)
         if len(tmp) > 3 and tmp[2] == '(NEEDED)':
             # NEEDED lines look like:
@@ -81,6 +82,7 @@ def dependentlibs_otool(lib):
         #           cmd LC_LOAD_DYLIB
         #       cmdsize 56
         #          name libname (offset 24)
+        line = line.decode()
         tmp = line.split()
         if len(tmp) < 2:
             continue
