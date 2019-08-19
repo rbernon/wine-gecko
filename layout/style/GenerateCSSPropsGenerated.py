@@ -58,7 +58,7 @@ def generate_idl_name_positions(properties):
     ps = [p for p in properties if p["proptype"] is not "alias"]
 
     # Sort alphabetically by IDL name.
-    ps = sorted(ps, key=lambda p: p["idlname"])
+    ps = sorted(ps, key=lambda p: (p["idlname"] is not None, p["idlname"]))
 
     # Annotate entries with the sorted position.
     ps = [(p, position) for position, p in enumerate(ps)]
