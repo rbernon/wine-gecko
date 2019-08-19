@@ -505,7 +505,7 @@ def hasactor(type):
 
 def hasshmem(type):
     """Return true iff |type| is shmem or has it buried within."""
-    class found: pass
+    class found(BaseException): pass
     class findShmem(TypeVisitor):
         def visitShmemType(self, s):  raise found()
     try:
@@ -516,7 +516,7 @@ def hasshmem(type):
 
 def hasfd(type):
     """Return true iff |type| is fd or has it buried within."""
-    class found: pass
+    class found(BaseException): pass
     class findFD(TypeVisitor):
         def visitFDType(self, s):  raise found()
     try:
