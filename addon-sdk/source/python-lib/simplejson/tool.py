@@ -1,43 +1,41 @@
-r"""
-Using simplejson from the shell to validate and
-pretty-print::
-    
-    $ echo '{"json":"obj"}' | python -msimplejson
+r"""Command-line tool to validate and pretty-print JSON
+
+Usage::
+
+    $ echo '{"json":"obj"}' | python -m simplejson.tool
     {
         "json": "obj"
     }
-    $ echo '{ 1.2:3.4}' | python -msimplejson
+    $ echo '{ 1.2:3.4}' | python -m simplejson.tool
     Expecting property name: line 1 column 2 (char 2)
 
-Note that the JSON produced by this module's default settings
-is a subset of YAML, so it may be used as a serializer for that as well.
 """
-import simplejson
-
-#
-# Pretty printer:
-#     curl http://mochikit.com/examples/ajax_tables/domains.json | python -msimplejson.tool
-#
+from __future__ import with_statement
+import sys
+import simplejson as json
 
 def main():
-    import sys
     if len(sys.argv) == 1:
         infile = sys.stdin
         outfile = sys.stdout
     elif len(sys.argv) == 2:
-        infile = open(sys.argv[1], 'rb')
+        infile = open(sys.argv[1], 'r')
         outfile = sys.stdout
     elif len(sys.argv) == 3:
-        infile = open(sys.argv[1], 'rb')
-        outfile = open(sys.argv[2], 'wb')
+        infile = open(sys.argv[1], 'r')
+        outfile = open(sys.argv[2], 'w')
     else:
-        raise SystemExit("%s [infile [outfile]]" % (sys.argv[0],))
-    try:
-        obj = simplejson.load(infile)
-    except ValueError as e:
-        raise SystemExit(e)
-    simplejson.dump(obj, outfile, sort_keys=True, indent=4)
-    outfile.write('\n')
+        raise SystemExit(sys.argv[0] + " [infile [outfile]]")
+    with infile:
+        try:
+            obj = json.load(infile,
+                            object_pairs_hook=json.OrderedDict,
+                            use_decimal=True)
+        except ValueError:
+            raise SystemExit(sys.exc_info()[1])
+    with outfile:
+        json.dump(obj, outfile, sort_keys=True, indent='    ', use_decimal=True)
+        outfile.write('\n')
 
 
 if __name__ == '__main__':
