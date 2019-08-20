@@ -147,7 +147,7 @@ class DataMap:
             datamap[dataname] = hash_file(absname)
             self.files_to_copy.append( (zipname, absname) )
         self.data_manifest = to_json(datamap)
-        self.data_manifest_hash = hashlib.sha256(self.data_manifest).hexdigest()
+        self.data_manifest_hash = hashlib.sha256(self.data_manifest.encode()).hexdigest()
         self.data_manifest_zipname = datamap_zipname(pkg.name)
         self.data_uri_prefix = "%s/data/" % (self.name)
 
