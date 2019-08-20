@@ -326,22 +326,19 @@ def parse_args(arguments, global_options, usage, version, parser_groups,
     parser = optparse.OptionParser(usage=usage.strip(), option_class=CfxOption,
                                    version=version)
 
-    def name_cmp(a, b):
+    def name_key(a):
         # a[0]    = name sequence
         # a[0][0] = short name (possibly empty string)
         # a[0][1] = long name
-        names = []
-        for seq in (a, b):
-            names.append(seq[0][0][1:] if seq[0][0] else seq[0][1][2:])
-        return cmp(*names)
+        return a[0][0][1:] if a[0][0] else a[0][1][2:]
 
-    global_options.sort(name_cmp)
+    global_options.sort(key=name_key)
     for names, opts in global_options:
         parser.add_option(*names, **opts)
 
     for group_name, options in parser_groups:
         group = optparse.OptionGroup(parser, group_name)
-        options.sort(name_cmp)
+        options.sort(key=name_key)
         for names, opts in options:
             if 'cmds' in opts:
                 cmds = opts['cmds']
