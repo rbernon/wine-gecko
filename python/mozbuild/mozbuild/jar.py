@@ -10,6 +10,7 @@ See the documentation for jar.mn on MDC for further details on the format.
 
 
 
+import codecs
 import sys
 import os
 import errno
@@ -17,7 +18,7 @@ import re
 import logging
 from time import localtime
 from MozZipFile import ZipFile
-from io import StringIO
+from io import BytesIO
 from collections import defaultdict
 
 from mozbuild.preprocessor import Preprocessor
@@ -42,7 +43,7 @@ class ZipEntry(object):
     def __init__(self, name, zipfile):
         self._zipfile = zipfile
         self._name = name
-        self._inner = StringIO()
+        self._inner = BytesIO()
 
     def write(self, content):
         '''Append the given content to this zip entry'''
@@ -453,7 +454,7 @@ class JarMaker(object):
         self._seen_output.add(out)
 
         if e.preprocess:
-            outf = outHelper.getOutput(out)
+            outf = codecs.getwriter('utf8')(outHelper.getOutput(out))
             inf = open(realsrc)
             pp = self.pp.clone()
             if src[-4:] == '.css':

@@ -166,7 +166,7 @@ class BaseFile(object):
             else:
                 # Ensure the file is always created
                 if not dest.exists():
-                    dest.write('')
+                    dest.write(b'')
                 shutil.copyfileobj(self.open(), dest)
             return True
 
