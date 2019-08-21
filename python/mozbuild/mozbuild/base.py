@@ -454,7 +454,7 @@ class MozbuildObject(ProcessExecutionMixin):
                 FlashWindowEx(params)
         except Exception as e:
             self.log(logging.WARNING, 'notifier-failed', {'error':
-                e.message}, 'Notification center failed: {error}')
+                str(e)}, 'Notification center failed: {error}')
 
     @property
     def _config_guess(self):
