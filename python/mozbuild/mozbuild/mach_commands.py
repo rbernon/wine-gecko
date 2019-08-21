@@ -410,7 +410,7 @@ class Build(MachCommandBase):
                     status = self._run_make(directory=make_dir, target=make_target,
                         line_handler=output.on_line, log=False, print_directory=False,
                         ensure_exit_code=False, num_jobs=jobs, silent=not verbose,
-                        append_env={b'NO_BUILDSTATUS_MESSAGES': b'1'})
+                        append_env={'NO_BUILDSTATUS_MESSAGES': '1'})
 
                     if status != 0:
                         break
@@ -442,7 +442,7 @@ class Build(MachCommandBase):
                 append_env = None
                 if projects:
                     project = projects.split()[0]
-                    append_env = {b'MOZ_CURRENT_PROJECT': project.encode('utf-8')}
+                    append_env = {'MOZ_CURRENT_PROJECT': project}
                     subdir = os.path.join(self.topobjdir, project)
                 else:
                     subdir = self.topobjdir
@@ -901,7 +901,7 @@ class GTestCommands(MachCommandBase):
         # Use GTest environment variable to control test execution
         # For details see:
         # https://code.google.com/p/googletest/wiki/AdvancedGuide#Running_Test_Programs:_Advanced_Options
-        gtest_env = {b'GTEST_FILTER': gtest_filter}
+        gtest_env = {'GTEST_FILTER': gtest_filter}
 
         # Note: we must normalize the path here so that gtest on Windows sees
         # a MOZ_GMP_PATH which has only Windows dir seperators, because
