@@ -115,10 +115,15 @@ def _collect(pipe, poll_interval):
         last_time = measured_end_time
         sleep_interval = max(0, poll_interval - collection_overhead)
 
+    pipe.recv() # terminate
+
     for entry in data:
         pipe.send(entry)
 
     pipe.send(('done', None, None, None, None, None, None))
+
+    pipe.recv() # done
+
     pipe.close()
     sys.exit(0)
 
@@ -301,6 +306,8 @@ class SystemResourceMonitor(object):
 
             self.measurements.append(SystemResourceUsage(start_time, end_time,
                 cpu_times, cpu_percent, io, virt, swap))
+
+        self._pipe.send('done')
 
         self._process.join()
         assert done
