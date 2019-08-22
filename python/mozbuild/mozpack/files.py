@@ -489,7 +489,10 @@ class GeneratedFile(BaseFile):
     File class for content with no previous existence on the filesystem.
     '''
     def __init__(self, content):
-        self.content = content
+        if isinstance(content, str):
+            self.content = content.encode()
+        else:
+            self.content = content
 
     def open(self, mode='rb'):
         if 'b' in mode:

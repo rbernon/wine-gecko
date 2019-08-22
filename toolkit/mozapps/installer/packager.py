@@ -192,7 +192,7 @@ class RemovedFiles(GeneratedFile):
             return
         if self.copier.contains(f):
             errors.error('Removal of packaged file(s): %s' % f)
-        self.content += f + '\n'
+        self.content += f.encode() + b'\n'
 
 
 def split_define(define):
