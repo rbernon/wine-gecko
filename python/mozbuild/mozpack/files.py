@@ -4,6 +4,7 @@
 
 
 
+import codecs
 import errno
 import os
 import platform
@@ -22,7 +23,7 @@ from mozpack.executables import (
     elfhack,
 )
 from mozpack.chrome.manifest import ManifestEntry
-from io import BytesIO
+from io import BytesIO, StringIO
 from mozpack.errors import (
     ErrorMessage,
     errors,
@@ -188,14 +189,14 @@ class BaseFile(object):
             shutil.copystat(self.path, dest.path)
         return True
 
-    def open(self):
+    def open(self, mode='rb'):
         '''
         Return a file-like object allowing to read() the content of the
         associated file. This is meant to be overloaded in subclasses to return
         a custom file-like object.
         '''
         assert self.path is not None
-        return open(self.path, 'rb')
+        return open(self.path, mode)
 
     def read(self):
         raise NotImplementedError('BaseFile.read() not implemented. Bug 1170329.')
@@ -490,8 +491,11 @@ class GeneratedFile(BaseFile):
     def __init__(self, content):
         self.content = content
 
-    def open(self):
-        return BytesIO(self.content)
+    def open(self, mode='rb'):
+        if 'b' in mode:
+            return BytesIO(self.content)
+        else:
+            return StringIO(self.content.decode())
 
 
 class DeflatedFile(BaseFile):
@@ -504,9 +508,12 @@ class DeflatedFile(BaseFile):
         assert isinstance(file, JarFileReader)
         self.file = file
 
-    def open(self):
+    def open(self, mode='rb'):
         self.file.seek(0)
-        return self.file
+        if 'b' in mode:
+            return self.file
+        else:
+            return codecs.getreader('utf8')(self.file)
 
 
 class XPTFile(GeneratedFile):
@@ -571,7 +578,7 @@ class XPTFile(GeneratedFile):
         dest.write(s.getvalue())
         return True
 
-    def open(self):
+    def open(self, mode='rb'):
         raise RuntimeError("Unsupported")
 
     def isempty(self):
@@ -615,13 +622,17 @@ class ManifestFile(BaseFile):
         assert isinstance(entry, ManifestEntry)
         self._entries.remove(entry)
 
-    def open(self):
+    def open(self, mode='rb'):
         '''
         Return a file-like object allowing to read() the serialized content of
         the manifest.
         '''
-        return BytesIO(''.join('%s\n' % e.rebase(self._base)
-                               for e in self._entries))
+        content = ''.join('%s\n' % e.rebase(self._base)
+                               for e in self._entries)
+        if 'b' in mode:
+            return BytesIO(content.encode())
+        else:
+            return StringIO(content)
 
     def __iter__(self):
         '''
@@ -645,13 +656,17 @@ class MinifiedProperties(BaseFile):
         assert isinstance(file, BaseFile)
         self._file = file
 
-    def open(self):
+    def open(self, mode='rb'):
         '''
         Return a file-like object allowing to read() the minified content of
         the properties file.
         '''
-        return BytesIO(''.join(l for l in self._file.open().readlines()
-                               if not l.startswith('#')))
+        content = ''.join(l for l in self._file.open().readlines()
+                               if not l.startswith('#'))
+        if 'b' in mode:
+            return BytesIO(content.encode())
+        else:
+            return StringIO(content)
 
 
 class MinifiedJavaScript(BaseFile):
@@ -663,8 +678,8 @@ class MinifiedJavaScript(BaseFile):
         self._file = file
         self._verify_command = verify_command
 
-    def open(self):
-        output = BytesIO()
+    def open(self, mode='rb'):
+        output = StringIO()
         minify = JavascriptMinify(self._file.open(), output, quote_chars="'\"`")
         minify.minify()
         output.seek(0)
@@ -695,7 +710,10 @@ class MinifiedJavaScript(BaseFile):
 
                 return self._file.open()
 
-        return output
+        if 'b' in mode:
+            return BytesIO(output.getvalue().encode())
+        else:
+            return output
 
 
 class BaseFinder(object):

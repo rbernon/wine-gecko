@@ -282,7 +282,7 @@ class SimplePackager(object):
             b = mozpath.normsep(file.path)
             if b.endswith('/' + path) or b == path:
                 base = os.path.normpath(b[:-len(path)])
-        for e in parse_manifest(base, path, file.open()):
+        for e in parse_manifest(base, path, file.open(mode='r')):
             # ManifestResources need to be given after ManifestChrome, so just
             # put all ManifestChrome in a separate queue to make them first.
             if isinstance(e, ManifestChrome):

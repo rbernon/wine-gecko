@@ -549,7 +549,7 @@ class Jarrer(FileRegistry, BaseFile):
             if self._preload:
                 jar.preload(self._preload)
 
-    def open(self):
+    def open(self, mode='rb'):
         raise RuntimeError('unsupported')
 
     def preload(self, paths):
