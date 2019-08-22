@@ -598,7 +598,7 @@ class JarWriter(object):
             deflater = data
         else:
             deflater = Deflater(compress, compress_level=self._compress_level)
-            if isinstance(data, str):
+            if isinstance(data, bytes):
                 deflater.write(data)
             elif hasattr(data, 'read'):
                 if hasattr(data, 'seek'):

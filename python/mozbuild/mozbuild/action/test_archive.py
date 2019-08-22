@@ -515,7 +515,7 @@ def main(argv):
             res = find_files(args.archive)
             for p, f in res:
                 file_count += 1
-                writer.add(p.encode('utf-8'), f.read(), mode=f.mode)
+                writer.add(p, f.read(), mode=f.mode)
 
     duration = time.time() - t_start
     zip_size = os.path.getsize(args.outputfile)
