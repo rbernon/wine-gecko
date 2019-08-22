@@ -1415,66 +1415,68 @@ class ConfigObj(Section):
             line = infile[0]
         else:
             line = infile
-        if self.encoding is not None:
-            # encoding explicitly supplied
-            # And it could have an associated BOM
-            # TODO: if encoding is just UTF16 - we ought to check for both
-            # TODO: big endian and little endian versions.
-            enc = BOM_LIST[self.encoding.lower()]
-            if enc == 'utf_16':
-                # For UTF16 we try big endian and little endian
-                for BOM, (encoding, final_encoding) in list(BOMS.items()):
+
+        if isinstance(line, bytes):
+            if self.encoding is not None:
+                # encoding explicitly supplied
+                # And it could have an associated BOM
+                # TODO: if encoding is just UTF16 - we ought to check for both
+                # TODO: big endian and little endian versions.
+                enc = BOM_LIST[self.encoding.lower()]
+                if enc == 'utf_16':
+                    # For UTF16 we try big endian and little endian
+                    for BOM, (encoding, final_encoding) in list(BOMS.items()):
+                        if not final_encoding:
+                            # skip UTF8
+                            continue
+                        if infile.startswith(BOM):
+                            ### BOM discovered
+                            ##self.BOM = True
+                            # Don't need to remove BOM
+                            return self._decode(infile, encoding)
+                        
+                    # If we get this far, will *probably* raise a DecodeError
+                    # As it doesn't appear to start with a BOM
+                    return self._decode(infile, self.encoding)
+                
+                # Must be UTF8
+                BOM = BOM_SET[enc]
+                if not line.startswith(BOM):
+                    return self._decode(infile, self.encoding)
+                
+                newline = line[len(BOM):]
+                
+                # BOM removed
+                if isinstance(infile, (list, tuple)):
+                    infile[0] = newline
+                else:
+                    infile = newline
+                self.BOM = True
+                return self._decode(infile, self.encoding)
+            
+            # No encoding specified - so we need to check for UTF8/UTF16
+            for BOM, (encoding, final_encoding) in list(BOMS.items()):
+                if not line.startswith(BOM):
+                    continue
+                else:
+                    # BOM discovered
+                    self.encoding = final_encoding
                     if not final_encoding:
-                        # skip UTF8
-                        continue
-                    if infile.startswith(BOM):
-                        ### BOM discovered
-                        ##self.BOM = True
-                        # Don't need to remove BOM
-                        return self._decode(infile, encoding)
-                    
-                # If we get this far, will *probably* raise a DecodeError
-                # As it doesn't appear to start with a BOM
-                return self._decode(infile, self.encoding)
-            
-            # Must be UTF8
-            BOM = BOM_SET[enc]
-            if not line.startswith(BOM):
-                return self._decode(infile, self.encoding)
-            
-            newline = line[len(BOM):]
-            
-            # BOM removed
-            if isinstance(infile, (list, tuple)):
-                infile[0] = newline
-            else:
-                infile = newline
-            self.BOM = True
-            return self._decode(infile, self.encoding)
-        
-        # No encoding specified - so we need to check for UTF8/UTF16
-        for BOM, (encoding, final_encoding) in list(BOMS.items()):
-            if not line.startswith(BOM):
-                continue
-            else:
-                # BOM discovered
-                self.encoding = final_encoding
-                if not final_encoding:
-                    self.BOM = True
-                    # UTF8
-                    # remove BOM
-                    newline = line[len(BOM):]
-                    if isinstance(infile, (list, tuple)):
-                        infile[0] = newline
-                    else:
-                        infile = newline
-                    # UTF8 - don't decode
-                    if isinstance(infile, str):
-                        return infile.splitlines(True)
-                    else:
-                        return infile
-                # UTF16 - have to decode
-                return self._decode(infile, encoding)
+                        self.BOM = True
+                        # UTF8
+                        # remove BOM
+                        newline = line[len(BOM):]
+                        if isinstance(infile, (list, tuple)):
+                            infile[0] = newline
+                        else:
+                            infile = newline
+                        # UTF8 - don't decode
+                        if isinstance(infile, str):
+                            return infile.splitlines(True)
+                        else:
+                            return infile
+                    # UTF16 - have to decode
+                    return self._decode(infile, encoding)
             
         # No BOM discovered and no encoding specified, just return
         if isinstance(infile, str):
@@ -1497,12 +1499,12 @@ class ConfigObj(Section):
         
         if is a string, it also needs converting to a list.
         """
-        if isinstance(infile, str):
+        if isinstance(infile, bytes):
             # can't be unicode
             # NOTE: Could raise a ``UnicodeDecodeError``
             return infile.decode(encoding).splitlines(True)
         for i, line in enumerate(infile):
-            if not isinstance(line, str):
+            if not isinstance(line, bytes):
                 # NOTE: The isinstance test here handles mixed lists of unicode/string
                 # NOTE: But the decode will break on any non-string values
                 # NOTE: Or could raise a ``UnicodeDecodeError``
@@ -1514,7 +1516,7 @@ class ConfigObj(Section):
         """Decode element to unicode if necessary."""
         if not self.encoding:
             return line
-        if isinstance(line, str) and self.default_encoding:
+        if isinstance(line, bytes) and self.default_encoding:
             return line.decode(self.default_encoding)
         return line
 
