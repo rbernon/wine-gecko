@@ -266,7 +266,7 @@ class SimplePackager(object):
             self._file_queue.append(self.formatter.add, path, file)
             if mozpath.basename(path) == 'install.rdf':
                 addon = True
-                install_rdf = file.open().read()
+                install_rdf = file.open(mode='r').read()
                 if self.UNPACK_ADDON_RE.search(install_rdf):
                     addon = 'unpacked'
                 self._addons[mozpath.dirname(path)] = addon
