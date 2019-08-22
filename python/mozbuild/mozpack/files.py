@@ -172,7 +172,7 @@ class BaseFile(object):
             return True
 
         src = self.open()
-        copy_content = ''
+        copy_content = b''
         while True:
             dest_content = dest.read(32768)
             src_content = src.read(32768)
