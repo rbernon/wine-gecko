@@ -61,7 +61,7 @@ class ReftestManifest(object):
         if self.finder:
             lines = self.finder.get(path).read().splitlines()
         else:
-            with open(path, 'r') as fh:
+            with open(path, 'r', encoding='utf8') as fh:
                 lines = fh.read().splitlines()
 
         urlprefix = ''
