@@ -20,7 +20,6 @@ target_abi=win32
 target_arch=x86
 pkg_type=msi
 do_strip=yes
-unstripped_package=no
 no_xulinstaller=no
 
 while [ "$1" != "" ]
@@ -57,6 +56,9 @@ do
     --tar-package)
         pkg_type=tar
         ;;
+    --all-package)
+        pkg_type=all
+        ;;
     --no-package)
         pkg_type=none
         ;;
@@ -64,8 +66,7 @@ do
         do_strip=no
         ;;
     --unstripped)
-        unstripped_package=yes
-        pkg_type=tar
+        pkg_type=unstripped
         ;;
     *)
         echo "make_package: Unknown option: $1"
@@ -161,19 +162,8 @@ while read -r f; do
     rm -f "$build_dir/dist/$wine_gecko_dir/$f"
 done <wine/remove-files.txt
 
-# This is hackish, but this allows us to prepare both stripped
-# and unstripped packages from the same build.
-if [ "$unstripped_package" = "yes" -a "$do_strip" = "yes" ]
-then
-    cd "$build_dir/dist/$wine_gecko_dir"
-    for f in *.dll; do
-        cp ../bin/$f $f
-    done
-    package_basename=$package_basename-unstripped
-fi
-
 case $pkg_type in
-msi)
+msi|all)
     echo "make_package: Creating MSI file..."
 
     msi_dir=$build_dir/dist/msi
@@ -329,7 +319,10 @@ msi)
     echo Package done:
     echo $(pwd)/$package_basename.msi
     ;;
-tar)
+esac
+
+case $pkg_type in
+tar|all)
     echo "make_package: Creating .tar.bz2 archive..."
 
     cd $build_dir/dist
@@ -362,5 +355,29 @@ tar)
         echo PDB package done:
         echo $build_path/dist/${package_basename}-pdb.tar.bz2
 	fi
+    ;;
+esac
+
+case $pkg_type in
+unstripped|all)
+    echo "make_package: Creating unstripped archive..."
+
+    cd "$build_dir/dist"
+
+    cp -r $wine_gecko_dir $wine_gecko_dir-unstripped
+
+    # This is hackish, but this allows us to prepare both stripped
+    # and unstripped packages from the same build.
+    if [ "$do_strip" = "yes" ]
+    then
+        cd $wine_gecko_dir-unstripped
+        for f in *.dll; do
+            cp ../bin/$f $f
+        done
+        cd ..
+    fi
+    tar -cjf $package_basename-unstripped.tar.bz2 $wine_gecko_dir-unstripped
+    echo Package done:
+    echo $(pwd)/$package_basename-unstripped.tar.bz2
     ;;
 esac
