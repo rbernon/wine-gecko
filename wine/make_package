@@ -77,7 +77,8 @@ done
 
 src_dir=$(pwd)
 version=$(head -n 1 $src_dir/wine/VERSION)
-dist_basename=wine_gecko-$version-$target_arch$debug
+wine_gecko_dir=wine-gecko-$version-$target_arch
+dist_basename=$wine_gecko_dir$debug
 
 if [ "$OS" = "Windows_NT" ]; then
     package_basename=${dist_basename}-msvc
@@ -146,25 +147,25 @@ then
 fi
 
 echo "make_package: Preparing Wine Gecko files..."
-rm -rf $build_dir/dist/wine_gecko
+rm -rf "$build_dir/dist/$wine_gecko_dir"
 
 if [ "$no_xulinstaller" != "yes" ]
 then
     MOZCONFIG=$build_dir/mozconfig make $MAKEOPTS -C $build_dir/browser/installer
 fi
 
-cp -r $build_dir/dist/firefox $build_dir/dist/wine_gecko
-echo -n "Wine Gecko $version" > $build_dir/dist/wine_gecko/VERSION
+cp -r "$build_dir/dist/firefox" "$build_dir/dist/$wine_gecko_dir"
+echo -n "Wine Gecko $version" > "$build_dir/dist/$wine_gecko_dir/VERSION"
 
 while read -r f; do
-    rm -f $build_dir/dist/wine_gecko/$f
+    rm -f "$build_dir/dist/$wine_gecko_dir/$f"
 done <wine/remove-files.txt
 
 # This is hackish, but this allows us to prepare both stripped
 # and unstripped packages from the same build.
 if [ "$unstripped_package" = "yes" -a "$do_strip" = "yes" ]
 then
-    cd $build_dir/dist/wine_gecko
+    cd "$build_dir/dist/$wine_gecko_dir"
     for f in *.dll; do
         cp ../bin/$f $f
     done
@@ -182,7 +183,7 @@ msi)
     cd $build_dir/dist
 
     datetime=`date "+%Y\/%m\/%d %k:%m:%S"`
-    keypath=`find wine_gecko -mindepth 1 -maxdepth 1 -type f | sort | head -1 | cut -d'/' -f2- | sed -e "s/\//!/g"`
+    keypath=`find $wine_gecko_dir -mindepth 1 -maxdepth 1 -type f | sort | head -1 | cut -d'/' -f2- | sed -e "s/\//!/g"`
     cabfile=winegecko.cab
 
     if [ "$target_abi" = "win64" ]
@@ -221,7 +222,7 @@ msi)
     process_dirs()
     {
         depth=$1
-        find wine_gecko -mindepth $depth -maxdepth $depth -type d | sort > $msi_tmp
+        find $wine_gecko_dir -mindepth $depth -maxdepth $depth -type d | sort > $msi_tmp
 
         if [ ! -s $msi_tmp ]; then
             return
@@ -252,7 +253,7 @@ msi)
 
     process_dirs 1
 
-    find wine_gecko -mindepth 1 -type d | sort > $msi_tmp
+    find $wine_gecko_dir -mindepth 1 -type d | sort > $msi_tmp
 
     for d in `cat $msi_tmp`;
     do
@@ -263,7 +264,7 @@ msi)
         fi
     done
 
-    find wine_gecko -type f | sort > $msi_tmp
+    find $wine_gecko_dir -type f | sort > $msi_tmp
 
     sequence=1
     for f in `cat $msi_tmp`;
@@ -271,7 +272,7 @@ msi)
         key=`echo $f | cut -d '/' -f2- | sed -e "s/\//!/g"`
         basename=`basename $f`
         dirname=`dirname $f`
-        if [ $dirname = wine_gecko ];
+        if [ $dirname = $wine_gecko_dir ];
         then
             component=gecko
         else
@@ -282,7 +283,7 @@ msi)
         sequence=`expr $sequence + 1`
     done
 
-    find wine_gecko -type f -print | sort > $msi_tmp
+    find $wine_gecko_dir -type f -print | sort > $msi_tmp
 
     mkdir $msi_dir/files
     for f in `cat $msi_tmp`;
@@ -291,7 +292,7 @@ msi)
         ln -s ../../$f $msi_dir/files/$key
     done
 
-    num_files=`find wine_gecko -type f | wc -l`
+    num_files=`find $wine_gecko_dir -type f | wc -l`
     echo -e 1\\t$num_files\\t\\t\#$cabfile\\t\\t >> $msi_dir/tables/media.idt
 
     rm -f $msi_tmp
@@ -333,7 +334,7 @@ tar)
 
     cd $build_dir/dist
 
-    tar -cjf $package_basename.tar.bz2 wine_gecko
+    tar -cjf $package_basename.tar.bz2 $wine_gecko_dir
 
     echo Package done:
     echo $(pwd)/$package_basename.tar.bz2
@@ -352,8 +353,8 @@ tar)
         rm -rf $build_path/dist/drive_c/
         mkdir -p $build_sub_path
 
-        for x in `find $build_path/dist/wine_gecko/ -iname \*.dll` ; do y=`basename $x .dll` ; find . -iname $y.pdb >> ${pdb_list} ; done
-        for x in `find $build_path/dist/wine_gecko/ -iname \*.exe` ; do y=`basename $x .exe` ; find . -iname $y.pdb >> ${pdb_list} ; done
+        for x in `find $build_path/dist/$wine_gecko_dir/ -iname \*.dll` ; do y=`basename $x .dll` ; find . -iname $y.pdb >> ${pdb_list} ; done
+        for x in `find $build_path/dist/$wine_gecko_dir/ -iname \*.exe` ; do y=`basename $x .exe` ; find . -iname $y.pdb >> ${pdb_list} ; done
 
         tar -cf - `cat $pdb_list` | tar xf - -C $build_sub_path
         tar -cjf $build_path/dist/${package_basename}-pdb.tar.bz2 -C $build_path/dist/drive_c/ $dist_basename
