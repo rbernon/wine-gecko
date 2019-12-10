@@ -106,7 +106,7 @@ DLL_SUFFIX   = dll
 ifdef NS_USE_GCC
     OS_CFLAGS += -mwindows -mms-bitfields
     _GEN_IMPORT_LIB=-Wl,--out-implib,$(IMPORT_LIBRARY)
-    DLLFLAGS  += -mwindows -o $@ -shared -Wl,--export-all-symbols $(if $(IMPORT_LIBRARY),$(_GEN_IMPORT_LIB))
+    DLLFLAGS  += -mwindows -o $@ -shared -Wl,--export-all-symbols -Wl,--nxcompat $(if $(IMPORT_LIBRARY),$(_GEN_IMPORT_LIB))
     ifdef BUILD_OPT
 	ifeq (11,$(ALLOW_OPT_CODE_SIZE)$(OPT_CODE_SIZE))
 		OPTIMIZER += -Os
