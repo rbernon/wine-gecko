@@ -90,7 +90,7 @@ elif system == "Linux":
     if hasattr(platform, "linux_distribution"):
         (distro, os_version, codename) = platform.linux_distribution()
     else:
-        (distro, os_version, codename) = platform.dist()
+        (distro, os_version, codename) = ('', '', '')
     if not processor:
         processor = machine
     version = "%s %s" % (distro, os_version)
