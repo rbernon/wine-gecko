@@ -1347,8 +1347,12 @@ if test "$GNU_CC"; then
     MKCSHLIB='$(CC) $(CFLAGS) $(DSO_PIC_CFLAGS) $(DSO_LDOPTS) -Wl,-h,$(DSO_SONAME) -o $@'
     WARNINGS_AS_ERRORS='-Werror'
     DSO_CFLAGS=''
-    DSO_PIC_CFLAGS='-fPIC'
-    ASFLAGS="$ASFLAGS -fPIC"
+
+    if test "$OS_ARCH" != "WINNT" -o -z "$CLANG_CC"; then
+        DSO_PIC_CFLAGS='-fPIC'
+        ASFLAGS="$ASFLAGS -fPIC"
+    fi
+
     AC_MSG_CHECKING([for --noexecstack option to as])
     _SAVE_CFLAGS=$CFLAGS
     CFLAGS="$CFLAGS -Wa,--noexecstack"
@@ -2052,11 +2056,16 @@ ia64*-hpux*)
         WIN32_CONSOLE_EXE_LDFLAGS=-mconsole
         WIN32_GUI_EXE_LDFLAGS=-mwindows
 
-        # GCC/binutils can't link to a function if we try to include dllexport function
-        # in the same library as dllimport caller. To work around it, we build NSPR
-        # and NSS with -mnop-fun-dllimport flag. The drawback of this solution is that
-        # function thunks need to be generated for cross-DLL calls.
-        MOZ_FOLD_LIBS_FLAGS=-mnop-fun-dllimport
+        if test -z "$CLANG_CC"; then
+            # GCC/binutils can't link to a function if we try to include dllexport function
+            # in the same library as dllimport caller. To work around it, we build NSPR
+            # and NSS with -mnop-fun-dllimport flag. The drawback of this solution is that
+            # function thunks need to be generated for cross-DLL calls.
+            MOZ_FOLD_LIBS_FLAGS="-mnop-fun-dllimport"
+        else
+            # Silence problematic clang warnings
+            CXXFLAGS="$CXXFLAGS -Wno-incompatible-ms-struct"
+        fi
 
         # We use mix of both POSIX and Win32 printf format across the tree, so format
         # warnings are useless on mingw.
@@ -2276,9 +2285,12 @@ ia64*-hpux*)
         fi
 
         if test -n "$GNU_CC"; then
-            CFLAGS="$CFLAGS -mstackrealign -fno-keep-inline-dllexport"
-            CXXFLAGS="$CXXFLAGS -mstackrealign -fno-keep-inline-dllexport"
-            LDFLAGS="$LDFLAGS -Wl,--enable-stdcall-fixup -Wl,--large-address-aware -Wl,--nxcompat"
+            LDFLAGS="$LDFLAGS -Wl,--nxcompat"
+            if test -z "$CLANG_CC"; then
+                CFLAGS="$CFLAGS -mstackrealign -fno-keep-inline-dllexport"
+                CXXFLAGS="$CXXFLAGS -mstackrealign -fno-keep-inline-dllexport"
+                LDFLAGS="$LDFLAGS -Wl,--enable-stdcall-fixup -Wl,--large-address-aware"
+            fi
         else
             DSO_LDOPTS="$DSO_LDOPTS -MACHINE:X86"
             LDFLAGS="$LDFLAGS -SAFESEH"
