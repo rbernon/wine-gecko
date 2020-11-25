@@ -236,6 +236,11 @@ public:
     return GetContentDocument();
   }
 
+  NS_IMETHOD_(already_AddRefed<nsFrameLoader>) GetFrameLoader() override
+  {
+    return nsObjectLoadingContent::GetFrameLoader();
+  }
+
 private:
   /**
    * Calls LoadObject with the correct arguments to start the plugin load.

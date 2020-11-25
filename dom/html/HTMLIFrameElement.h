@@ -181,7 +181,12 @@ public:
     SetHTMLBoolAttr(nsGkAtoms::mozbrowser, aAllow, aError);
   }
   using nsGenericHTMLFrameElement::SetMozbrowser;
-  // nsGenericHTMLFrameElement::GetFrameLoader is fine
+
+  NS_IMETHOD_(already_AddRefed<nsFrameLoader>) GetFrameLoader() override
+  {
+    return nsGenericHTMLFrameElement::GetFrameLoader();
+  }
+
   // nsGenericHTMLFrameElement::GetAppManifestURL is fine
 
   // The fullscreen flag is set to true only when requestFullscreen is

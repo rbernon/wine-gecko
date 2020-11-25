@@ -92,6 +92,11 @@ public:
   using nsGenericHTMLFrameElement::GetContentDocument;
   using nsGenericHTMLFrameElement::GetContentWindow;
 
+  NS_IMETHOD_(already_AddRefed<nsFrameLoader>) GetFrameLoader() override
+  {
+    return nsGenericHTMLFrameElement::GetFrameLoader();
+  }
+
 protected:
   virtual ~HTMLFrameElement();
 
