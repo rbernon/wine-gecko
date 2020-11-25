@@ -3385,12 +3385,12 @@ PluginInstanceChild::UpdateWindowAttributes(bool aForceSetWindow)
         WINDOWPOS winpos = {
             0, 0,
             mWindow.x, mWindow.y,
-            mWindow.width, mWindow.height,
+            static_cast<int>(mWindow.width), static_cast<int>(mWindow.height),
             0
         };
         NPEvent pluginEvent = {
             WM_WINDOWPOSCHANGED, 0,
-            (LPARAM) &winpos
+            (uintptr_t) &winpos
         };
         mPluginIface->event(&mData, &pluginEvent);
     }

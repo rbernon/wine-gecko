@@ -1370,7 +1370,7 @@ PluginInstanceParent::UpdateScrollCapture(bool& aRequestNewCapture)
     container->SetCurrentImages(imageList);
 
     // Invalidate our area in the page so the image gets flushed.
-    NPRect nprect = {0, 0, targetSize.width, targetSize.height};
+    NPRect nprect = {0, 0, static_cast<uint16_t>(targetSize.width), static_cast<uint16_t>(targetSize.height)};
     RecvNPN_InvalidateRect(nprect);
 
     return true;
