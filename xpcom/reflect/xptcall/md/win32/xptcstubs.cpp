@@ -153,7 +153,7 @@ asm(".text\n\t"
 // The clang-cl specific code below is required because mingw uses the gcc name
 // mangling, but clang-cl implements the MSVC name mangling.
 
-#ifdef __clang__
+#ifndef __MINGW32__
 
 #define STUB_ENTRY(n) \
 asm(".text\n\t" \
