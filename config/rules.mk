@@ -159,6 +159,9 @@ endif # FORCE_SHARED_LIB
 endif # LIBRARY
 
 ifeq ($(OS_ARCH),WINNT)
+
+LINK_PDBFILE ?= $(basename $(@F)).pdb
+
 ifndef GNU_CC
 
 #
@@ -180,7 +183,6 @@ endif
 COMPILE_CFLAGS += $(COMPILE_PDB_FLAG)
 COMPILE_CXXFLAGS += $(COMPILE_PDB_FLAG)
 
-LINK_PDBFILE ?= $(basename $(@F)).pdb
 ifdef MOZ_DEBUG
 CODFILE=$(basename $(@F)).cod
 endif
@@ -205,6 +207,11 @@ ifeq (arm-Darwin,$(CPU_ARCH)-$(OS_TARGET))
 ifdef PROGRAM
 MOZ_PROGRAM_LDFLAGS += -Wl,-rpath -Wl,@executable_path/Frameworks
 endif
+endif
+
+ifeq ($(MOZ_PDB),1)
+MOZ_PROGRAM_LDFLAGS += -Wl,-pdb,$(dir $@)/$(LINK_PDBFILE)
+MKSHLIB += -Wl,-pdb,$(dir $@)/$(LINK_PDBFILE)
 endif
 
 ifeq ($(SOLARIS_SUNPRO_CXX),1)

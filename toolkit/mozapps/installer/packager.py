@@ -23,6 +23,7 @@ from mozpack.copier import (
     Jarrer,
 )
 from mozpack.errors import errors
+from mozpack.files import ExecutableFile
 from mozpack.unify import UnifiedBuildFinder
 import mozpack.path as mozpath
 import buildconfig

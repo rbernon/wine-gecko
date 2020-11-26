@@ -1104,6 +1104,15 @@ if test -n "$MOZ_TSAN"; then
 fi
 AC_SUBST(MOZ_TSAN)
 
+dnl ========================================================
+dnl pdb
+dnl ========================================================
+MOZ_ARG_ENABLE_BOOL(pdb,
+[  --enable-pdb          Use PDB for debug symbols.],
+    MOZ_PDB=1,
+    MOZ_PDB= )
+AC_SUBST(MOZ_PDB)
+
 # The LLVM symbolizer is used by all sanitizers
 AC_SUBST(LLVM_SYMBOLIZER)
 
@@ -1524,6 +1533,11 @@ ia64*-hpux*)
         if test -n "$CLANG_CC"; then
             # Silence problematic clang warnings
             CXXFLAGS="$CXXFLAGS -Wno-incompatible-ms-struct"
+        fi
+
+        if test -n "$MOZ_PDB"; then
+           CFLAGS="$CFLAGS -g -gcodeview"
+           CXXFLAGS="$CXXFLAGS -g -gcodeview"
         fi
 
         WIN32_CONSOLE_EXE_LDFLAGS=-mconsole

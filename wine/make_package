@@ -4,7 +4,7 @@ set -e
 
 case x"$1" in
 x-h|x--help|xhelp)
-    echo "Usage: wine/make_package [-dbg] [-win32] [-win64] [--no-build] [--force-build] [--package-only] [--msi-package] [--tar-package] [--no-package] [--disable-strip] [--unstripped]"
+    echo "Usage: wine/make_package [-dbg] [-win32] [-win64] [-pdb] [--no-build] [--force-build] [--package-only] [--msi-package] [--tar-package] [--no-package] [--disable-strip] [--unstripped]"
     exit 0
     ;;
 esac
@@ -21,6 +21,7 @@ target_arch=x86
 pkg_type=msi
 do_strip=yes
 no_xulinstaller=no
+pdb=no
 
 while [ "$1" != "" ]
 do
@@ -39,6 +40,10 @@ do
         target=x86_64-w64-mingw32
         target_abi=win64
         target_arch=x86_64
+        ;;
+    -pdb)
+        do_strip=no
+        pdb=yes
         ;;
     --no-build)
         no_build=yes
@@ -127,6 +132,11 @@ then
     else
         echo "ac_add_options --enable-debug" >>$config_file
         echo "ac_add_options --disable-optimize" >>$config_file
+    fi
+
+    if [ "$pdb" = "yes" ]
+    then
+        echo "ac_add_options --enable-pdb" >>$config_file
     fi
 
     if [ "$do_strip" = "no" ]
@@ -332,52 +342,46 @@ tar|all)
     echo Package done:
     echo $(pwd)/$package_basename.tar.xz
 
-    if [ "$debug" = "-dbg" ] && [ "$OS" = "Windows_NT" ]
+    if [ "$pdb" != "no" ]
     then
-        echo "make_package: Creating .tar.xz PDB package..."
-        pdb_list="$(mktemp)"
+        echo "make_package: Creating PDB archive"
 
-        # We need to recreate the same file system structure under C:\ for the pdb's to work:
-        # $build_dir has relative paths, we need an exact path:
-        cd $build_dir
-        build_path="$(pwd)"
-        build_sub_path=${build_path/\/c/${build_path}\/dist\/drive_c\/}
-
-        rm -rf $build_path/dist/drive_c/
-        mkdir -p $build_sub_path
-
-        for x in `find $build_path/dist/$wine_gecko_dir/ -iname \*.dll` ; do y=`basename $x .dll` ; find . -iname $y.pdb >> ${pdb_list} ; done
-        for x in `find $build_path/dist/$wine_gecko_dir/ -iname \*.exe` ; do y=`basename $x .exe` ; find . -iname $y.pdb >> ${pdb_list} ; done
-
-        tar -cf - `cat $pdb_list` | tar xf - -C $build_sub_path
-        tar -cJf $build_path/dist/${package_basename}-pdb.tar.xz -C $build_path/dist/drive_c/ $dist_basename
-        rm -rf $pdb_list $build_path/dist/drive_c
-        echo PDB package done:
-        echo $build_path/dist/${package_basename}-pdb.tar.xz
-	fi
-    ;;
-esac
-
-case $pkg_type in
-unstripped|all)
-    echo "make_package: Creating unstripped archive..."
-
-    cd "$build_dir/dist"
-
-    cp -r $wine_gecko_dir $wine_gecko_dir-unstripped
-
-    # This is hackish, but this allows us to prepare both stripped
-    # and unstripped packages from the same build.
-    if [ "$do_strip" = "yes" ]
-    then
-        cd $wine_gecko_dir-unstripped
-        for f in *.dll; do
-            cp ../bin/$f $f
-        done
+        # FIXME: ideally we'd get that from build system
         cd ..
+        for x in `find dist/$wine_gecko_dir/ -name \*.dll` ; do y=`basename $x .dll` ; find $(ls |grep -v dist) -name $y.pdb -exec cp {} dist/$wine_gecko_dir/ \; ; done
+        for x in `find dist/$wine_gecko_dir/ -name \*.exe` ; do y=`basename $x .exe` ; find $(ls |grep -v dist) -name $y.pdb -exec cp {} dist/$wine_gecko_dir/ \; ; done
+        cd dist
+
+        tar -cJf $package_basename-pdb.tar.xz $wine_gecko_dir
+        echo PDB package done:
+        echo $(pwd)/$package_basename-pdb.tar.xz
     fi
-    tar -cJf $package_basename-unstripped.tar.xz $wine_gecko_dir-unstripped
-    echo Package done:
-    echo $(pwd)/$package_basename-unstripped.tar.xz
     ;;
 esac
+
+if [ "$pdb" = "no" ]
+then
+    case $pkg_type in
+    unstripped|all)
+        echo "make_package: Creating unstripped archive..."
+
+        cd "$build_dir/dist"
+
+        cp -r $wine_gecko_dir $wine_gecko_dir-unstripped
+
+        # This is hackish, but this allows us to prepare both stripped
+        # and unstripped packages from the same build.
+        if [ "$do_strip" = "yes" ]
+        then
+            cd $wine_gecko_dir-unstripped
+            for f in *.dll; do
+                cp ../bin/$f $f
+            done
+            cd ..
+        fi
+        tar -cJf $package_basename-unstripped.tar.xz $wine_gecko_dir-unstripped
+        echo Package done:
+        echo $(pwd)/$package_basename-unstripped.tar.xz
+        ;;
+    esac
+fi
