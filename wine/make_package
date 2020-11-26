@@ -323,18 +323,18 @@ esac
 
 case $pkg_type in
 tar|all)
-    echo "make_package: Creating .tar.bz2 archive..."
+    echo "make_package: Creating .tar.xz archive..."
 
     cd $build_dir/dist
 
-    tar -cjf $package_basename.tar.bz2 $wine_gecko_dir
+    tar -cJf $package_basename.tar.xz $wine_gecko_dir
 
     echo Package done:
-    echo $(pwd)/$package_basename.tar.bz2
+    echo $(pwd)/$package_basename.tar.xz
 
     if [ "$debug" = "-dbg" ] && [ "$OS" = "Windows_NT" ]
     then
-        echo "make_package: Creating .tar.bz2 PDB package..."
+        echo "make_package: Creating .tar.xz PDB package..."
         pdb_list="$(mktemp)"
 
         # We need to recreate the same file system structure under C:\ for the pdb's to work:
@@ -350,10 +350,10 @@ tar|all)
         for x in `find $build_path/dist/$wine_gecko_dir/ -iname \*.exe` ; do y=`basename $x .exe` ; find . -iname $y.pdb >> ${pdb_list} ; done
 
         tar -cf - `cat $pdb_list` | tar xf - -C $build_sub_path
-        tar -cjf $build_path/dist/${package_basename}-pdb.tar.bz2 -C $build_path/dist/drive_c/ $dist_basename
+        tar -cJf $build_path/dist/${package_basename}-pdb.tar.xz -C $build_path/dist/drive_c/ $dist_basename
         rm -rf $pdb_list $build_path/dist/drive_c
         echo PDB package done:
-        echo $build_path/dist/${package_basename}-pdb.tar.bz2
+        echo $build_path/dist/${package_basename}-pdb.tar.xz
 	fi
     ;;
 esac
@@ -376,8 +376,8 @@ unstripped|all)
         done
         cd ..
     fi
-    tar -cjf $package_basename-unstripped.tar.bz2 $wine_gecko_dir-unstripped
+    tar -cJf $package_basename-unstripped.tar.xz $wine_gecko_dir-unstripped
     echo Package done:
-    echo $(pwd)/$package_basename-unstripped.tar.bz2
+    echo $(pwd)/$package_basename-unstripped.tar.xz
     ;;
 esac
