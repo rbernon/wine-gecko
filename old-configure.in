@@ -2063,9 +2063,11 @@ ia64*-hpux*)
             # and NSS with -mnop-fun-dllimport flag. The drawback of this solution is that
             # function thunks need to be generated for cross-DLL calls.
             MOZ_FOLD_LIBS_FLAGS="-mnop-fun-dllimport"
+            LDFLAGS="$LDFLAGS -Wl,--file-alignment,0x1000"
         else
             # Silence problematic clang warnings
             CXXFLAGS="$CXXFLAGS -Wno-incompatible-ms-struct"
+            LDFLAGS="$LDFLAGS -Wl,-Xlink=-filealign:0x1000"
         fi
 
         # We use mix of both POSIX and Win32 printf format across the tree, so format
