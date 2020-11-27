@@ -221,12 +221,12 @@ NS_DEFINE_STATIC_IID_ACCESSOR(nsIDocumentObserver, NS_IDOCUMENT_OBSERVER_IID)
 
 #define NS_DECL_NSIDOCUMENTOBSERVER_BINDTODOCUMENT                           \
     NS_IMETHOD_(void) BindToDocument(nsIDocument *aDocument,                 \
-                                     nsIContent *aContent);
+                                     nsIContent *aContent) override;
 
 #define NS_DECL_NSIDOCUMENTOBSERVER_ATTEMPTTOEXECUTESCRIPT                   \
   NS_IMETHOD_(void) AttemptToExecuteScript(nsIContent *aContent,             \
                                   nsIParser *aParser,                        \
-                                  bool *aBlock);
+                                  bool *aBlock) override;
 
 #else
 

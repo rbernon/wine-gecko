@@ -2251,11 +2251,11 @@ ToCanonicalSupports(nsINode* aPointer)
   { \
     return nsINode::Contains(aOther, aResult); \
   } \
-  NS_IMETHOD GetMshtmlNode(nsISupports** aReturn) \
+  NS_IMETHOD GetMshtmlNode(nsISupports** aReturn) override \
   { \
     return nsINode::GetMshtmlNode(aReturn); \
   } \
-  NS_IMETHOD SetMshtmlNode(nsISupports* aMshtmlNode) \
+  NS_IMETHOD SetMshtmlNode(nsISupports* aMshtmlNode) override \
   { \
     return nsINode::SetMshtmlNode(aMshtmlNode); \
   }
