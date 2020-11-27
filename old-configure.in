@@ -2076,6 +2076,7 @@ ia64*-hpux*)
             # Silence problematic clang warnings
             CXXFLAGS="$CXXFLAGS -Wno-incompatible-ms-struct"
             LDFLAGS="$LDFLAGS -Wl,-Xlink=-filealign:0x1000"
+            MOZ_DELAYLOAD_FLAG="-Wl,-Xlink=-DELAYLOAD:"
         fi
 
         if test -n "$MOZ_PDB"; then
@@ -2261,6 +2262,7 @@ ia64*-hpux*)
         dnl allow AVX2 code from VS2012
         HAVE_X86_AVX2=1
         MOZ_MEMORY=1
+        MOZ_DELAYLOAD_FLAG="-DELAYLOAD:"
     fi
     AC_DEFINE(HAVE_SNPRINTF)
     AC_DEFINE(_WINDOWS)
@@ -2270,6 +2272,7 @@ ia64*-hpux*)
     AC_DEFINE(HW_THREADS)
     AC_DEFINE(STDC_HEADERS)
     AC_DEFINE(WIN32_LEAN_AND_MEAN)
+    AC_SUBST(MOZ_DELAYLOAD_FLAG)
     dnl See http://support.microsoft.com/kb/143208 to use STL
     AC_DEFINE(NOMINMAX)
     _PLATFORM_DEFAULT_TOOLKIT='cairo-windows'
