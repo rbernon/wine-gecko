@@ -19,6 +19,7 @@
 
 #if defined(WINNT) || defined(__MINGW32__)
 #include <winsock.h>
+#include <winsock2.h>
 #endif
 
 /* MinGW doesn't define these in its winsock.h. */
