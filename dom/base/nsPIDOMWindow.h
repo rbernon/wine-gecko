@@ -554,9 +554,9 @@ public:
                               nsISupports* aExtraArgument,
                               nsPIDOMWindowOuter** _retval) = 0;
 
-  virtual nsresult GetDevicePixelRatio(float* aRatio) = 0;
-  virtual nsresult GetInnerWidth(int32_t* aWidth) = 0;
-  virtual nsresult GetInnerHeight(int32_t* aHeight) = 0;
+  NS_IMETHOD GetDevicePixelRatio(float* aRatio) = 0;
+  NS_IMETHOD GetInnerWidth(int32_t* aWidth) = 0;
+  NS_IMETHOD GetInnerHeight(int32_t* aHeight) = 0;
   virtual already_AddRefed<nsICSSDeclaration>
     GetComputedStyle(mozilla::dom::Element& aElt, const nsAString& aPseudoElt,
                      mozilla::ErrorResult& aError) = 0;
@@ -564,13 +564,22 @@ public:
   virtual already_AddRefed<nsIDOMOfflineResourceList> GetApplicationCache() = 0;
   virtual bool Closed() = 0;
   virtual bool GetFullScreen() = 0;
-  virtual nsresult SetFullScreen(bool aFullScreen) = 0;
+  NS_IMETHOD SetFullScreen(bool aFullScreen) = 0;
 
-  virtual nsresult Focus() = 0;
-  virtual nsresult Close() = 0;
+  NS_IMETHOD Focus() = 0;
+  NS_IMETHOD Close() = 0;
 
   virtual nsresult MoveBy(int32_t aXDif, int32_t aYDif) = 0;
   virtual nsresult UpdateCommands(const nsAString& anAction, nsISelection* aSel, int16_t aReason) = 0;
+
+  NS_IMETHOD GetLocation(nsIDOMLocation * *aLocation) = 0;
+  NS_IMETHOD GetOpener(mozIDOMWindowProxy * *aOpenerWindow) = 0;
+  NS_IMETHOD GetNavigator(nsIDOMNavigator * *aNavigator) = 0;
+  NS_IMETHOD GetSelection(nsISelection * *_retval) = 0;
+  NS_IMETHOD GetFullScreen(bool *aFullScreen) = 0;
+  NS_IMETHOD GetComputedStyle(nsIDOMElement *elt, const nsAString & pseudoElt, nsIDOMCSSStyleDeclaration * *_retval) = 0;
+  NS_IMETHOD GetFrames(nsIDOMWindowCollection * *aFrames) = 0;
+  NS_IMETHOD Open(const nsAString & url, const nsAString & name, const nsAString & options, nsIDOMWindow * *_retval) = 0;
 
 protected:
   // The nsPIDOMWindow constructor. The aOuterWindow argument should

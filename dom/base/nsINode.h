@@ -2007,6 +2007,24 @@ private:
   // Boolean flags.
   uint32_t mBoolFlags;
 
+  /* Wine extention to support MSHTML node wrapping */
+  nsCOMPtr<nsISupports> mMshtmlNode;
+
+public:
+  nsresult GetMshtmlNode(nsISupports** aReturn)
+  {
+    *aReturn = mMshtmlNode;
+    if(*aReturn)
+      NS_ADDREF(*aReturn);
+    return NS_OK;
+  }
+
+  nsresult SetMshtmlNode(nsISupports* aMshtmlNode)
+  {
+    mMshtmlNode = aMshtmlNode;
+    return NS_OK;
+  }
+
 protected:
   // These references are non-owning and safe, as they are managed by
   // nsAttrAndChildArray.
@@ -2232,6 +2250,14 @@ ToCanonicalSupports(nsINode* aPointer)
   NS_IMETHOD Contains(nsIDOMNode* aOther, bool* aResult) __VA_ARGS__ override \
   { \
     return nsINode::Contains(aOther, aResult); \
+  } \
+  NS_IMETHOD GetMshtmlNode(nsISupports** aReturn) \
+  { \
+    return nsINode::GetMshtmlNode(aReturn); \
+  } \
+  NS_IMETHOD SetMshtmlNode(nsISupports* aMshtmlNode) \
+  { \
+    return nsINode::SetMshtmlNode(aMshtmlNode); \
   }
 
 #define NS_FORWARD_NSIDOMNODE_TO_NSINODE \

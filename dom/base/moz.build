@@ -89,6 +89,7 @@ EXPORTS += [
     'nsIContentInlines.h',
     'nsIContentIterator.h',
     'nsIContentSerializer.h',
+    'nsIContentUtils.h',
     'nsIDocument.h',
     'nsIDocumentInlines.h',
     'nsIDocumentObserver.h',

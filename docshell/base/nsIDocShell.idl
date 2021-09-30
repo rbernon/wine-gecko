@@ -252,6 +252,8 @@ interface nsIDocShell : nsIDocShellTreeItem
    */
   attribute boolean allowJavascript;
 
+  attribute boolean disableNoScript;
+
   /**
    * Attribute stating if refresh based redirects can be allowed
    */

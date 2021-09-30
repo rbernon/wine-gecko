@@ -1,0 +1,4 @@
+Component	ComponentId	Directory_	Attributes	Condition	KeyPath
+s72	S38	s72	i2	S255	S72
+Component	Component
+gecko	{1016EB88-0D78-41CD-91C2-1A2C98A95181}	WINEGECKODIR	@COMPATTR@		@KEYPATH@

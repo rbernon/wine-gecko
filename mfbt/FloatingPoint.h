@@ -289,7 +289,9 @@ NumberEqualsInt32(T aValue, int32_t* aInt32)
    *     (bug 744965), but as apparently it "works" in practice, it's not a
    *     pressing concern now.
    */
-  return aValue == (*aInt32 = int32_t(aValue));
+  return aValue <= INT32_MAX &&
+         aValue >= INT32_MIN &&
+         aValue == (*aInt32 = int32_t(aValue));
 }
 
 /**

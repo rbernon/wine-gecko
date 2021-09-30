@@ -4204,3 +4204,74 @@ nsCycleCollector_shutdown()
     }
   }
 }
+
+#ifdef WINE_GECKO_SRC
+
+#include "nsCOMPtr.h"
+#include <new>
+#include "nsCycleCollectionParticipant.h"
+
+struct CCObjCallback {
+    nsresult (NS_STDCALL *traverse)(nsCycleCollectionParticipant*,void*,nsCycleCollectionTraversalCallback&);
+    nsresult (NS_STDCALL *unlink)(void*);
+    void (NS_STDCALL *delete_cycle_collectable)(void*);
+};
+
+class ExternalCycleCollectionParticipant : nsXPCOMCycleCollectionParticipant {
+private:
+    const struct CCObjCallback *callbacks;
+public:
+    ExternalCycleCollectionParticipant(const CCObjCallback *cb) : callbacks(cb) {}
+
+    NS_IMETHOD Traverse(void *p, nsCycleCollectionTraversalCallback &cb) {
+        return callbacks->traverse(this, p, cb);
+    }
+
+    NS_IMETHOD_(void) Unlink(void *p) {
+        callbacks->unlink(p);
+    }
+
+    NS_IMETHOD_(void) DeleteCycleCollectable(void *n) {
+        callbacks->delete_cycle_collectable(n);
+    }
+};
+
+extern "C" {
+    nsrefcnt __declspec(dllexport) ccref_incr(nsCycleCollectingAutoRefCnt *ref, nsISupports *owner)
+    {
+        return ref->incr(owner);
+    }
+
+    nsrefcnt __declspec(dllexport) ccref_decr(nsCycleCollectingAutoRefCnt *ref, nsISupports *base,
+            nsXPCOMCycleCollectionParticipant *ccp)
+    {
+        return ref->decr(base, ccp);
+    }
+
+    void __declspec(dllexport) ccref_init(nsCycleCollectingAutoRefCnt *ref, nsrefcnt refcnt)
+    {
+        static_assert(sizeof(nsCycleCollectingAutoRefCnt) == sizeof(void*), "Unexpected nsCycleCollectingAutoRefCnt size");
+        new (ref) nsCycleCollectingAutoRefCnt(refcnt);
+    }
+
+    void __declspec(dllexport) ccp_init(nsXPCOMCycleCollectionParticipant *ccp, const CCObjCallback *callback)
+    {
+        static_assert(sizeof(ExternalCycleCollectionParticipant) == 3*sizeof(void*), "unexpected ExternalCycleCollectionParticipant size");
+        new (ccp) ExternalCycleCollectionParticipant(callback);
+    }
+
+    void __declspec(dllexport) describe_cc_node(nsCycleCollectingAutoRefCnt *ref, const char *obj_name,
+                                                nsCycleCollectionTraversalCallback *cb)
+    {
+        cb->DescribeRefCountedNode(ref->get(), obj_name);
+    }
+
+    void __declspec(dllexport) note_cc_edge(nsISupports *child, const char *name, nsCycleCollectionTraversalCallback *cb)
+    {
+        if(cb->WantDebugInfo())
+            cb->NoteNextEdgeName(name);
+        cb->NoteXPCOMChild(child);
+    }
+}
+
+#endif

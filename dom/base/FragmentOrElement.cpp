@@ -1231,6 +1231,8 @@ FragmentOrElement::FireNodeInserted(nsIDocument* aDoc,
       mozAutoSubtreeModified subtree(aDoc, aParent);
       (new AsyncEventDispatcher(childContent, mutation))->RunDOMEventWhenSafe();
     }
+
+    aDoc->BindToDocument(childContent);
   }
 }
 

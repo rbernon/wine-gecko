@@ -49,6 +49,8 @@ XPIDL_SOURCES += [
     'nsIDOMHTMLSourceElement.idl',
     'nsIDOMHTMLStyleElement.idl',
     'nsIDOMHTMLTableCellElement.idl',
+    'nsIDOMHTMLTableElement.idl',
+    'nsIDOMHTMLTableRowElement.idl',
     'nsIDOMHTMLTextAreaElement.idl',
     'nsIDOMHTMLUListElement.idl',
     'nsIDOMMediaError.idl',

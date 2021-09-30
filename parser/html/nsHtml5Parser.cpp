@@ -217,7 +217,7 @@ nsHtml5Parser::Parse(const nsAString& aSourceBuffer,
                  "Had stream parser but document.write started life cycle.");
     // This is the first document.write() on a document.open()ed document
     mExecutor->SetParser(this);
-    mTreeBuilder->setScriptingEnabled(mExecutor->IsScriptEnabled());
+    mTreeBuilder->setScriptingEnabled(mExecutor->IsNoScriptDisabled());
 
     bool isSrcdoc = false;
     nsCOMPtr<nsIChannel> channel;

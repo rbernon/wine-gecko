@@ -262,7 +262,7 @@ interface nsIHttpChannelInternal : nsISupports
      * Make cross-origin CORS loads happen with a CORS preflight, and specify
      * the CORS preflight parameters.
      */
-    [noscript, notxpcom, nostdcall]
+    [noscript, notxpcom]
     void setCorsPreflightParameters(in StringArrayRef unsafeHeaders);
 
     /**

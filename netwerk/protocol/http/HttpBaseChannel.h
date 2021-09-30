@@ -218,7 +218,7 @@ public:
   NS_IMETHOD SetRedirectMode(uint32_t aRedirectMode) override;
   NS_IMETHOD GetTopWindowURI(nsIURI **aTopWindowURI) override;
   NS_IMETHOD GetProxyURI(nsIURI **proxyURI) override;
-  virtual void SetCorsPreflightParameters(const nsTArray<nsCString>& unsafeHeaders) override;
+  NS_IMETHOD_(void) SetCorsPreflightParameters(const nsTArray<nsCString>& unsafeHeaders) override;
 
   inline void CleanRedirectCacheChainIfNecessary()
   {

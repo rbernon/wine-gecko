@@ -1,0 +1,101 @@
+
+  COMPILATION INSTRUCTIONS
+
+** Getting sources **
+
+First get required sources and extract them in a build directory. We use
+separated compilers environments for 32 and 64-bit builds (multiarch is
+not supported), so these instructions use out-of-tree builds. Note that
+we use mingw-w64 project headers and libraries (SVN version) for both
+32 and 64-bit builds. It's also important to use binutils version (at
+least) 2.23.1.
+
+$ wget http://ftp.gnu.org/gnu/binutils/binutils-2.26.tar.bz2
+$ tar -jxf binutils-2.26.tar.bz2
+$ wget http://ftp.gnu.org/gnu/gcc/gcc-5.3.0/gcc-5.3.0.tar.bz2
+$ tar -jxf gcc-5.3.0.tar.bz2
+
+SVN version of mingw-w64 is required:
+$ git clone git://git.code.sf.net/p/mingw-w64/mingw-w64 mingw-w64-git
+
+
+** 32-bit environment **
+
+* binutils
+
+$ mkdir binutils-2.26-mingw32 && cd binutils-2.23.2-mingw32
+$ ../binutils-2.26/configure --prefix=/usr/local/ --target=i686-w64-mingw32
+$ make
+# make install
+
+* mingw-w64 headers
+
+$ mkdir mingw-w64-headers32 && cd mingw-w64-headers32
+$ ../mingw-w64-git/mingw-w64-headers/configure --host=i686-w64-mingw32 --prefix=/usr/local/i686-w64-mingw32/ --enable-sdk=all --enable-secure-api --enable-idl
+# make install
+
+* GCC compiler
+
+$ mkdir gcc-5.3.0-mingw32 && cd gcc-5.3.0-mingw32
+$ ../gcc-5.3.0/configure --prefix=/usr/local/ --target=i686-w64-mingw32 --with-gnu-ld --with-gnu-as --enable-languages=c,c++ --disable-multilib
+$ make all-gcc
+# make install-gcc
+
+* mingw-w64 crt
+
+$ mkdir mingw-w64-lib32 && cd mingw-w64-lib32
+$ ../mingw-w64-git/mingw-w64-crt/configure --host=i686-w64-mingw32 --prefix=/usr/local/i686-w64-mingw32/
+$ make
+# make install
+
+* Finnishing GCC
+
+$ cd gcc-5.3.0-mingw32
+$ make
+# make install
+
+
+** 64-bit environment **
+
+* binutils
+
+$ mkdir binutils-2.26-mingw64 && cd binutils-2.26-mingw64
+$ ../binutils-2.26/configure --prefix=/usr/local/ --target=x86_64-w64-mingw32 --disable-multilib
+$ make
+# make install
+
+* mingw-w64 headers
+
+$ mkdir mingw-w64-headers64 && cd mingw-w64-headers64
+$ ../mingw-w64-git/mingw-w64-headers/configure --host=x86_64-w64-mingw32 --prefix=/usr/local/x86_64-w64-mingw32 --enable-sdk=all --enable-secure-api --enable-idl
+# make install
+
+* GCC compiler
+
+$ mkdir gcc-5.3.0-mingw64 && cd gcc-5.3.0-mingw64
+$ ../gcc-5.3.0/configure --target=x86_64-w64-mingw32 --disable-multilib --prefix=/usr/local/ --enable-languages=c,c++ --with-gnu-ld --with-gnu-as
+$ make all-gcc
+# make install-gcc
+
+* mingw-w64 crt
+
+$ mkdir mingw-w64-lib64 && cd mingw-w64-lib64
+$ ../mingw-w64-git/mingw-w64-crt/configure --host=x86_64-w64-mingw32 --prefix=/usr/local/x86_64-w64-mingw32/
+$ make
+# make install
+
+* Finishing GCC
+
+$ cd gcc-5.3.0-mingw64
+$ make
+# make install
+
+** Compiling wine_gecko **
+
+To compile Wine Gecko package simply run wine/make_package script. See 'wine/make_package --help'
+for available options. Also if you want to use parallel build, set MAKEOPTS environment variable to
+something like -j4. You may also change default build dir by setting BUILD_DIR environment variable.
+
+$ wine/make_package
+
+If all goes well, you should have a complete package in ../wine_gecko-$TARGET$DEBUG-$VERSION/dist/wine_gecko

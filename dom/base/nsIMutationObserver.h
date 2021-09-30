@@ -118,7 +118,7 @@ public:
    *       assume that this call will happen when there are script blockers on
    *       the stack.
    */
-  virtual void CharacterDataWillChange(nsIDocument *aDocument,
+  NS_IMETHOD_(void) CharacterDataWillChange(nsIDocument *aDocument,
                                        nsIContent* aContent,
                                        CharacterDataChangeInfo* aInfo) = 0;
 
@@ -140,7 +140,7 @@ public:
    *       assume that this call will happen when there are script blockers on
    *       the stack.
    */
-  virtual void CharacterDataChanged(nsIDocument *aDocument,
+  NS_IMETHOD_(void) CharacterDataChanged(nsIDocument *aDocument,
                                     nsIContent* aContent,
                                     CharacterDataChangeInfo* aInfo) = 0;
 
@@ -167,7 +167,7 @@ public:
    *       assume that this call will happen when there are script blockers on
    *       the stack.
    */
-  virtual void AttributeWillChange(nsIDocument* aDocument,
+  NS_IMETHOD_(void) AttributeWillChange(nsIDocument* aDocument,
                                    mozilla::dom::Element* aElement,
                                    int32_t      aNameSpaceID,
                                    nsIAtom*     aAttribute,
@@ -193,7 +193,7 @@ public:
    *       assume that this call will happen when there are script blockers on
    *       the stack.
    */
-  virtual void AttributeChanged(nsIDocument* aDocument,
+  NS_IMETHOD_(void) AttributeChanged(nsIDocument* aDocument,
                                 mozilla::dom::Element* aElement,
                                 int32_t      aNameSpaceID,
                                 nsIAtom*     aAttribute,
@@ -208,7 +208,7 @@ public:
    * @param aContent     Anonymous node that's been added or removed
    * @param aIsRemove    True if it's a removal, false if an addition
    */
-  virtual void NativeAnonymousChildListChange(nsIDocument* aDocument,
+  NS_IMETHOD_(void) NativeAnonymousChildListChange(nsIDocument* aDocument,
                                               nsIContent* aContent,
                                               bool aIsRemove) {}
 
@@ -221,7 +221,7 @@ public:
    * @param aNameSpaceID The namespace id of the changed attribute
    * @param aAttribute   The name of the changed attribute
    */
-  virtual void AttributeSetToCurrentValue(nsIDocument* aDocument,
+  NS_IMETHOD_(void) AttributeSetToCurrentValue(nsIDocument* aDocument,
                                           mozilla::dom::Element* aElement,
                                           int32_t aNameSpaceID,
                                           nsIAtom* aAttribute) {}
@@ -243,7 +243,7 @@ public:
    *       assume that this call will happen when there are script blockers on
    *       the stack.
    */
-  virtual void ContentAppended(nsIDocument *aDocument,
+  NS_IMETHOD_(void) ContentAppended(nsIDocument *aDocument,
                                nsIContent* aContainer,
                                nsIContent* aFirstNewContent,
                                int32_t     aNewIndexInContainer) = 0;
@@ -267,7 +267,7 @@ public:
    *       assume that this call will happen when there are script blockers on
    *       the stack.
    */
-  virtual void ContentInserted(nsIDocument *aDocument,
+  NS_IMETHOD_(void) ContentInserted(nsIDocument *aDocument,
                                nsIContent* aContainer,
                                nsIContent* aChild,
                                int32_t aIndexInContainer) = 0;
@@ -294,7 +294,7 @@ public:
    *       assume that this call will happen when there are script blockers on
    *       the stack.
    */
-  virtual void ContentRemoved(nsIDocument *aDocument,
+  NS_IMETHOD_(void) ContentRemoved(nsIDocument *aDocument,
                               nsIContent* aContainer,
                               nsIContent* aChild,
                               int32_t aIndexInContainer,
@@ -317,7 +317,7 @@ public:
    *       the observer.  The observer is responsible for making sure it
    *       stays alive for the duration of the call as needed.
    */
-  virtual void NodeWillBeDestroyed(const nsINode *aNode) = 0;
+  NS_IMETHOD_(void) NodeWillBeDestroyed(const nsINode *aNode) = 0;
 
   /**
    * Notification that the node's parent chain has changed. This
@@ -335,23 +335,23 @@ public:
    *       stays alive for the duration of the call as needed.
    */
 
-  virtual void ParentChainChanged(nsIContent *aContent) = 0;
+  NS_IMETHOD_(void) ParentChainChanged(nsIContent *aContent) = 0;
 };
 
 NS_DEFINE_STATIC_IID_ACCESSOR(nsIMutationObserver, NS_IMUTATION_OBSERVER_IID)
 
 #define NS_DECL_NSIMUTATIONOBSERVER_CHARACTERDATAWILLCHANGE                  \
-    virtual void CharacterDataWillChange(nsIDocument* aDocument,             \
+    NS_IMETHOD_(void) CharacterDataWillChange(nsIDocument* aDocument,        \
                                          nsIContent* aContent,               \
                                          CharacterDataChangeInfo* aInfo) override;
 
 #define NS_DECL_NSIMUTATIONOBSERVER_CHARACTERDATACHANGED                     \
-    virtual void CharacterDataChanged(nsIDocument* aDocument,                \
+  NS_IMETHOD_(void) CharacterDataChanged(nsIDocument* aDocument,        \
                                       nsIContent* aContent,                  \
                                       CharacterDataChangeInfo* aInfo) override;
 
 #define NS_DECL_NSIMUTATIONOBSERVER_ATTRIBUTEWILLCHANGE                      \
-    virtual void AttributeWillChange(nsIDocument* aDocument,                 \
+  NS_IMETHOD_(void) AttributeWillChange(nsIDocument* aDocument,         \
                                      mozilla::dom::Element* aElement,        \
                                      int32_t aNameSpaceID,                   \
                                      nsIAtom* aAttribute,                    \
@@ -359,12 +359,12 @@ NS_DEFINE_STATIC_IID_ACCESSOR(nsIMutationObserver, NS_IMUTATION_OBSERVER_IID)
                                      const nsAttrValue* aNewValue) override;
 
 #define NS_DECL_NSIMUTATIONOBSERVER_NATIVEANONYMOUSCHILDLISTCHANGE           \
-    virtual void NativeAnonymousChildListChange(nsIDocument* aDocument,      \
+    NS_IMETHOD_(void) NativeAnonymousChildListChange(nsIDocument* aDocument,      \
                                                 nsIContent* aContent,        \
                                                 bool aIsRemove) override;
 
 #define NS_DECL_NSIMUTATIONOBSERVER_ATTRIBUTECHANGED                         \
-    virtual void AttributeChanged(nsIDocument* aDocument,                    \
+  NS_IMETHOD_(void) AttributeChanged(nsIDocument* aDocument,            \
                                   mozilla::dom::Element* aElement,           \
                                   int32_t aNameSpaceID,                      \
                                   nsIAtom* aAttribute,                       \
@@ -372,29 +372,29 @@ NS_DEFINE_STATIC_IID_ACCESSOR(nsIMutationObserver, NS_IMUTATION_OBSERVER_IID)
                                   const nsAttrValue* aOldValue) override;
 
 #define NS_DECL_NSIMUTATIONOBSERVER_CONTENTAPPENDED                          \
-    virtual void ContentAppended(nsIDocument* aDocument,                     \
+  NS_IMETHOD_(void) ContentAppended(nsIDocument* aDocument,             \
                                  nsIContent* aContainer,                     \
                                  nsIContent* aFirstNewContent,               \
                                  int32_t aNewIndexInContainer) override;
 
 #define NS_DECL_NSIMUTATIONOBSERVER_CONTENTINSERTED                          \
-    virtual void ContentInserted(nsIDocument* aDocument,                     \
+  NS_IMETHOD_(void) ContentInserted(nsIDocument* aDocument,             \
                                  nsIContent* aContainer,                     \
                                  nsIContent* aChild,                         \
                                  int32_t aIndexInContainer) override;
 
 #define NS_DECL_NSIMUTATIONOBSERVER_CONTENTREMOVED                           \
-    virtual void ContentRemoved(nsIDocument* aDocument,                      \
+  NS_IMETHOD_(void) ContentRemoved(nsIDocument* aDocument,              \
                                 nsIContent* aContainer,                      \
                                 nsIContent* aChild,                          \
                                 int32_t aIndexInContainer,                   \
                                 nsIContent* aPreviousSibling) override;
 
 #define NS_DECL_NSIMUTATIONOBSERVER_NODEWILLBEDESTROYED                      \
-    virtual void NodeWillBeDestroyed(const nsINode* aNode) override;
+  NS_IMETHOD_(void) NodeWillBeDestroyed(const nsINode* aNode) override;
 
 #define NS_DECL_NSIMUTATIONOBSERVER_PARENTCHAINCHANGED                       \
-    virtual void ParentChainChanged(nsIContent *aContent) override;
+  NS_IMETHOD_(void) ParentChainChanged(nsIContent *aContent) override;
 
 #define NS_DECL_NSIMUTATIONOBSERVER                                          \
     NS_DECL_NSIMUTATIONOBSERVER_CHARACTERDATAWILLCHANGE                      \

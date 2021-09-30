@@ -141,3 +141,13 @@ nsScriptElement::MaybeProcessScript()
   RefPtr<nsScriptLoader> loader = ownerDoc->ScriptLoader();
   return loader->ProcessScriptElement(this);
 }
+
+#ifdef WINE_GECKO_SRC
+void
+nsIScriptElement::PropagateAttemptToExecute(bool &aBlock)
+{
+  nsCOMPtr<nsIContent> cont = do_QueryInterface(this);
+  nsCOMPtr<nsIParser> parser = GetCreatorParser();
+  cont->OwnerDoc()->AttemptToExecuteScript(cont, parser, &aBlock);
+}
+#endif

@@ -327,8 +327,9 @@ NS_IMPL_ADDREF_INHERITED(HTMLTableElement, Element)
 NS_IMPL_RELEASE_INHERITED(HTMLTableElement, Element)
 
 // QueryInterface implementation for HTMLTableElement
-NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION_INHERITED(HTMLTableElement)
-NS_INTERFACE_MAP_END_INHERITING(nsGenericHTMLElement)
+NS_INTERFACE_TABLE_HEAD_CYCLE_COLLECTION_INHERITED(HTMLTableElement)
+  NS_INTERFACE_TABLE_INHERITED(HTMLTableElement, nsIDOMHTMLTableElement)
+NS_INTERFACE_TABLE_TAIL_INHERITING(nsGenericHTMLElement)
 
 
 NS_IMPL_ELEMENT_CLONE(HTMLTableElement)
@@ -974,6 +975,296 @@ HTMLTableElement::AfterSetAttr(int32_t aNameSpaceID, nsIAtom* aName,
   }
   return nsGenericHTMLElement::AfterSetAttr(aNameSpaceID, aName, aValue,
                                             aNotify);
+}
+
+NS_IMETHODIMP
+HTMLTableElement::SetAlign(const nsAString& aAlign)
+{
+  ErrorResult rv;
+  SetAlign(aAlign, rv);
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+HTMLTableElement::GetAlign(nsAString& aAlign)
+{
+  DOMString align;
+  GetAlign(align);
+  align.ToString(aAlign);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+HTMLTableElement::SetBgColor(const nsAString& aBgColor)
+{
+  ErrorResult rv;
+  SetBgColor(aBgColor, rv);
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+HTMLTableElement::GetBgColor(nsAString& aBgColor)
+{
+  DOMString bgColor;
+  GetBgColor(bgColor);
+  bgColor.ToString(aBgColor);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+HTMLTableElement::SetBorder(const nsAString& aBorder)
+{
+  ErrorResult rv;
+  SetBorder(aBorder, rv);
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+HTMLTableElement::GetBorder(nsAString& aBorder)
+{
+  DOMString border;
+  GetBorder(border);
+  border.ToString(aBorder);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+HTMLTableElement::SetCellPadding(const nsAString& aCellPadding)
+{
+  ErrorResult rv;
+  SetCellPadding(aCellPadding, rv);
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+HTMLTableElement::GetCellPadding(nsAString& aCellPadding)
+{
+  DOMString cellPadding;
+  GetCellPadding(cellPadding);
+  cellPadding.ToString(aCellPadding);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+HTMLTableElement::SetCellSpacing(const nsAString& aCellSpacing)
+{
+  ErrorResult rv;
+  SetCellSpacing(aCellSpacing, rv);
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+HTMLTableElement::GetCellSpacing(nsAString& aCellSpacing)
+{
+  DOMString cellSpacing;
+  GetCellSpacing(cellSpacing);
+  cellSpacing.ToString(aCellSpacing);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+HTMLTableElement::SetFrame(const nsAString& aFrame)
+{
+  ErrorResult rv;
+  SetFrame(aFrame, rv);
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+HTMLTableElement::GetFrame(nsAString& aFrame)
+{
+  DOMString frame;
+  GetFrame(frame);
+  frame.ToString(aFrame);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+HTMLTableElement::SetRules(const nsAString& aRules)
+{
+  ErrorResult rv;
+  SetRules(aRules, rv);
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+HTMLTableElement::GetRules(nsAString& aRules)
+{
+  DOMString rules;
+  GetRules(rules);
+  rules.ToString(aRules);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+HTMLTableElement::SetSummary(const nsAString& aSummary)
+{
+  ErrorResult rv;
+  SetSummary(aSummary, rv);
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+HTMLTableElement::GetSummary(nsAString& aSummary)
+{
+  DOMString summary;
+  GetSummary(summary);
+  summary.ToString(aSummary);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+HTMLTableElement::SetWidth(const nsAString& aWidth)
+{
+  ErrorResult rv;
+  SetWidth(aWidth, rv);
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+HTMLTableElement::GetWidth(nsAString& aWidth)
+{
+  DOMString width;
+  GetWidth(width);
+  width.ToString(aWidth);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+HTMLTableElement::GetCaption(nsIDOMHTMLElement** aValue)
+{
+  nsCOMPtr<nsIDOMHTMLElement> caption = GetCaption();
+  caption.forget(aValue);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+HTMLTableElement::SetCaption(nsIDOMHTMLElement* aValue)
+{
+  HTMLTableCaptionElement* caption =
+    static_cast<HTMLTableCaptionElement*>(aValue);
+  SetCaption(caption);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+HTMLTableElement::GetTHead(nsIDOMHTMLElement** aValue)
+{
+  NS_IF_ADDREF(*aValue = GetTHead());
+
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+HTMLTableElement::SetTHead(nsIDOMHTMLElement* aValue)
+{
+  HTMLTableSectionElement* section =
+    static_cast<HTMLTableSectionElement*>(aValue);
+  ErrorResult rv;
+  SetTHead(section, rv);
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+HTMLTableElement::GetTFoot(nsIDOMHTMLElement** aValue)
+{
+  NS_IF_ADDREF(*aValue = GetTFoot());
+
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+HTMLTableElement::SetTFoot(nsIDOMHTMLElement* aValue)
+{
+  HTMLTableSectionElement* section =
+    static_cast<HTMLTableSectionElement*>(aValue);
+  ErrorResult rv;
+  SetTFoot(section, rv);
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+HTMLTableElement::GetRows(nsIDOMHTMLCollection** aValue)
+{
+  NS_ADDREF(*aValue = Rows());
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+HTMLTableElement::GetTBodies(nsIDOMHTMLCollection** aValue)
+{
+  NS_ADDREF(*aValue = TBodies());
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+HTMLTableElement::CreateTHead(nsIDOMHTMLElement** aValue)
+{
+  RefPtr<nsGenericHTMLElement> thead = CreateTHead();
+  if(!thead) {
+    *aValue = nullptr;
+    return NS_OK;
+  }
+  return CallQueryInterface(thead, aValue);
+}
+
+NS_IMETHODIMP
+HTMLTableElement::xpidlDeleteTHead()
+{
+  DeleteTHead();
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+HTMLTableElement::CreateTFoot(nsIDOMHTMLElement** aValue)
+{
+  RefPtr<nsGenericHTMLElement> tfoot = CreateTFoot();
+  if(!tfoot) {
+    *aValue = nullptr;
+    return NS_OK;
+  }
+  return CallQueryInterface(tfoot, aValue);
+}
+
+NS_IMETHODIMP
+HTMLTableElement::xpidlDeleteTFoot()
+{
+  DeleteTFoot();
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+HTMLTableElement::CreateCaption(nsIDOMHTMLElement** aValue)
+{
+  RefPtr<nsGenericHTMLElement> caption = CreateCaption();
+  if(!caption) {
+    *aValue = nullptr;
+    return NS_OK;
+  }
+  return CallQueryInterface(caption, aValue);
+}
+
+NS_IMETHODIMP
+HTMLTableElement::xpidlDeleteCaption()
+{
+  DeleteCaption();
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+HTMLTableElement::InsertRow(int32_t aIndex, nsIDOMHTMLElement** aValue)
+{
+  ErrorResult rv;
+  RefPtr<nsGenericHTMLElement> newRow = InsertRow(aIndex, rv);
+  return rv.Failed() ? rv.StealNSResult() : CallQueryInterface(newRow, aValue);
+}
+
+NS_IMETHODIMP
+HTMLTableElement::DeleteRow(int32_t aValue)
+{
+  ErrorResult rv;
+  DeleteRow(aValue, rv);
+  return rv.StealNSResult();
 }
 
 } // namespace dom

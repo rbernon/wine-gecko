@@ -972,7 +972,7 @@ public:
   /**
    * Notify that a content node's state has changed
    */
-  virtual void ContentStateChanged(nsIDocument* aDocument,
+  NS_IMETHOD_(void) ContentStateChanged(nsIDocument* aDocument,
                                    nsIContent* aContent,
                                    mozilla::EventStates aStateMask) = 0;
 

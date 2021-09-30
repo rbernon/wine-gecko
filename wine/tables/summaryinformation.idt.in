@@ -1,0 +1,16 @@
+PropertyId	Value
+i2	l255
+_SummaryInformation	PropertyId
+1	1252
+2	Wine Gecko @VERSION@ Installation Database
+3	Wine Gecko @VERSION@
+4	The Wine Project
+5	Installer, Wine, Gecko, MSHTML
+6	This installer database contains the logic and data required to install Wine Gecko @VERSION@.
+7	@TARGETCPU@
+9	{E3D28B79-BE3B-49B6-9781-021FAD856F54}
+12	@DATETIME@
+14	200
+15	2
+18	winemsibuilder
+19	2

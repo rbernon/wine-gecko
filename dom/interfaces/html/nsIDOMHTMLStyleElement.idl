@@ -24,4 +24,6 @@ interface nsIDOMHTMLStyleElement : nsISupports
            attribute DOMString        media;
            attribute DOMString        type;
            attribute boolean          scoped;
+
+  [noscript] readonly attribute nsIDOMStyleSheet DOMStyleSheet;
 };

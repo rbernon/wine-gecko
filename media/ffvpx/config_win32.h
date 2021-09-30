@@ -182,7 +182,11 @@
 #define HAVE_ATOMIC_COMPARE_EXCHANGE 0
 #define HAVE_MACHINE_RW_BARRIER 0
 #define HAVE_MEMORYBARRIER 1
+#ifdef __GNUC__
+#define HAVE_MM_EMPTY 0
+#else
 #define HAVE_MM_EMPTY 1
+#endif
 #define HAVE_RDTSC 1
 #define HAVE_SARESTART 0
 #define HAVE_SYNC_VAL_COMPARE_AND_SWAP 0
@@ -206,7 +210,9 @@
 #define HAVE_DEV_VIDEO_BKTR_IOCTL_BT848_H 0
 #define HAVE_DEV_VIDEO_METEOR_IOCTL_METEOR_H 0
 #define HAVE_DIRECT_H 1
+#ifndef HAVE_DIRENT_H
 #define HAVE_DIRENT_H 0
+#endif
 #define HAVE_DLFCN_H 0
 #define HAVE_D3D11_H 1
 #define HAVE_DXVA_H 1
@@ -234,7 +240,9 @@
 #define HAVE_SYS_VIDEOIO_H 0
 #define HAVE_TERMIOS_H 0
 #define HAVE_UDPLITE_H 0
+#ifndef HAVE_UNISTD_H
 #define HAVE_UNISTD_H 0
+#endif
 #define HAVE_VALGRIND_VALGRIND_H 0
 #define HAVE_WINDOWS_H 1
 #define HAVE_WINSOCK2_H 1
@@ -360,7 +368,11 @@
 #define HAVE_DOS_PATHS 1
 #define HAVE_DXVA2_LIB 0
 #define HAVE_DXVA2API_COBJ 1
+#ifdef __GNUC__
+#define HAVE_LIBC_MSVCRT 0
+#else
 #define HAVE_LIBC_MSVCRT 1
+#endif
 #define HAVE_LIBDC1394_1 0
 #define HAVE_LIBDC1394_2 0
 #define HAVE_MAKEINFO 1

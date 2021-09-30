@@ -1,0 +1,365 @@
+#!/bin/bash
+
+set -e
+
+case x"$1" in
+x-h|x--help|xhelp)
+    echo "Usage: wine/make_package [-dbg] [-win32] [-win64] [--no-build] [--force-build] [--package-only] [--msi-package] [--tar-package] [--no-package] [--disable-strip] [--unstripped]"
+    exit 0
+    ;;
+esac
+
+if [ ! -e client.mk ]
+then
+    echo "Script must be ran from top source directory"
+    exit 1
+fi
+
+target=i686-w64-mingw32
+target_abi=win32
+target_arch=x86
+pkg_type=msi
+do_strip=yes
+unstripped_package=no
+no_xulinstaller=no
+
+while [ "$1" != "" ]
+do
+    case $1 in
+    -dbg)
+        debug="-dbg"
+        pkg_type=tar
+        do_strip=no
+        ;;
+    -win32)
+        target=i686-w64-mingw32
+        target_abi=win32
+        target_arch=x86
+        ;;
+    -win64)
+        target=x86_64-w64-mingw32
+        target_abi=win64
+        target_arch=x86_64
+        ;;
+    --no-build)
+        no_build=yes
+        ;;
+    --force-build)
+        force_build=yes
+        ;;
+    --package-only)
+        no_build=yes
+        no_xulinstaller=yes
+        ;;
+    --msi-package)
+        pkg_type=msi
+        ;;
+    --tar-package)
+        pkg_type=tar
+        ;;
+    --no-package)
+        pkg_type=none
+        ;;
+    --disable-strip)
+        do_strip=no
+        ;;
+    --unstripped)
+        unstripped_package=yes
+        pkg_type=tar
+        ;;
+    *)
+        echo "make_package: Unknown option: $1"
+        exit 1
+        ;;
+    esac
+    shift
+done
+
+src_dir=$(pwd)
+version=$(head -n 1 $src_dir/wine/VERSION)
+dist_basename=wine_gecko-$version-$target_arch$debug
+
+if [ "$OS" = "Windows_NT" ]; then
+    package_basename=${dist_basename}-msvc
+else
+    package_basename=${dist_basename}
+fi
+
+if [ "$BUILD_DIR" = "" ]; then
+    build_dir=$src_dir/../$dist_basename
+else
+    build_dir="$BUILD_DIR"
+fi
+
+if [ "$force_build" = "yes" ]
+then
+    echo "make_package: Removing build directory..."
+    rm -rf $build_dir
+fi
+
+if [ "$no_build" != "yes" ]
+then
+    echo "make_package: Building firefox..."
+
+    config_file="$(mktemp)"
+
+    mkdir -p $build_dir
+
+    case $OS in
+        Windows_NT)
+            build_dir="$(cd $build_dir && pwd -W)"
+            ;;
+        *)
+            echo export CROSS_COMPILE=1 >>$config_file
+            echo "ac_add_options --target=$target" >>$config_file
+            ;;
+    esac
+
+    echo "mk_add_options MOZ_OBJDIR=\"$build_dir\"" >>$config_file
+    echo "mk_add_options MOZ_MAKE_FLAGS=\"$MAKEOPTS\"" >>$config_file
+
+    if [ "$debug" = "" ]
+    then
+        echo "ac_add_options --disable-debug" >>$config_file
+        echo "ac_add_options --enable-optimize" >>$config_file
+    else
+        echo "ac_add_options --enable-debug" >>$config_file
+        echo "ac_add_options --disable-optimize" >>$config_file
+    fi
+
+    if [ "$do_strip" = "no" ]
+    then
+        echo "ac_add_options --disable-install-strip" >>$config_file
+    fi
+
+    cat wine/mozconfig-common >>$config_file
+
+    if cmp -s $config_file $build_dir/mozconfig; then
+        echo "mozconfig is unchanged"
+        rm -f $config_file
+    else
+        mv $config_file $build_dir/mozconfig
+        MOZCONFIG=$build_dir/mozconfig ./mach configure
+    fi
+
+    MOZCONFIG=$build_dir/mozconfig ./mach build
+fi
+
+echo "make_package: Preparing Wine Gecko files..."
+rm -rf $build_dir/dist/wine_gecko
+
+if [ "$no_xulinstaller" != "yes" ]
+then
+    MOZCONFIG=$build_dir/mozconfig ./mach build browser/installer
+fi
+
+cp -r $build_dir/dist/firefox $build_dir/dist/wine_gecko
+echo -n "Wine Gecko $version" > $build_dir/dist/wine_gecko/VERSION
+
+while read -r f; do
+    rm -f $build_dir/dist/wine_gecko/$f
+done <wine/remove-files.txt
+
+# This is hackish, but this allows us to prepare both stripped
+# and unstripped packages from the same build.
+if [ "$unstripped_package" = "yes" -a "$do_strip" = "yes" ]
+then
+    cd $build_dir/dist/wine_gecko
+    for f in *.dll; do
+        cp ../bin/$f $f
+    done
+    package_basename=$package_basename-unstripped
+fi
+
+case $pkg_type in
+msi)
+    echo "make_package: Creating MSI file..."
+
+    msi_dir=$build_dir/dist/msi
+    rm -rf $msi_dir
+    mkdir $msi_dir
+
+    cd $build_dir/dist
+
+    datetime=`date "+%Y\/%m\/%d %k:%m:%S"`
+    keypath=`find wine_gecko -mindepth 1 -maxdepth 1 -type f | sort | head -1 | cut -d'/' -f2- | sed -e "s/\//!/g"`
+    cabfile=winegecko.cab
+
+    if [ "$target_abi" = "win64" ]
+    then
+        msi_sysdir=System64Folder
+        msi_productname="Wine Gecko (64-bit)"
+        msi_targetcpu="x64;0"
+        msi_productcode=$(head -n 3 $src_dir/wine/VERSION |tail -n 1)
+        msi_compattr="256"
+    else
+        msi_sysdir=SystemFolder
+        msi_productname="Wine Gecko (32-bit)"
+        msi_targetcpu="Intel;0"
+        msi_productcode=$(head -n 2 $src_dir/wine/VERSION |tail -n 1)
+        msi_compattr="0"
+    fi
+
+    mkdir $msi_dir/tables
+    for f in $src_dir/wine/tables/*.in
+    do
+        filename=$(basename $f)
+        cat $src_dir/wine/tables/$filename \
+            |sed -e "s/@VERSION@/$version/g" \
+            |sed -e "s/@KEYPATH@/$keypath/g" \
+            |sed -e "s/@DATETIME@/$datetime/g" \
+            |sed -e "s/@SYSTEMFOLDER@/$msi_sysdir/g" \
+            |sed -e "s/@PRODUCTCODE@/$msi_productcode/g" \
+            |sed -e "s/@PRODUCTNAME@/$msi_productname/g" \
+            |sed -e "s/@TARGETCPU@/$msi_targetcpu/g" \
+            |sed -e "s/@COMPATTR@/$msi_compattr/g" \
+            > $msi_dir/tables/$(echo $filename | sed 's/.in$//')
+    done
+
+    msi_tmp=`mktemp`
+
+    process_dirs()
+    {
+        depth=$1
+        find wine_gecko -mindepth $depth -maxdepth $depth -type d | sort > $msi_tmp
+
+        if [ ! -s $msi_tmp ]; then
+            return
+        fi
+
+        for d in `cat $msi_tmp`;
+        do
+            key=`echo $d | cut -d'/' -f2- | sed -e "s/\//|/g"`
+            guid=`uuidgen | tr [a-z] [A-Z]`
+
+            keypath=`find $d -mindepth 1 -maxdepth 1 -type f | sort | head -1 | cut -d'/' -f2- | sed -e "s/\//!/g"`
+            if [ "x$keypath" != "x" ]; then
+                echo -e $key\\t\{$guid\}\\t$key\\t0\\t\\t$keypath >>$msi_dir/tables/component.idt
+            fi
+
+            if [ $depth = "1" ]; then
+                parent=WINEGECKODIR
+            else
+                parent=`dirname $d | cut -d '/' -f2- | sed -e "s/\//|/g"`
+            fi
+            default=`basename $d`
+            echo -e $key\\t$parent\\t$default >>$msi_dir/tables/directory.idt
+        done
+
+        depth=`expr $depth + 1`
+        process_dirs $depth
+    }
+
+    process_dirs 1
+
+    find wine_gecko -mindepth 1 -type d | sort > $msi_tmp
+
+    for d in `cat $msi_tmp`;
+    do
+        component=`echo $d | cut -d '/' -f2- | sed -e "s/\//|/g"`
+        hasfile=`find $d -mindepth 1 -maxdepth 1 -type f`
+        if [ "x$hasfile" != "x" ]; then
+            echo -e wine_gecko\\t$component >> $msi_dir/tables/featurecomponents.idt
+        fi
+    done
+
+    find wine_gecko -type f | sort > $msi_tmp
+
+    sequence=1
+    for f in `cat $msi_tmp`;
+    do
+        key=`echo $f | cut -d '/' -f2- | sed -e "s/\//!/g"`
+        basename=`basename $f`
+        dirname=`dirname $f`
+        if [ $dirname = wine_gecko ];
+        then
+            component=gecko
+        else
+            component=`echo $dirname | cut -d '/' -f2- | sed -e "s/\//|/g"`
+        fi
+        filesize=`ls -l $f | awk '{ print $5 }'`
+        echo -e $key\\t$component\\t$basename\\t$filesize\\t\\t\\t\\t$sequence >> $msi_dir/tables/file.idt
+        sequence=`expr $sequence + 1`
+    done
+
+    find wine_gecko -type f -print | sort > $msi_tmp
+
+    mkdir $msi_dir/files
+    for f in `cat $msi_tmp`;
+    do
+        key=`echo $f | cut -d '/' -f2- | sed -e "s/\//!/g"`
+        ln -s ../../$f $msi_dir/files/$key
+    done
+
+    num_files=`find wine_gecko -type f | wc -l`
+    echo -e 1\\t$num_files\\t\\t\#$cabfile\\t\\t >> $msi_dir/tables/media.idt
+
+    rm -f $msi_tmp
+
+    if test -z "$WINE_BUILD_DIR"
+    then
+        WINE=wine
+        WINESERVER=wineserver
+    else
+        WINE=$WINE_BUILD_DIR/wine
+        WINESERVER=$WINE_BUILD_DIR/server/wineserver
+    fi
+
+    if test -z "$WINEPREFIX"
+    then
+        tmp_wineprefix=`mktemp -d`
+        export WINEDLLOVERRIDES=mshtml=
+        export WINEPREFIX=$tmp_wineprefix
+    fi
+
+    rm -f $cabfile $package_basename.msi
+
+    $WINE cabarc.exe -r -m mszip N $cabfile msi/files
+
+    $WINE winemsibuilder -i $package_basename.msi msi/tables/*
+    $WINE winemsibuilder -a $package_basename.msi $cabfile $cabfile
+
+    if test -n "$tmp_wineprefix"
+    then
+        $WINESERVER -k
+        rm -rf $tmp_wineprefix
+    fi
+
+    echo Package done:
+    echo $(pwd)/$package_basename.msi
+    ;;
+tar)
+    echo "make_package: Creating .tar.bz2 archive..."
+
+    cd $build_dir/dist
+
+    tar -cjf $package_basename.tar.bz2 wine_gecko
+
+    echo Package done:
+    echo $(pwd)/$package_basename.tar.bz2
+
+    if [ "$debug" = "-dbg" ] && [ "$OS" = "Windows_NT" ]
+    then
+        echo "make_package: Creating .tar.bz2 PDB package..."
+        pdb_list="$(mktemp)"
+
+        # We need to recreate the same file system structure under C:\ for the pdb's to work:
+        # $build_dir has relative paths, we need an exact path:
+        cd $build_dir
+        build_path="$(pwd)"
+        build_sub_path=${build_path/\/c/${build_path}\/dist\/drive_c\/}
+
+        rm -rf $build_path/dist/drive_c/
+        mkdir -p $build_sub_path
+
+        for x in `find $build_path/dist/wine_gecko/ -iname \*.dll` ; do y=`basename $x .dll` ; find . -iname $y.pdb >> ${pdb_list} ; done
+        for x in `find $build_path/dist/wine_gecko/ -iname \*.exe` ; do y=`basename $x .exe` ; find . -iname $y.pdb >> ${pdb_list} ; done
+
+        tar -cf - `cat $pdb_list` | tar xf - -C $build_sub_path
+        tar -cjf $build_path/dist/${package_basename}-pdb.tar.bz2 -C $build_path/dist/drive_c/ $dist_basename
+        rm -rf $pdb_list $build_path/dist/drive_c
+        echo PDB package done:
+        echo $build_path/dist/${package_basename}-pdb.tar.bz2
+	fi
+    ;;
+esac

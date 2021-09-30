@@ -598,6 +598,18 @@ nsHtml5TreeOpExecutor::IsScriptEnabled()
            ScriptAllowed(globalObject->GetGlobalJSObject());
 }
 
+bool
+nsHtml5TreeOpExecutor::IsNoScriptDisabled()
+{
+  if (!mDocShell)
+    return true;
+  bool disabled = true;
+  mDocShell->GetDisableNoScript(&disabled);
+  if (disabled)
+    return true;
+  return IsScriptEnabled();
+}
+
 void
 nsHtml5TreeOpExecutor::StartLayout() {
   if (mLayoutStarted || !mDocument) {

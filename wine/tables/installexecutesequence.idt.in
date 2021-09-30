@@ -1,0 +1,18 @@
+Action	Condition	Sequence
+s72	S255	I2
+InstallExecuteSequence	Action
+CostInitialize		100
+FileCost		200
+CostFinalize		300
+InstallValidate		400
+InstallInitialize		500
+ProcessComponents		600
+RemoveFiles		700
+InstallFiles		800
+RemoveRegistryValues		900
+WriteRegistryValues		1000
+PublishFeatures		1100
+PublishProduct		1200
+RegisterProduct		1300
+RegisterUser		1400
+InstallFinalize		1500

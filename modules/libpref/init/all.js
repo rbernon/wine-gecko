@@ -4286,7 +4286,7 @@ pref("gl.multithreaded", true);
 #endif
 
 pref("webgl.force-enabled", false);
-pref("webgl.disabled", false);
+pref("webgl.disabled", true);
 pref("webgl.disable-angle", false);
 pref("webgl.min_capability_mode", false);
 pref("webgl.disable-extensions", false);
@@ -4322,7 +4322,7 @@ pref("webgl.renderer-string-override", "");
 pref("webgl.vendor-string-override", "");
 
 #ifdef XP_WIN
-pref("webgl.angle.try-d3d11", true);
+pref("webgl.angle.try-d3d11", false);
 pref("webgl.angle.force-d3d11", false);
 pref("webgl.angle.force-warp", false);
 pref("webgl.dxgl.enabled", false);
@@ -4360,7 +4360,7 @@ pref("network.tcp.keepalive.probe_count", 4);
 #endif
 
 // Whether to disable acceleration for all widgets.
-pref("layers.acceleration.disabled", false);
+pref("layers.acceleration.disabled", true);
 // Preference that when switched at runtime will run a series of benchmarks
 // and output the result to stderr.
 pref("layers.bench.enabled", false);
@@ -4469,7 +4469,7 @@ pref("gfx.xrender.enabled",false);
 pref("gfx.content.use-native-pushlayer", true);
 
 // Whether to disable the automatic detection and use of direct2d.
-pref("gfx.direct2d.disabled", false);
+pref("gfx.direct2d.disabled", true);
 
 // Whether to attempt to enable Direct2D regardless of automatic detection or
 // blacklisting
@@ -4478,7 +4478,7 @@ pref("gfx.direct2d.force-enabled", false);
 pref("layers.prefer-opengl", false);
 pref("layers.prefer-d3d9", false);
 pref("layers.d3d11.force-warp", false);
-pref("layers.d3d11.disable-warp", false);
+pref("layers.d3d11.disable-warp", true);
 #endif
 
 // Force all possible layers to be always active layers

@@ -81,6 +81,8 @@ using mozilla::net::CaptivePortalService;
 
 #define MAX_RECURSION_COUNT 50
 
+#define NS_SUCCESS_DEFAULT_ACTION NS_ERROR_GENERATE_SUCCESS(NS_ERROR_MODULE_NETWORK, 66)
+
 nsIOService* gIOService = nullptr;
 static bool gHasWarnedUploadChannel2;
 
@@ -556,6 +558,8 @@ nsIOService::GetProtocolHandler(const char* scheme, nsIProtocolHandler* *result)
                         result);
     if (NS_FAILED(rv))
         return NS_ERROR_UNKNOWN_PROTOCOL;
+    if (mHook)
+        return mHook->GetProtocolHandler(*result, result);
 
     return rv;
 }
@@ -599,6 +603,12 @@ nsresult
 nsIOService::NewURI(const nsACString &aSpec, const char *aCharset, nsIURI *aBaseURI, nsIURI **result)
 {
     NS_ASSERTION(NS_IsMainThread(), "wrong thread");
+
+    if (mHook) {
+        nsresult rv = mHook->NewURI(aSpec, aCharset, aBaseURI, result);
+        if (rv != NS_SUCCESS_DEFAULT_ACTION)
+            return rv;
+    }
 
     static uint32_t recursionCount = 0;
     if (recursionCount >= MAX_RECURSION_COUNT)
@@ -706,6 +716,12 @@ nsIOService::NewChannelFromURIWithProxyFlagsInternal(nsIURI* aURI,
 {
     nsresult rv;
     NS_ENSURE_ARG_POINTER(aURI);
+
+    if (mHook) {
+        rv = mHook->NewChannel(aURI, aLoadInfo, result);
+        if (rv != NS_SUCCESS_DEFAULT_ACTION)
+            return rv;
+    }
 
     nsAutoCString scheme;
     rv = aURI->GetScheme(scheme);
@@ -1542,6 +1558,12 @@ nsIOService::ProtocolHasFlags(nsIURI   *uri,
 {
     NS_ENSURE_ARG(uri);
 
+    if(mHook) {
+        nsresult rv = mHook->ProtocolHasFlags(uri, flags, result);
+        if(rv != NS_SUCCESS_DEFAULT_ACTION)
+            return rv;
+    }
+
     *result = false;
     nsAutoCString scheme;
     nsresult rv = uri->GetScheme(scheme);
@@ -1564,6 +1586,12 @@ nsIOService::URIChainHasFlags(nsIURI   *uri,
                               uint32_t  flags,
                               bool     *result)
 {
+    if(mHook) {
+        nsresult rv = mHook->URIChainHasFlags(uri, flags, result);
+        if(rv != NS_SUCCESS_DEFAULT_ACTION)
+            return rv;
+    }
+
     nsresult rv = ProtocolHasFlags(uri, flags, result);
     NS_ENSURE_SUCCESS(rv, rv);
 
@@ -2067,5 +2095,12 @@ nsIOService::IsAppOffline(uint32_t aAppId, bool* aResult)
         }
     }
 
+    return NS_OK;
+}
+
+NS_IMETHODIMP
+nsIOService::SetHook(nsIIOServiceHook *aHook)
+{
+    mHook = aHook;
     return NS_OK;
 }

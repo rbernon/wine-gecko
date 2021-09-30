@@ -13,6 +13,7 @@
 
 class nsIContent;
 class nsIDocument;
+class nsIParser;
 
 namespace mozilla {
 namespace css {
@@ -40,26 +41,26 @@ public:
    * Notify that a content model update is beginning. This call can be
    * nested.
    */
-  virtual void BeginUpdate(nsIDocument *aDocument,
+  NS_IMETHOD_(void) BeginUpdate(nsIDocument *aDocument,
                            nsUpdateType aUpdateType) = 0;
 
   /**
    * Notify that a content model update is finished. This call can be
    * nested.
    */
-  virtual void EndUpdate(nsIDocument *aDocument, nsUpdateType aUpdateType) = 0;
+  NS_IMETHOD_(void) EndUpdate(nsIDocument *aDocument, nsUpdateType aUpdateType) = 0;
 
   /**
    * Notify the observer that a document load is beginning.
    */
-  virtual void BeginLoad(nsIDocument *aDocument) = 0;
+  NS_IMETHOD_(void) BeginLoad(nsIDocument *aDocument) = 0;
 
   /**
    * Notify the observer that a document load has finished. Note that
    * the associated reflow of the document will be done <b>before</b>
    * EndLoad is invoked, not after.
    */
-  virtual void EndLoad(nsIDocument *aDocument) = 0;
+  NS_IMETHOD_(void) EndLoad(nsIDocument *aDocument) = 0;
 
   /**
    * Notification that the state of a content node has changed. 
@@ -77,7 +78,7 @@ public:
    * @param aDocument The document being observed
    * @param aContent the piece of content that changed
    */
-  virtual void ContentStateChanged(nsIDocument* aDocument,
+  NS_IMETHOD_(void) ContentStateChanged(nsIDocument* aDocument,
                                    nsIContent* aContent,
                                    mozilla::EventStates aStateMask) = 0;
 
@@ -87,7 +88,7 @@ public:
    * @param aDocument The document being observed
    * @param aStateMask the state that changed
    */
-  virtual void DocumentStatesChanged(nsIDocument* aDocument,
+  NS_IMETHOD_(void) DocumentStatesChanged(nsIDocument* aDocument,
                                      mozilla::EventStates aStateMask) = 0;
 
   /**
@@ -100,7 +101,7 @@ public:
    * @param aDocumentSheet True if sheet is in document's style sheet list,
    *                       false if sheet is not (i.e., UA or user sheet)
    */
-  virtual void StyleSheetAdded(mozilla::StyleSheetHandle aStyleSheet,
+  NS_IMETHOD_(void) StyleSheetAdded(mozilla::StyleSheetHandle aStyleSheet,
                                bool aDocumentSheet) = 0;
 
   /**
@@ -113,7 +114,7 @@ public:
    * @param aDocumentSheet True if sheet is in document's style sheet list,
    *                       false if sheet is not (i.e., UA or user sheet)
    */
-  virtual void StyleSheetRemoved(mozilla::StyleSheetHandle aStyleSheet,
+  NS_IMETHOD_(void) StyleSheetRemoved(mozilla::StyleSheetHandle aStyleSheet,
                                  bool aDocumentSheet) = 0;
   
   /**
@@ -125,7 +126,7 @@ public:
    *
    * @param aStyleSheet the StyleSheet that has changed state
    */
-  virtual void StyleSheetApplicableStateChanged(mozilla::StyleSheetHandle aStyleSheet) = 0;
+  NS_IMETHOD_(void) StyleSheetApplicableStateChanged(mozilla::StyleSheetHandle aStyleSheet) = 0;
 
   /**
    * A StyleRule has just been modified within a style sheet.
@@ -136,7 +137,7 @@ public:
    *
    * @param aStyleSheet the StyleSheet that contians the rule
    */
-  virtual void StyleRuleChanged(mozilla::StyleSheetHandle aStyleSheet) = 0;
+  NS_IMETHOD_(void) StyleRuleChanged(mozilla::StyleSheetHandle aStyleSheet) = 0;
 
   /**
    * A StyleRule has just been added to a style sheet.
@@ -147,7 +148,7 @@ public:
    *
    * @param aStyleSheet the StyleSheet that has been modified
    */
-  virtual void StyleRuleAdded(mozilla::StyleSheetHandle aStyleSheet) = 0;
+  NS_IMETHOD_(void) StyleRuleAdded(mozilla::StyleSheetHandle aStyleSheet) = 0;
 
   /**
    * A StyleRule has just been removed from a style sheet.
@@ -158,53 +159,81 @@ public:
    *
    * @param aStyleSheet the StyleSheet that has been modified
    */
-  virtual void StyleRuleRemoved(mozilla::StyleSheetHandle aStyleSheet) = 0;
+  NS_IMETHOD_(void) StyleRuleRemoved(mozilla::StyleSheetHandle aStyleSheet) = 0;
+
+#ifdef WINE_GECKO_SRC
+  /**
+   * A node has been bind to the tree
+   */
+  NS_IMETHOD_(void) BindToDocument(nsIDocument *aDocument,
+                              nsIContent *aContent) = 0;
+
+  NS_IMETHOD_(void) AttemptToExecuteScript(nsIContent *aContent, nsIParser *aParser, bool *aBlock) = 0;
+#endif
 };
 
 NS_DEFINE_STATIC_IID_ACCESSOR(nsIDocumentObserver, NS_IDOCUMENT_OBSERVER_IID)
 
 #define NS_DECL_NSIDOCUMENTOBSERVER_BEGINUPDATE                              \
-    virtual void BeginUpdate(nsIDocument* aDocument,                         \
+    NS_IMETHOD_(void) BeginUpdate(nsIDocument* aDocument,                    \
                              nsUpdateType aUpdateType) override;
 
 #define NS_DECL_NSIDOCUMENTOBSERVER_ENDUPDATE                                \
-    virtual void EndUpdate(nsIDocument* aDocument, nsUpdateType aUpdateType) override;
+    NS_IMETHOD_(void) EndUpdate(nsIDocument* aDocument, nsUpdateType aUpdateType) override;
 
 #define NS_DECL_NSIDOCUMENTOBSERVER_BEGINLOAD                                \
-    virtual void BeginLoad(nsIDocument* aDocument) override;
+    NS_IMETHOD_(void) BeginLoad(nsIDocument* aDocument) override;
 
 #define NS_DECL_NSIDOCUMENTOBSERVER_ENDLOAD                                  \
-    virtual void EndLoad(nsIDocument* aDocument) override;
+    NS_IMETHOD_(void) EndLoad(nsIDocument* aDocument) override;
 
 #define NS_DECL_NSIDOCUMENTOBSERVER_CONTENTSTATECHANGED                      \
-    virtual void ContentStateChanged(nsIDocument* aDocument,                 \
+    NS_IMETHOD_(void) ContentStateChanged(nsIDocument* aDocument,            \
                                      nsIContent* aContent,                   \
                                      mozilla::EventStates aStateMask) override;
 
 #define NS_DECL_NSIDOCUMENTOBSERVER_DOCUMENTSTATESCHANGED                    \
-    virtual void DocumentStatesChanged(nsIDocument* aDocument,               \
+    NS_IMETHOD_(void) DocumentStatesChanged(nsIDocument* aDocument,          \
                                        mozilla::EventStates aStateMask) override;
 
 #define NS_DECL_NSIDOCUMENTOBSERVER_STYLESHEETADDED                          \
-    virtual void StyleSheetAdded(mozilla::StyleSheetHandle aStyleSheet,      \
+    NS_IMETHOD_(void) StyleSheetAdded(mozilla::StyleSheetHandle aStyleSheet, \
                                  bool aDocumentSheet) override;
 
 #define NS_DECL_NSIDOCUMENTOBSERVER_STYLESHEETREMOVED                        \
-    virtual void StyleSheetRemoved(mozilla::StyleSheetHandle aStyleSheet,    \
+    NS_IMETHOD_(void) StyleSheetRemoved(mozilla::StyleSheetHandle aStyleSheet, \
                                    bool aDocumentSheet) override;
 
 #define NS_DECL_NSIDOCUMENTOBSERVER_STYLESHEETAPPLICABLESTATECHANGED         \
-    virtual void StyleSheetApplicableStateChanged(                           \
+    NS_IMETHOD_(void) StyleSheetApplicableStateChanged(                      \
         mozilla::StyleSheetHandle aStyleSheet) override;
 
 #define NS_DECL_NSIDOCUMENTOBSERVER_STYLERULECHANGED                         \
-    virtual void StyleRuleChanged(mozilla::StyleSheetHandle aStyleSheet) override;
+    NS_IMETHOD_(void) StyleRuleChanged(mozilla::StyleSheetHandle aStyleSheet) override;
 
 #define NS_DECL_NSIDOCUMENTOBSERVER_STYLERULEADDED                           \
-    virtual void StyleRuleAdded(mozilla::StyleSheetHandle aStyleSheet) override;
+    NS_IMETHOD_(void) StyleRuleAdded(mozilla::StyleSheetHandle aStyleSheet) override;
 
 #define NS_DECL_NSIDOCUMENTOBSERVER_STYLERULEREMOVED                         \
-    virtual void StyleRuleRemoved(mozilla::StyleSheetHandle aStyleSheet) override;
+    NS_IMETHOD_(void) StyleRuleRemoved(mozilla::StyleSheetHandle aStyleSheet) override;
+
+#ifdef WINE_GECKO_SRC
+
+#define NS_DECL_NSIDOCUMENTOBSERVER_BINDTODOCUMENT                           \
+    NS_IMETHOD_(void) BindToDocument(nsIDocument *aDocument,                 \
+                                     nsIContent *aContent);
+
+#define NS_DECL_NSIDOCUMENTOBSERVER_ATTEMPTTOEXECUTESCRIPT                   \
+  NS_IMETHOD_(void) AttemptToExecuteScript(nsIContent *aContent,             \
+                                  nsIParser *aParser,                        \
+                                  bool *aBlock);
+
+#else
+
+#define NS_DECL_NSIDOCUMENTOBSERVER_BINDTODOCUMENT
+#define NS_DECL_NSIDOCUMENTOBSERVER_ATTEMPTTOEXECUTESCRIPT
+
+#endif
 
 #define NS_DECL_NSIDOCUMENTOBSERVER                                          \
     NS_DECL_NSIDOCUMENTOBSERVER_BEGINUPDATE                                  \
@@ -219,6 +248,8 @@ NS_DEFINE_STATIC_IID_ACCESSOR(nsIDocumentObserver, NS_IDOCUMENT_OBSERVER_IID)
     NS_DECL_NSIDOCUMENTOBSERVER_STYLERULECHANGED                             \
     NS_DECL_NSIDOCUMENTOBSERVER_STYLERULEADDED                               \
     NS_DECL_NSIDOCUMENTOBSERVER_STYLERULEREMOVED                             \
+    NS_DECL_NSIDOCUMENTOBSERVER_BINDTODOCUMENT                               \
+    NS_DECL_NSIDOCUMENTOBSERVER_ATTEMPTTOEXECUTESCRIPT                       \
     NS_DECL_NSIMUTATIONOBSERVER
 
 
@@ -257,8 +288,25 @@ _class::DocumentStatesChanged(nsIDocument* aDocument,                     \
 {                                                                         \
 }
 
+#ifdef WINE_GECKO_SRC
+
 #define NS_IMPL_NSIDOCUMENTOBSERVER_CONTENT(_class)                       \
-NS_IMPL_NSIMUTATIONOBSERVER_CONTENT(_class)
+NS_IMPL_NSIMUTATIONOBSERVER_CONTENT(_class) \
+void _class::BindToDocument(nsIDocument *aDocument,                       \
+                            nsIContent *aContent)                         \
+{ \
+} \
+void _class::AttemptToExecuteScript(nsIContent *aContent,                 \
+                                    nsIParser *aParser,                   \
+                                    bool *aBlock)                         \
+{ \
+}
+
+#else
+
+#define NS_IMPL_NSIDOCUMENTOBSERVER_CONTENT(_class)
+
+#endif
 
 #define NS_IMPL_NSIDOCUMENTOBSERVER_STYLE_STUB(_class)                    \
 void                                                                      \

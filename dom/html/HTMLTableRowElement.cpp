@@ -40,8 +40,9 @@ NS_IMPL_ADDREF_INHERITED(HTMLTableRowElement, Element)
 NS_IMPL_RELEASE_INHERITED(HTMLTableRowElement, Element)
 
 // QueryInterface implementation for HTMLTableRowElement
-NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION_INHERITED(HTMLTableRowElement)
-NS_INTERFACE_MAP_END_INHERITING(nsGenericHTMLElement)
+NS_INTERFACE_TABLE_HEAD_CYCLE_COLLECTION_INHERITED(HTMLTableRowElement)
+  NS_INTERFACE_TABLE_INHERITED(HTMLTableRowElement, nsIDOMHTMLTableRowElement)
+NS_INTERFACE_TABLE_TAIL_INHERITING(nsGenericHTMLElement)
 
 
 NS_IMPL_ELEMENT_CLONE(HTMLTableRowElement)
@@ -323,6 +324,129 @@ nsMapRuleToAttributesFunc
 HTMLTableRowElement::GetAttributeMappingFunction() const
 {
   return &MapAttributesIntoRule;
+}
+
+
+NS_IMETHODIMP
+HTMLTableRowElement::GetRowIndex(int32_t* aValue)
+{
+  *aValue = RowIndex();
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+HTMLTableRowElement::GetSectionRowIndex(int32_t* aValue)
+{
+  *aValue = SectionRowIndex();
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+HTMLTableRowElement::InsertCell(int32_t aIndex, nsIDOMHTMLElement** aValue)
+{
+  ErrorResult rv;
+  RefPtr<nsGenericHTMLElement> cell = InsertCell(aIndex, rv);
+  return rv.Failed() ? rv.StealNSResult() : CallQueryInterface(cell, aValue);
+}
+
+NS_IMETHODIMP
+HTMLTableRowElement::GetCells(nsIDOMHTMLCollection** aValue)
+{
+  NS_ADDREF(*aValue = Cells());
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+HTMLTableRowElement::DeleteCell(int32_t aValue)
+{
+  ErrorResult rv;
+  DeleteCell(aValue, rv);
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+HTMLTableRowElement::SetAlign(const nsAString& aAlign)
+{
+  ErrorResult rv;
+  SetAlign(aAlign, rv);
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+HTMLTableRowElement::GetAlign(nsAString& aAlign)
+{
+  DOMString align;
+  GetAlign(align);
+  align.ToString(aAlign);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+HTMLTableRowElement::SetVAlign(const nsAString& aVAlign)
+{
+  ErrorResult rv;
+  SetVAlign(aVAlign, rv);
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+HTMLTableRowElement::GetVAlign(nsAString& aVAlign)
+{
+  DOMString vAlign;
+  GetVAlign(vAlign);
+  vAlign.ToString(aVAlign);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+HTMLTableRowElement::SetCh(const nsAString& aCh)
+{
+  ErrorResult rv;
+  SetCh(aCh, rv);
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+HTMLTableRowElement::GetCh(nsAString& aCh)
+{
+  DOMString ch;
+  GetCh(ch);
+  ch.ToString(aCh);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+HTMLTableRowElement::SetChOff(const nsAString& aChOff)
+{
+  ErrorResult rv;
+  SetChOff(aChOff, rv);
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+HTMLTableRowElement::GetChOff(nsAString& aChOff)
+{
+  DOMString chOff;
+  GetChOff(chOff);
+  chOff.ToString(aChOff);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+HTMLTableRowElement::SetBgColor(const nsAString& aBgColor)
+{
+  ErrorResult rv;
+  SetBgColor(aBgColor, rv);
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+HTMLTableRowElement::GetBgColor(nsAString& aBgColor)
+{
+  DOMString bgColor;
+  GetBgColor(bgColor);
+  bgColor.ToString(aBgColor);
+  return NS_OK;
 }
 
 } // namespace dom

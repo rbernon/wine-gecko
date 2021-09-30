@@ -21,8 +21,10 @@ namespace hal_impl {
 static nsCOMPtr<nsITimer> sUpdateTimer;
 
 /* Power Event API is Vista or later */
+#ifndef WINE_GECKO_SRC
 static decltype(RegisterPowerSettingNotification)* sRegisterPowerSettingNotification = nullptr;
 static decltype(UnregisterPowerSettingNotification)* sUnregisterPowerSettingNotification = nullptr;
+#endif
 static HPOWERNOTIFY sPowerHandle = nullptr;
 static HPOWERNOTIFY sCapacityHandle = nullptr;
 static HWND sHWnd = nullptr;
@@ -63,6 +65,7 @@ BatteryWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 void
 EnableBatteryNotifications()
 {
+#ifndef WINE_GECKO_SRC
   if (IsVistaOrLater()) {
     // RegisterPowerSettingNotification is from Vista or later.
     // Use this API if available.
@@ -125,11 +128,13 @@ EnableBatteryNotifications()
                                          nsITimer::TYPE_REPEATING_SLACK);
     } 
   }
+#endif
 }
 
 void
 DisableBatteryNotifications()
 {
+#ifndef WINE_GECKO_SRC
   if (IsVistaOrLater()) {
     if (sPowerHandle) {
       sUnregisterPowerSettingNotification(sPowerHandle);
@@ -152,6 +157,7 @@ DisableBatteryNotifications()
       sUpdateTimer = nullptr;
     }
   }
+#endif
 }
 
 void

@@ -32,6 +32,10 @@ class PluginEventRunnable;
 #include "mozilla/PluginLibrary.h"
 #include "mozilla/WeakPtr.h"
 
+#ifdef WINE_GECKO_SRC
+#include "nsIPluginInstance.h"
+#endif
+
 class nsPluginStreamListenerPeer; // browser-initiated stream class
 class nsNPAPIPluginStreamListener; // plugin-initiated stream class
 class nsIPluginInstanceOwner;
@@ -75,7 +79,7 @@ public:
   bool needUnschedule;
 };
 
-class nsNPAPIPluginInstance final : public nsIAudioChannelAgentCallback
+class nsNPAPIPluginInstance final : public nsIPluginInstance
                                   , public mozilla::SupportsWeakPtr<nsNPAPIPluginInstance>
 {
 private:
@@ -278,7 +282,7 @@ public:
 
   nsresult IsPrivateBrowsing(bool *aEnabled);
 
-  nsresult GetDOMElement(nsIDOMElement* *result);
+  NS_IMETHOD GetDOMElement(nsIDOMElement* *result);
 
   nsNPAPITimer* TimerWithID(uint32_t id, uint32_t* index);
   uint32_t      ScheduleTimer(uint32_t interval, NPBool repeat, void (*timerFunc)(NPP npp, uint32_t timerID));

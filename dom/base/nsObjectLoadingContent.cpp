@@ -719,7 +719,8 @@ nsObjectLoadingContent::nsObjectLoadingContent()
   , mActivated(false)
   , mIsStopping(false)
   , mIsLoading(false)
-  , mScriptRequested(false) {}
+  , mScriptRequested(false)
+  , mSyncInit(false){}
 
 nsObjectLoadingContent::~nsObjectLoadingContent()
 {
@@ -772,13 +773,21 @@ nsObjectLoadingContent::InstantiatePluginInstance(bool aIsLoading)
   // Flush layout so that the frame is created if possible and the plugin is
   // initialized with the latest information.
   doc->FlushPendingNotifications(Flush_Layout);
+
   // Flushing layout may have re-entered and loaded something underneath us
   NS_ENSURE_TRUE(mInstantiating, NS_OK);
+  
+#ifndef WINE_GECKO_SRC
+  // This may happen when invisible (like style="display:none") ActiveX plugin
+  // is loaded synchronously. Ignoring error here shouldn't cause any stability
+  // problem, but it's not the right solution and we should revisit it at some
+  // point.
 
   if (!thisContent->GetPrimaryFrame()) {
     LOG(("OBJLC [%p]: Not instantiating plugin with no frame", this));
     return NS_OK;
   }
+#endif
 
   nsresult rv = NS_ERROR_FAILURE;
   RefPtr<nsPluginHost> pluginHost = nsPluginHost::GetInst();
@@ -1712,6 +1721,14 @@ nsObjectLoadingContent::UpdateObjectParameters(bool aJavaURI)
   bool isJava = false;
   // Set if this state can't be used to load anything, forces eType_Null
   bool stateInvalid = false;
+  // In cases of java or classids, we ignore the data/uri parameter, as it often
+  // contains URIs we cannot make sense of, and we do not open channels for
+  // these types (e.g. java: uris, clsid: uris).
+  // Note that the tag element calls LoadObject() with forceload when the
+  // src/data attributes change, so we don't need to watch for changes to these
+  // when no channels are involved
+  bool noChannel = false;
+
   // Indicates what parameters changed.
   // eParamChannelChanged - means parameters that affect channel opening
   //                        decisions changed
@@ -1763,6 +1780,11 @@ nsObjectLoadingContent::UpdateObjectParameters(bool aJavaURI)
           pluginHost->HavePluginForType(javaMIME)) {
         newMime = javaMIME;
         isJava = true;
+      } else if (StringBeginsWith(classIDAttr, NS_LITERAL_STRING("clsid:"), nsCaseInsensitiveStringComparator())
+                 && pluginHost && pluginHost->HavePluginForType(NS_LITERAL_CSTRING("application/x-oleobject"))) {
+        newMime.Assign("application/x-oleobject");
+        mSyncInit = true;
+        noChannel = true;
       } else {
         // XXX(johns): Our de-facto behavior since forever was to refuse to load
         // Objects who don't have a classid we support, regardless of other type
@@ -1772,6 +1794,9 @@ nsObjectLoadingContent::UpdateObjectParameters(bool aJavaURI)
       }
     }
   }
+
+  if (isJava)
+    noChannel = true;
 
   ///
   /// Codebase
@@ -1835,7 +1860,7 @@ nsObjectLoadingContent::UpdateObjectParameters(bool aJavaURI)
 
   nsAutoString uriStr;
   // Different elements keep this in various locations
-  if (isJava) {
+  if (noChannel) {
     // Applet tags and embed/object with explicit java MIMEs have src/data
     // attributes that are not meant to be parsed as URIs or opened by the
     // browser -- act as if they are null. (Setting these attributes triggers a
@@ -2016,13 +2041,24 @@ nsObjectLoadingContent::UpdateObjectParameters(bool aJavaURI)
   // In order of preference:
   //  1) If we have attempted channel load, or set stateInvalid above, the type
   //     is always null (fallback)
-  //  2) If we have a loaded channel, we grabbed its mimeType above, use that
-  //     type.
-  //  3) If we have a plugin type and no URI, use that type.
-  //  4) If we have a plugin type and eAllowPluginSkipChannel, use that type.
-  //  5) if we have a URI, set type to loading to indicate we'd need a channel
-  //     to proceed.
-  //  6) Otherwise, type null to indicate unloadable content (fallback)
+  //  2) Otherwise, If we have a loaded channel, we grabbed its mimeType above,
+  //     use that type.
+  //  3) Otherwise, See if we can load this as a plugin without a channel
+  //     (image/document types always need a channel).
+  //     - If we have indication this is a plugin (mime, extension, or classID)
+  //       AND:
+  //       - We have eAllowPluginSkipChannel OR
+  //       - We have no URI in the first place OR
+  //       - We're loading based on classID/java (see noChannel comment)
+  //  3) Otherwise, if we have a URI, set type to loading to indicate
+  //     we'd need a channel to proceed.
+  //  4) Otherwise, type null to indicate unloadable content (fallback)
+  //
+  // XXX(johns): <embed> tags both support URIs and have
+  //   eAllowPluginSkipChannel, meaning it is possible that we have a URI, but
+  //   are not going to open a channel for it. The old objLC code did this (in a
+  //   less obviously-intended way), so it's probably best not to change our
+  //   behavior at this point.
   //
 
   if (stateInvalid) {
@@ -2073,9 +2109,10 @@ nsObjectLoadingContent::UpdateObjectParameters(bool aJavaURI)
   }
 
   if (!URIEquals(mBaseURI, newBaseURI)) {
-    if (isJava) {
-      // Java bases its class loading on the base URI, so we consider the state
-      // to have changed if this changes. If the object is using a relative URI,
+    if (noChannel) {
+      // Java and activeX plugins don't use a primary URI, and instead base
+      // their class loading on the codebase URI, so we consider the state to
+      // have changed if this changes. If the object is using a relative URI,
       // mURI will have changed below regardless
       retval = (ParameterUpdateFlags)(retval | eParamStateChanged);
     }
@@ -3054,7 +3091,11 @@ nsObjectLoadingContent::AsyncStartPluginInstance()
   }
 
   nsCOMPtr<nsIRunnable> event = new nsAsyncInstantiateEvent(this);
-  nsresult rv = NS_DispatchToCurrentThread(event);
+  nsresult rv;
+  if(mSyncInit)
+    rv = nsContentUtils::AddScriptRunner(event) ? NS_OK : NS_ERROR_FAILURE;
+  else
+    rv = NS_DispatchToCurrentThread(event);
   if (NS_SUCCEEDED(rv)) {
     // Track pending events
     mPendingInstantiateEvent = event;

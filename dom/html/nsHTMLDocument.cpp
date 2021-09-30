@@ -558,6 +558,7 @@ nsHTMLDocument::StartDocumentLoad(const char* aCommand,
       loadAsHtml5 = false;
   }
   
+#ifndef WINE_GECKO_SRC
   // TODO: Proper about:blank treatment is bug 543435
   if (loadAsHtml5 && view) {
     // mDocumentURI hasn't been set, yet, so get the URI from the channel
@@ -574,6 +575,7 @@ nsHTMLDocument::StartDocumentLoad(const char* aCommand,
       }
     }
   }
+#endif
   
   CSSLoader()->SetCompatibilityMode(mCompatMode);
   
@@ -1478,8 +1480,8 @@ nsHTMLDocument::Open(JSContext* cx,
     // change the principals of a document for security reasons we'll have to
     // refuse to go ahead with this call.
 
-    rv.Throw(NS_ERROR_DOM_SECURITY_ERR);
-    return nullptr;
+    SetIsInitialDocument(PR_FALSE);
+    callerDoc = this;
   }
 
   // Grab a reference to the calling documents security info (if any)
@@ -1882,7 +1884,7 @@ nsHTMLDocument::WriteCommon(JSContext *cx,
     if (NS_FAILED(rv) || !mParser) {
       return rv;
     }
-    MOZ_ASSERT(!JS_IsExceptionPending(cx),
+    MOZ_ASSERT(!cx || !JS_IsExceptionPending(cx),
                "Open() succeeded but JS exception is pending");
   }
 

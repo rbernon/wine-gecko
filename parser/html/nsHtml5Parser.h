@@ -180,22 +180,22 @@ class nsHtml5Parser final : public nsIParser,
     /**
      * Don't call. For interface compat only.
      */
-    virtual void Reset() override;
+    NS_IMETHOD_(void) Reset() override;
 
     /**
      * True if the insertion point (per HTML5) is defined.
      */
-    virtual bool IsInsertionPointDefined() override;
+    NS_IMETHOD_(bool) IsInsertionPointDefined() override;
 
     /**
      * Call immediately before starting to evaluate a parser-inserted script.
      */
-    virtual void BeginEvaluatingParserInsertedScript() override;
+    NS_IMETHOD_(void) BeginEvaluatingParserInsertedScript() override;
 
     /**
      * Call immediately after having evaluated a parser-inserted script.
      */
-    virtual void EndEvaluatingParserInsertedScript() override;
+    NS_IMETHOD_(void) EndEvaluatingParserInsertedScript() override;
 
     /**
      * Marks the HTML5 parser as not a script-created parser: Prepares the 
@@ -204,12 +204,12 @@ class nsHtml5Parser final : public nsIParser,
      * @param aCommand the parser command (Yeah, this is bad API design. Let's
      * make this better when retiring nsIParser)
      */
-    virtual void MarkAsNotScriptCreated(const char* aCommand) override;
+    NS_IMETHOD_(void) MarkAsNotScriptCreated(const char* aCommand) override;
 
     /**
      * True if this is a script-created HTML5 parser.
      */
-    virtual bool IsScriptCreated() override;
+    NS_IMETHOD_(bool) IsScriptCreated() override;
 
     /* End nsIParser  */
 

@@ -648,6 +648,9 @@ class nsObjectLoadingContent : public nsImageLoadingContent
     // whether content js has tried to access the plugin script object.
     bool                        mScriptRequested : 1;
 
+    // ActiveX objects should be loaded synchronously
+    bool mSyncInit : 1;
+
     nsWeakFrame                 mPrintFrame;
 
     RefPtr<nsPluginInstanceOwner> mInstanceOwner;

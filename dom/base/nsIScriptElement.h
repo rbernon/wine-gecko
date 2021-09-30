@@ -224,6 +224,7 @@ public:
       // execution later.
       LoseParserInsertedness();
     }
+    PropagateAttemptToExecute(block);
     return block;
   }
 
@@ -321,6 +322,11 @@ protected:
    * The creator parser of a non-defer, non-async parser-inserted script.
    */
   nsWeakPtr mCreatorParser;
+
+#ifdef WINE_GECKO_SRC
+private:
+  void PropagateAttemptToExecute(bool&);
+#endif
 };
 
 NS_DEFINE_STATIC_IID_ACCESSOR(nsIScriptElement, NS_ISCRIPTELEMENT_IID)

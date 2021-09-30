@@ -3229,8 +3229,14 @@ nsresult nsPluginInstanceOwner::Init(nsIContent* aContent)
     // document is destroyed before we try to create the new one.
     objFrame->PresContext()->EnsureVisible();
   } else {
+#ifndef WINE_GECKO_SRC
+    // This may happen when invisible (like style="display:none") ActiveX plugin
+    // is loaded synchronously. Ignoring error here shouldn't cause any stability
+    // problem, but it's not the right solution and we should revisit it at some
+    // point.
     NS_NOTREACHED("Should not be initializing plugin without a frame");
     return NS_ERROR_FAILURE;
+#endif
   }
 
   // register context menu listener

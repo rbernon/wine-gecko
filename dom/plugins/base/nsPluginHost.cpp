@@ -1111,6 +1111,8 @@ nsPluginHost::GetPermissionStringForType(const nsACString &aMimeType,
   aPermissionString.Truncate();
   uint32_t blocklistState;
   rv = tag->GetBlocklistState(&blocklistState);
+  if (NS_FAILED(rv))
+    blocklistState = nsIBlocklistService::STATE_NOT_BLOCKED;
   NS_ENSURE_SUCCESS(rv, rv);
 
   if (blocklistState == nsIBlocklistService::STATE_VULNERABLE_UPDATE_AVAILABLE ||
@@ -2056,6 +2058,9 @@ nsPluginHost::ShouldAddPlugin(nsPluginTag* aPluginTag)
       aPluginTag->HasMimeType(NS_LITERAL_CSTRING("application/x-java-test"))) {
     return true;
   }
+  // Also allow ActiveX plugin loading on win64.
+  if (aPluginTag->HasMimeType(NS_LITERAL_CSTRING("application/x-oleobject")))
+    return true;
 #ifdef PLUGIN_LOGGING
   PLUGIN_LOG(PLUGIN_LOG_NORMAL,
              ("ShouldAddPlugin : Ignoring non-flash plugin library %s\n", aPluginTag->FileName().get()));

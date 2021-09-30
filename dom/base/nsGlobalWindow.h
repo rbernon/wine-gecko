@@ -861,7 +861,6 @@ public:
   void SetStatus(const nsAString& aStatus, mozilla::ErrorResult& aError);
   void CloseOuter(bool aTrustedCaller);
   void Close(mozilla::ErrorResult& aError);
-  nsresult Close() override;
   bool GetClosedOuter();
   bool GetClosed(mozilla::ErrorResult& aError);
   bool Closed() override;
@@ -869,7 +868,6 @@ public:
   void Stop(mozilla::ErrorResult& aError);
   void FocusOuter(mozilla::ErrorResult& aError);
   void Focus(mozilla::ErrorResult& aError);
-  nsresult Focus() override;
   void BlurOuter();
   void Blur(mozilla::ErrorResult& aError);
   already_AddRefed<nsPIDOMWindowOuter> GetFramesOuter();
@@ -1085,7 +1083,6 @@ public:
   float GetMozInnerScreenY(mozilla::ErrorResult& aError);
   float GetDevicePixelRatioOuter();
   float GetDevicePixelRatio(mozilla::ErrorResult& aError);
-  nsresult GetDevicePixelRatio(float* aRatio) override;
   int32_t GetScrollMinX(mozilla::ErrorResult& aError);
   int32_t GetScrollMinY(mozilla::ErrorResult& aError);
   int32_t GetScrollMaxX(mozilla::ErrorResult& aError);
@@ -1095,7 +1092,6 @@ public:
   bool GetFullScreen() override;
   void SetFullScreenOuter(bool aFullScreen, mozilla::ErrorResult& aError);
   void SetFullScreen(bool aFullScreen, mozilla::ErrorResult& aError);
-  nsresult SetFullScreen(bool aFullScreen) override;
   void BackOuter(mozilla::ErrorResult& aError);
   void Back(mozilla::ErrorResult& aError);
   void ForwardOuter(mozilla::ErrorResult& aError);
@@ -1245,14 +1241,12 @@ public:
   int32_t GetInnerWidthOuter(mozilla::ErrorResult& aError);
 protected:
   int32_t GetInnerWidth(mozilla::ErrorResult& aError);
-  nsresult GetInnerWidth(int32_t* aWidth) override;
   void SetInnerWidthOuter(int32_t aInnerWidth, mozilla::ErrorResult& aError, bool aCallerIsChrome);
   void SetInnerWidth(int32_t aInnerWidth, mozilla::ErrorResult& aError);
 public:
   int32_t GetInnerHeightOuter(mozilla::ErrorResult& aError);
 protected:
   int32_t GetInnerHeight(mozilla::ErrorResult& aError);
-  nsresult GetInnerHeight(int32_t* aHeight) override;
   void SetInnerHeightOuter(int32_t aInnerHeight, mozilla::ErrorResult& aError, bool aCallerIsChrome);
   void SetInnerHeight(int32_t aInnerHeight, mozilla::ErrorResult& aError);
   int32_t GetScreenXOuter(mozilla::ErrorResult& aError);

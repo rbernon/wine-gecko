@@ -2554,5 +2554,36 @@ HTMLFormElement::WrapNode(JSContext* aCx, JS::Handle<JSObject*> aGivenProto)
   return HTMLFormElementBinding::Wrap(aCx, this, aGivenProto);
 }
 
+NS_IMETHODIMP
+HTMLFormElement::GetFormData(nsIDOMHTMLElement *aOriginatingElement, nsAString &aActionURI, nsIInputStream **postDataStream)
+{
+  nsAutoPtr<nsFormSubmission> submission;
+  //
+  // Get the submission object
+  //
+  nsCOMPtr<nsIContent> content(do_QueryInterface(aOriginatingElement));
+  nsresult rv = GetSubmissionFromForm(this, static_cast<nsGenericHTMLElement*>(content.get()), submission.StartAssignment());
+  NS_ENSURE_SUBMIT_SUCCESS(rv);
+
+  //
+  // Dump the data into the submission object
+  //
+  rv = WalkFormElements(submission);
+  NS_ENSURE_SUBMIT_SUCCESS(rv);
+
+  nsCOMPtr<nsIURI> actionURI;
+  rv = GetActionURL(getter_AddRefs(actionURI), submission->GetOriginatingElement());
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  nsAutoCString spec;
+  rv = actionURI->GetSpec(spec);
+  NS_ENSURE_SUCCESS(rv, rv);
+
+
+  CopyUTF8toUTF16(spec, aActionURI);
+
+  return submission->GetEncodedSubmission(actionURI, postDataStream);
+}
+
 } // namespace dom
 } // namespace mozilla

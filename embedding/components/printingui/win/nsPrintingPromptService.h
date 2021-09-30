@@ -42,7 +42,7 @@ public:
     NS_DECL_NSIWEBPROGRESSLISTENER
 
 private:
-    HWND GetHWNDForDOMWindow(mozIDOMWindowProxy *parent);
+    HWND GetHWNDForDOMWindow(mozIDOMWindowProxy *parent, bool &aIsTempWindow);
     nsresult DoDialog(mozIDOMWindowProxy *aParent,
                       nsIDialogParamBlock *aParamBlock, 
                       nsIPrintSettings* aPS,

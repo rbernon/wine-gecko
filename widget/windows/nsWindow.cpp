@@ -689,6 +689,7 @@ nsWindow::Create(nsIWidget* aParent,
 
   SubclassWindow(TRUE);
 
+#ifndef WINE_GECKO_SRC
   // Starting with Windows XP, a process always runs within a terminal services
   // session. In order to play nicely with RDP, fast user switching, and the
   // lock screen, we should be handling WM_WTSSESSION_CHANGE. We must register
@@ -696,6 +697,7 @@ nsWindow::Create(nsIWidget* aParent,
   DebugOnly<BOOL> wtsRegistered = ::WTSRegisterSessionNotification(mWnd,
                                                        NOTIFY_FOR_THIS_SESSION);
   NS_ASSERTION(wtsRegistered, "WTSRegisterSessionNotification failed!\n");
+#endif
 
   mDefaultIMC.Init(this);
   IMEHandler::InitInputContext(this, mInputContext);
@@ -2183,7 +2185,11 @@ nsWindow::ResetLayout()
 // margins are set.
 static const wchar_t kManageWindowInfoProperty[] = L"ManageWindowInfoProperty";
 typedef BOOL (WINAPI *GetWindowInfoPtr)(HWND hwnd, PWINDOWINFO pwi);
+#ifndef WINE_GECKO_SRC
 static GetWindowInfoPtr sGetWindowInfoPtrStub = nullptr;
+#else
+static GetWindowInfoPtr sGetWindowInfoPtrStub = GetWindowInfo;
+#endif
 
 BOOL WINAPI
 GetWindowInfoHook(HWND hWnd, PWINDOWINFO pwi)
@@ -6715,8 +6721,10 @@ void nsWindow::OnDestroy()
   mWidgetListener = nullptr;
   mAttachedWidgetListener = nullptr;
 
+#ifndef WINE_GECKO_SRC
   // Unregister notifications from terminal services
   ::WTSUnRegisterSessionNotification(mWnd);
+#endif
 
   // Free our subclass and clear |this| stored in the window props. We will no longer
   // receive events from Windows after this point.

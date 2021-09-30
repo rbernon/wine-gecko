@@ -170,6 +170,8 @@ private:
     nsCOMPtr<nsINetworkLinkService>      mNetworkLinkService;
     bool                                 mNetworkLinkServiceInitialized;
 
+    nsCOMPtr<nsIIOServiceHook>           mHook;
+
     // Cached protocol handlers
     nsWeakPtr                            mWeakHandler[NS_N(gScheme)];
 

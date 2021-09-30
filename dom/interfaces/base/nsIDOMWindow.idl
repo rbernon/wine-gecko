@@ -17,14 +17,234 @@ interface nsIVariant;
  * Empty interface for compatibility with older versions.
  * @deprecated Use WebIDL for script visible features,
  *             nsPIDOMWindow for C++ callers.
+ *
+ * Wine Gecko: We still need it until we have WebIDL bindings.
  */
 
-[scriptable, uuid(b8343993-0383-4add-9930-ad176b189240)]
-interface nsIDOMWindow : nsISupports {};
+interface mozIDOMWindow;
+interface mozIDOMWindowProxy;
+
+[scriptable, uuid(ab30b7cc-f7f9-4b9b-befb-7dbf6cf86d46)]
+interface nsIDOMWindow : nsISupports
+{
+  /**
+   * Accessor for the document in this window.
+   */
+  readonly attribute nsIDOMDocument                     document;
+
+  /**
+   * Set/Get the name of this window.
+   *
+   * This attribute is "replaceable" in JavaScript
+   */
+           attribute DOMString                          name;
+
+  /* The setter that takes a string argument needs to be special cased! */
+  readonly attribute nsIDOMLocation                     location;
+
+  void                      close();
+  void                      stop();
+  void                      focus();
+  void                      blur();
+
+
+  // other browsing contexts
+  /* [replaceable] length */
+  readonly attribute unsigned long                      length;
+
+  /**
+   * You shouldn't need to call this function directly; call GetTop instead.
+   */
+  [noscript]
+  readonly attribute nsIDOMWindow                       realTop;
+
+  /**
+   * You shouldn't need to read this property directly; call GetParent instead.
+   */
+  [noscript]
+  readonly attribute nsIDOMWindow                       realParent;
+
+  [noscript, binaryname(Opener)]
+           attribute mozIDOMWindowProxy                 openerWindow;
+
+  /**
+   * You shouldn't need to read this property directly; call GetFrameElement
+   * instead.
+   */
+  [noscript]
+  readonly attribute nsIDOMElement                      realFrameElement;
+
+  // the user agent
+  readonly attribute nsIDOMNavigator                    navigator;
+
+  void                      print();
+
+  // WindowSessionStorage
+  /**
+   * Session storage for the current browsing context.
+   * This attribute is a DOMStorage
+   */
+  readonly attribute nsISupports sessionStorage;
+
+
+  // WindowLocalStorage
+  /**
+   * Local storage for the current browsing context.
+   * This attribute is a DOMStorage
+   */
+  readonly attribute nsISupports localStorage;
+
+
+  // IndexedDB
+  // https://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#requests
+  // IDBEnvironment
+  readonly attribute nsISupports indexedDB;
+
+
+  // DOM Range
+  /**
+   * Method for accessing this window's selection object.
+   */
+  nsISelection              getSelection();
+
+
+  // CSSOM-View
+  // http://dev.w3.org/csswg/cssom-view/#extensions-to-the-window-interface
+  nsISupports      matchMedia(in DOMString media_query_list);
+
+  // viewport
+           attribute long                               innerWidth;
+           attribute long                               innerHeight;
+
+
+  // viewport scrolling
+  /**
+   * Accessor for the current x scroll position in this window in
+   * pixels.
+   *
+   * This attribute is "replaceable" in JavaScript
+   */
+  readonly attribute long                               scrollX;
+
+  /* The offset in pixels by which the window is scrolled */
+  readonly attribute long                               pageXOffset;
+
+  /**
+   * Accessor for the current y scroll position in this window in
+   * pixels.
+   *
+   * This attribute is "replaceable" in JavaScript
+   */
+  readonly attribute long                               scrollY;
+
+  /* The offset in pixels by which the window is scrolled */
+  readonly attribute long                               pageYOffset;
+
+  void                      scroll(in long xScroll, in long yScroll);
+
+  /**
+   * Method for scrolling this window to an absolute pixel offset.
+   */
+  void                      scrollTo(in long xScroll, in long yScroll);
+
+  /**
+   * Method for scrolling this window to a pixel offset relative to
+   * the current scroll position.
+   */
+  void                      scrollBy(in long xScrollDif, in long yScrollDif);
+
+
+  // client
+           attribute long                        screenX;
+           attribute long                        screenY;
+           attribute long                        outerWidth;
+           attribute long                        outerHeight;
+
+
+  // CSSOM
+  /**
+   * @see <http://dev.w3.org/csswg/cssom/#dom-window-getcomputedstyle>
+   */
+  nsIDOMCSSStyleDeclaration getComputedStyle(in nsIDOMElement elt, 
+                                             [optional] in DOMString pseudoElt);
+  nsIDOMCSSStyleDeclaration getDefaultComputedStyle(in nsIDOMElement elt,
+                                                    [optional] in DOMString pseudoElt);
+
+
+  /**
+   * Accessor for the child windows in this window.
+   */
+  [noscript] readonly attribute nsIDOMWindowCollection  frames;
+
+  /**
+   * Set/Get the document scale factor as a multiplier on the default
+   * size. When setting this attribute, a NS_ERROR_NOT_IMPLEMENTED
+   * error may be returned by implementations not supporting
+   * zoom. Implementations not supporting zoom should return 1.0 all
+   * the time for the Get operation. 1.0 is equals normal size,
+   * i.e. no zoom.
+   */
+  [noscript] attribute float                            textZoom;
+
+  /**
+   * Method for scrolling this window by a number of lines.
+   */
+  void                      scrollByLines(in long numLines);
+
+  /**
+   * Method for scrolling this window by a number of pages.
+   */
+  void                      scrollByPages(in long numPages);
+
+  readonly attribute float                              mozInnerScreenX;
+  readonly attribute float                              mozInnerScreenY;
+  readonly attribute float                              devicePixelRatio;
+
+  /* The maximum offset that the window can be scrolled to
+     (i.e., the document width/height minus the scrollport width/height) */
+  readonly attribute long                               scrollMaxX;
+  readonly attribute long                               scrollMaxY;
+
+           attribute boolean                            fullScreen;
+
+  void                      back();
+  void                      forward();
+  void                      home();
+
+  /**
+   * Open a new window with this one as the parent.  This method will
+   * NOT examine the JS stack for purposes of determining a caller.
+   * This window will be used for security checks during the search by
+   * name and the default character set on the newly opened window
+   * will just be the default character set of this window.
+   */
+  [noscript] nsIDOMWindow   open(in DOMString url, in DOMString name,
+                                 in DOMString options);
+
+  /* Find in page.
+   * @param str: the search pattern
+   * @param caseSensitive: is the search caseSensitive
+   * @param backwards: should we search backwards
+   * @param wrapAround: should we wrap the search
+   * @param wholeWord: should we search only for whole words
+   * @param searchInFrames: should we search through all frames
+   * @param showDialog: should we show the Find dialog
+   */
+  boolean                   find([optional] in DOMString str,
+                                 [optional] in boolean caseSensitive,
+                                 [optional] in boolean backwards,
+                                 [optional] in boolean wrapAround,
+                                 [optional] in boolean wholeWord,
+                                 [optional] in boolean searchInFrames,
+                                 [optional] in boolean showDialog);
+
+  [binaryname(DOMInnerWindow)] readonly attribute mozIDOMWindow innerWindow;
+  [binaryname(DOMOuterWindow)] readonly attribute mozIDOMWindowProxy outerWindow;
+};
 
 /**
  * Empty interface for compatibility with older versions.
  * @deprecated Use nsIDOMWindow instead
  */
-[scriptable, uuid(8c589e65-3237-4cd1-8bad-c5c47135e79b)]
+[scriptable, uuid(2ec49e81-b2ba-4633-991a-f48f1e1d8800)]
 interface nsIDOMWindowInternal : nsIDOMWindow {};

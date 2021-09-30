@@ -767,6 +767,7 @@ nsDocShell::nsDocShell()
   , mAllowSubframes(true)
   , mAllowPlugins(true)
   , mAllowJavascript(true)
+  , mDisableNoScript(false)
   , mAllowMetaRedirects(true)
   , mAllowImages(true)
   , mAllowMedia(true)
@@ -2186,9 +2187,25 @@ nsDocShell::GetAllowJavascript(bool* aAllowJavascript)
 NS_IMETHODIMP
 nsDocShell::SetAllowJavascript(bool aAllowJavascript)
 {
-  mAllowJavascript = aAllowJavascript;
+  mAllowJavascript = mDisableNoScript = aAllowJavascript;
   RecomputeCanExecuteScripts();
   return NS_OK;
+}
+
+NS_IMETHODIMP
+nsDocShell::GetDisableNoScript(bool *aDisableNoScript)
+{
+    NS_ENSURE_ARG_POINTER(aDisableNoScript);
+
+    *aDisableNoScript = mDisableNoScript;
+    return NS_OK;
+}
+
+NS_IMETHODIMP
+nsDocShell::SetDisableNoScript(bool aDisableNoScript)
+{
+    mDisableNoScript = aDisableNoScript;
+    return NS_OK;
 }
 
 NS_IMETHODIMP
@@ -3296,6 +3313,10 @@ nsDocShell::SetDocLoaderParent(nsDocLoader* aParent)
     }
     if (mAllowJavascript && NS_SUCCEEDED(parentAsDocShell->GetAllowJavascript(&value))) {
       SetAllowJavascript(value);
+    }
+    if (NS_SUCCEEDED(parentAsDocShell->GetDisableNoScript(&value)))
+    {
+      SetDisableNoScript(value);
     }
     if (mAllowMetaRedirects && NS_SUCCEEDED(parentAsDocShell->GetAllowMetaRedirects(&value))) {
       SetAllowMetaRedirects(value);
@@ -8730,6 +8751,9 @@ nsDocShell::RestoreFromHistory()
     bool allowJavascript;
     childShell->GetAllowJavascript(&allowJavascript);
 
+    bool disableNoScript;
+    childShell->GetDisableNoScript(&disableNoScript);
+
     bool allowRedirects;
     childShell->GetAllowMetaRedirects(&allowRedirects);
 
@@ -8759,6 +8783,7 @@ nsDocShell::RestoreFromHistory()
 
     childShell->SetAllowPlugins(allowPlugins);
     childShell->SetAllowJavascript(allowJavascript);
+    childShell->SetDisableNoScript(disableNoScript);
     childShell->SetAllowMetaRedirects(allowRedirects);
     childShell->SetAllowSubframes(allowSubframes);
     childShell->SetAllowImages(allowImages);

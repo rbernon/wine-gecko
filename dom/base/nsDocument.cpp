@@ -5398,6 +5398,20 @@ nsIDocument::RemoveAnonymousContent(AnonymousContent& aContent,
   }
 }
 
+#ifdef WINE_GECKO_SRC
+
+void nsDocument::BindToDocument(nsIContent *aContent)
+{
+  NS_DOCUMENT_NOTIFY_OBSERVERS(BindToDocument, (this, aContent));
+}
+
+void nsDocument::AttemptToExecuteScript(nsIContent *aContent, nsIParser *aParser, bool *aBlock)
+{
+  NS_DOCUMENT_NOTIFY_OBSERVERS(AttemptToExecuteScript, (aContent, aParser, aBlock));
+}
+
+#endif
+
 //
 // nsIDOMDocument interface
 //

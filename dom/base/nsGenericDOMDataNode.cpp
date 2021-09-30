@@ -542,6 +542,9 @@ nsGenericDOMDataNode::BindToTree(nsIDocument* aDocument, nsIContent* aParent,
     }
     // Clear the lazy frame construction bits.
     UnsetFlags(NODE_NEEDS_FRAME | NODE_DESCENDANTS_NEED_FRAMES);
+
+    // Notify document observer
+    aDocument->BindToDocument(this);
   } else if (!IsInShadowTree()) {
     // If we're not in the doc and not in a shadow tree,
     // update our subtree pointer.

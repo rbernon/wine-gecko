@@ -8,6 +8,7 @@
 
 #include "mozilla/Attributes.h"
 #include "nsGenericHTMLElement.h"
+#include "nsIDOMHTMLTableRowElement.h"
 
 class nsContentList;
 
@@ -17,6 +18,7 @@ namespace dom {
 class HTMLTableSectionElement;
 
 class HTMLTableRowElement final : public nsGenericHTMLElement
+                                , public nsIDOMHTMLTableRowElement
 {
 public:
   explicit HTMLTableRowElement(already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo)
@@ -29,6 +31,9 @@ public:
 
   // nsISupports
   NS_DECL_ISUPPORTS_INHERITED
+
+  // nsIDOMHTMLTableRowElement
+  NS_DECL_NSIDOMHTMLTABLEROWELEMENT
 
   int32_t RowIndex() const;
   int32_t SectionRowIndex() const;

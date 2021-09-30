@@ -168,6 +168,7 @@ class nsHtml5TreeOpExecutor final : public nsHtml5DocumentBuilder,
     void InitializeDocWriteParserState(nsAHtml5TreeBuilderState* aState, int32_t aLine);
 
     bool IsScriptEnabled();
+    bool IsNoScriptDisabled();
 
     virtual nsresult MarkAsBroken(nsresult aReason) override;
 

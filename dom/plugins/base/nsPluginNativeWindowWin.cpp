@@ -463,6 +463,7 @@ SetWindowLongWHook(HWND hWnd,
 static void
 HookSetWindowLongPtr()
 {
+#ifndef WINE_GECKO_SRC
   sUser32Intercept.Init("user32.dll");
 #ifdef _WIN64
   if (!sUser32SetWindowLongAHookStub)
@@ -482,6 +483,7 @@ HookSetWindowLongPtr()
     sUser32Intercept.AddHook("SetWindowLongW",
                              reinterpret_cast<intptr_t>(SetWindowLongWHook),
                              (void**) &sUser32SetWindowLongWHookStub);
+#endif
 #endif
 }
 

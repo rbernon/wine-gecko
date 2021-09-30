@@ -90,7 +90,7 @@ nsPrintingPromptService::Init()
 
 //-----------------------------------------------------------
 HWND
-nsPrintingPromptService::GetHWNDForDOMWindow(mozIDOMWindowProxy *aWindow)
+nsPrintingPromptService::GetHWNDForDOMWindow(mozIDOMWindowProxy *aWindow, bool &aIsTempWindow)
 {
     nsCOMPtr<nsIWebBrowserChrome> chrome;
 
@@ -111,6 +111,7 @@ nsPrintingPromptService::GetHWNDForDOMWindow(mozIDOMWindowProxy *aWindow)
         {
             HWND w;
             site->GetSiteWindow(reinterpret_cast<void **>(&w));
+            aIsTempWindow = false;
             return w;
         }
     }
@@ -136,6 +137,7 @@ nsPrintingPromptService::GetHWNDForDOMWindow(mozIDOMWindowProxy *aWindow)
     baseWin->GetMainWidget(getter_AddRefs(widget));
     if (!widget) return nullptr;
 
+    aIsTempWindow = true;
     return (HWND)widget->GetNativeData(NS_NATIVE_TMP_WINDOW);
 
 }
@@ -150,10 +152,16 @@ nsPrintingPromptService::ShowPrintDialog(mozIDOMWindowProxy *parent, nsIWebBrows
 {
     NS_ENSURE_ARG(parent);
 
-    HWND hWnd = GetHWNDForDOMWindow(parent);
+    bool isTempWindow;
+    HWND hWnd = GetHWNDForDOMWindow(parent, isTempWindow);
     NS_ASSERTION(hWnd, "Couldn't get native window for PRint Dialog!");
 
-    return NativeShowPrintDialog(hWnd, webBrowserPrint, printSettings);
+    nsresult rv = NativeShowPrintDialog(hWnd, webBrowserPrint, printSettings);
+    if (hWnd && isTempWindow) {
+        ::DestroyWindow(hWnd);
+    }
+
+    return rv;
 }
 
 

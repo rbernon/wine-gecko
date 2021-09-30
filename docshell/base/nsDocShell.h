@@ -923,6 +923,7 @@ protected:
   bool mAllowSubframes;
   bool mAllowPlugins;
   bool mAllowJavascript;
+  bool mDisableNoScript;
   bool mAllowMetaRedirects;
   bool mAllowImages;
   bool mAllowMedia;

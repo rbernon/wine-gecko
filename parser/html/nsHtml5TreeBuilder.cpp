@@ -184,6 +184,9 @@ nsHtml5TreeBuilder::comment(char16_t* buf, int32_t start, int32_t length)
   if (!isInForeign()) {
     switch(mode) {
       case NS_HTML5TREE_BUILDER_INITIAL:
+        documentModeInternal(QUIRKS_MODE, nullptr, nullptr, false);
+        mode = NS_HTML5TREE_BUILDER_BEFORE_HTML;
+        /* fallthrough */
       case NS_HTML5TREE_BUILDER_BEFORE_HTML:
       case NS_HTML5TREE_BUILDER_AFTER_AFTER_BODY:
       case NS_HTML5TREE_BUILDER_AFTER_AFTER_FRAMESET: {
@@ -221,9 +224,14 @@ nsHtml5TreeBuilder::characters(const char16_t* buf, int32_t start, int32_t lengt
       }
     }
   }
+  bool runLoop = false;
   switch(mode) {
-    case NS_HTML5TREE_BUILDER_IN_BODY:
     case NS_HTML5TREE_BUILDER_IN_CELL:
+      if (quirks && stack[currentPtr]->getGroup() == NS_HTML5TREE_BUILDER_TD_OR_TH) {
+        runLoop = true;
+        break;
+      }
+    case NS_HTML5TREE_BUILDER_IN_BODY:
     case NS_HTML5TREE_BUILDER_IN_CAPTION: {
       if (!isInForeignButNotHtmlOrMathTextIntegrationPoint()) {
         reconstructTheActiveFormattingElements();
@@ -236,10 +244,16 @@ nsHtml5TreeBuilder::characters(const char16_t* buf, int32_t start, int32_t lengt
     case NS_HTML5TREE_BUILDER_IN_TABLE:
     case NS_HTML5TREE_BUILDER_IN_TABLE_BODY:
     case NS_HTML5TREE_BUILDER_IN_ROW: {
-      accumulateCharactersForced(buf, start, length);
+      if (!quirks)
+        accumulateCharactersForced(buf, start, length);
+      else
+        runLoop = true;
       return;
     }
-    default: {
+    default:
+      runLoop = true;
+  }
+  if (runLoop) {
       int32_t end = start + length;
       for (int32_t i = start; i < end; i++) {
         switch(buf[i]) {
@@ -263,10 +277,14 @@ nsHtml5TreeBuilder::characters(const char16_t* buf, int32_t start, int32_t lengt
               case NS_HTML5TREE_BUILDER_AFTER_FRAMESET: {
                 continue;
               }
+              case NS_HTML5TREE_BUILDER_IN_CELL:
+                if (quirks) {
+                  start = i+1;
+                  continue;
+                }
               case NS_HTML5TREE_BUILDER_FRAMESET_OK:
               case NS_HTML5TREE_BUILDER_IN_TEMPLATE:
               case NS_HTML5TREE_BUILDER_IN_BODY:
-              case NS_HTML5TREE_BUILDER_IN_CELL:
               case NS_HTML5TREE_BUILDER_IN_CAPTION: {
                 if (start < i) {
                   accumulateCharacters(buf, start, i - start);
@@ -285,7 +303,8 @@ nsHtml5TreeBuilder::characters(const char16_t* buf, int32_t start, int32_t lengt
               case NS_HTML5TREE_BUILDER_IN_TABLE:
               case NS_HTML5TREE_BUILDER_IN_TABLE_BODY:
               case NS_HTML5TREE_BUILDER_IN_ROW: {
-                accumulateCharactersForced(buf, i, 1);
+                if(!quirks)
+                  accumulateCharactersForced(buf, i, 1);
                 start = i + 1;
                 continue;
               }
@@ -453,7 +472,6 @@ nsHtml5TreeBuilder::characters(const char16_t* buf, int32_t start, int32_t lengt
       if (start < end) {
         accumulateCharacters(buf, start, end - start);
       }
-    }
   }
 }
 
@@ -1420,7 +1438,10 @@ nsHtml5TreeBuilder::startTag(nsHtml5ElementName* elementName, nsHtml5HtmlAttribu
             }
             default: {
               reconstructTheActiveFormattingElements();
-              appendToCurrentNodeAndPushElementMayFoster(elementName, attributes);
+              if (!quirks || !elementName->isCustom())
+                appendToCurrentNodeAndPushElementMayFoster(elementName, attributes);
+              else
+                appendVoidElementToCurrentMayFoster(elementName, attributes);
               attributes = nullptr;
               NS_HTML5_BREAK(starttagloop);
             }

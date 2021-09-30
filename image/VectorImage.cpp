@@ -146,7 +146,7 @@ private:
   }
 
 public:
-  void EndLoad(nsIDocument* aDocument) override
+  NS_IMETHOD_(void) EndLoad(nsIDocument* aDocument) override
   {
     MOZ_ASSERT(aDocument == mDocument, "Got EndLoad for wrong document?");
 

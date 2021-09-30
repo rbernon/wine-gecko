@@ -205,32 +205,32 @@ class nsIParser : public nsParserBase {
 
     NS_IMETHOD CancelParsingEvents() = 0;
 
-    virtual void Reset() = 0;
+    NS_IMETHOD_(void) Reset() = 0;
 
     /**
      * True if the insertion point (per HTML5) is defined.
      */
-    virtual bool IsInsertionPointDefined() = 0;
+    NS_IMETHOD_(bool) IsInsertionPointDefined() = 0;
 
     /**
      * Call immediately before starting to evaluate a parser-inserted script.
      */
-    virtual void BeginEvaluatingParserInsertedScript() = 0;
+    NS_IMETHOD_(void) BeginEvaluatingParserInsertedScript() = 0;
 
     /**
      * Call immediately after having evaluated a parser-inserted script.
      */
-    virtual void EndEvaluatingParserInsertedScript() = 0;
+    NS_IMETHOD_(void) EndEvaluatingParserInsertedScript() = 0;
 
     /**
      * Marks the HTML5 parser as not a script-created parser.
      */
-    virtual void MarkAsNotScriptCreated(const char* aCommand) = 0;
+    NS_IMETHOD_(void) MarkAsNotScriptCreated(const char* aCommand) = 0;
 
     /**
      * True if this is a script-created HTML5 parser.
      */
-    virtual bool IsScriptCreated() = 0;
+    NS_IMETHOD_(bool) IsScriptCreated() = 0;
 };
 
 NS_DEFINE_STATIC_IID_ACCESSOR(nsIParser, NS_IPARSER_IID)

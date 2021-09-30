@@ -1,0 +1,9 @@
+Property	Value
+s72	l0
+Property	Property
+ProductCode	@PRODUCTCODE@
+ProductName	@PRODUCTNAME@
+ProductVersion	@VERSION@
+ProductLanguage	0
+Manufacturer	The Wine Project
+UpgradeCode	{AA909FDA-DE61-4879-9E02-3DB70846997E}

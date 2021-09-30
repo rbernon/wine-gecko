@@ -14017,3 +14017,627 @@ nsGlobalWindow::CheckForDPIChange()
 template class nsPIDOMWindow<mozIDOMWindowProxy>;
 template class nsPIDOMWindow<mozIDOMWindow>;
 template class nsPIDOMWindow<nsISupports>;
+
+NS_IMETHODIMP
+nsGlobalWindow::GetDocument(nsIDOMDocument** aDocument)
+{
+  nsCOMPtr<nsIDOMDocument> document = do_QueryInterface(GetDocument());
+  document.forget(aDocument);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetName(nsAString& aName)
+{
+  FORWARD_TO_INNER(GetName, (aName), NS_ERROR_UNEXPECTED);
+
+  ErrorResult rv;
+  GetName(aName, rv);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::SetName(const nsAString& aName)
+{
+  FORWARD_TO_INNER(SetName, (aName), NS_ERROR_UNEXPECTED);
+
+  ErrorResult rv;
+  SetName(aName, rv);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetLocation(nsIDOMLocation ** aLocation)
+{
+  FORWARD_TO_INNER(GetLocation, (aLocation), NS_ERROR_UNEXPECTED);
+
+  ErrorResult rv;
+  nsCOMPtr<nsIDOMLocation> location = GetLocation(rv);
+  location.forget(aLocation);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::Stop()
+{
+  FORWARD_TO_INNER(Stop, (), NS_ERROR_UNEXPECTED);
+
+  ErrorResult rv;
+  Stop(rv);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::Blur()
+{
+  ErrorResult rv;
+  Blur(rv);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetLength(uint32_t* aLength)
+{
+  *aLength = Length();
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetRealTop(nsIDOMWindow** aTop)
+{
+  ErrorResult rv;
+  nsCOMPtr<nsPIDOMWindowOuter> top = GetTop(rv);
+  if(!rv.Failed()) {
+    auto window = nsGlobalWindow::Cast(top);
+    *aTop = window;
+    top.forget();
+  }
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetRealParent(nsIDOMWindow** aParent)
+{
+  ErrorResult rv;
+  nsCOMPtr<nsPIDOMWindowOuter> parent = GetParent(rv);
+  if(!rv.Failed()) {
+    auto window = nsGlobalWindow::Cast(parent);
+    *aParent = window;
+    parent.forget();
+  }
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetOpener(mozIDOMWindowProxy** aOpener)
+{
+  nsCOMPtr<mozIDOMWindowProxy> opener = GetOpener();
+  opener.forget(aOpener);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::SetOpener(mozIDOMWindowProxy* aOpener)
+{
+  SetOpenerWindow(nsPIDOMWindowOuter::From(aOpener), false);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetRealFrameElement(nsIDOMElement** aFrameElement)
+{
+  FORWARD_TO_INNER(GetRealFrameElement, (aFrameElement), NS_ERROR_UNEXPECTED);
+
+  ErrorResult rv;
+  nsCOMPtr<nsIDOMElement> frameElement =
+    do_QueryInterface(GetRealFrameElement(rv));
+  frameElement.forget(aFrameElement);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetNavigator(nsIDOMNavigator** aNavigator)
+{
+  FORWARD_TO_INNER(GetNavigator, (aNavigator), NS_ERROR_UNEXPECTED);
+
+  ErrorResult rv;
+  nsCOMPtr<nsIDOMNavigator> navigator = GetNavigator(rv);
+  navigator.forget(aNavigator);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::Print()
+{
+  FORWARD_TO_INNER(Print, (), NS_ERROR_UNEXPECTED);
+
+  ErrorResult rv;
+  Print(rv);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetSessionStorage(nsISupports** aSessionStorage)
+{
+  FORWARD_TO_INNER(GetSessionStorage, (aSessionStorage), NS_ERROR_FAILURE);
+
+  ErrorResult rv;
+  nsCOMPtr<nsIDOMStorage> storage = GetSessionStorage(rv);
+  storage.forget(aSessionStorage);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetLocalStorage(nsISupports** aLocalStorage)
+{
+  NS_ENSURE_ARG(aLocalStorage);
+  FORWARD_TO_INNER(GetLocalStorage, (aLocalStorage), NS_ERROR_UNEXPECTED);
+
+  ErrorResult rv;
+  nsCOMPtr<nsIDOMStorage> storage = GetLocalStorage(rv);
+  storage.forget(aLocalStorage);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetIndexedDB(nsISupports** _retval)
+{
+  ErrorResult rv;
+  nsCOMPtr<nsISupports> request(GetIndexedDB(rv));
+  request.forget(_retval);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetSelection(nsISelection** aSelection)
+{
+  FORWARD_TO_INNER(GetSelection, (aSelection), NS_ERROR_UNEXPECTED);
+
+  ErrorResult rv;
+  nsCOMPtr<nsISelection> selection = GetSelection(rv);
+  selection.forget(aSelection);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::MatchMedia(const nsAString& aMediaQueryList,
+                           nsISupports** aResult)
+{
+  FORWARD_TO_INNER(MatchMedia, (aMediaQueryList, aResult), NS_ERROR_UNEXPECTED);
+
+  ErrorResult rv;
+  RefPtr<MediaQueryList> mediaQueryList = MatchMedia(aMediaQueryList, rv);
+  mediaQueryList.forget(aResult);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::SetInnerWidth(int32_t aInnerWidth)
+{
+  FORWARD_TO_OUTER(SetInnerWidth, (aInnerWidth), NS_ERROR_UNEXPECTED);
+
+  if (IsFrame()) {
+    return NS_OK;
+  }
+
+  ErrorResult rv;
+  SetInnerWidthOuter(aInnerWidth, rv, /* aCallerIsChrome = */ true);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::SetInnerHeight(int32_t aInnerHeight)
+{
+  FORWARD_TO_OUTER(SetInnerHeight, (aInnerHeight), NS_ERROR_UNEXPECTED);
+
+  if (IsFrame()) {
+    return NS_OK;
+  }
+
+  ErrorResult rv;
+  SetInnerHeightOuter(aInnerHeight, rv, /* aCallerIsChrome = */ true);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetScrollX(int32_t* aScrollX)
+{
+  FORWARD_TO_INNER(GetScrollX, (aScrollX), NS_ERROR_UNEXPECTED);
+  NS_ENSURE_ARG_POINTER(aScrollX);
+  ErrorResult rv;
+  *aScrollX = GetScrollX(rv);
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetScrollY(int32_t* aScrollY)
+{
+  FORWARD_TO_INNER(GetScrollY, (aScrollY), NS_ERROR_UNEXPECTED);
+  NS_ENSURE_ARG_POINTER(aScrollY);
+  ErrorResult rv;
+  *aScrollY = GetScrollY(rv);
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetPageXOffset(int32_t* aPageXOffset)
+{
+  return GetScrollX(aPageXOffset);
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetPageYOffset(int32_t* aPageYOffset)
+{
+  return GetScrollY(aPageYOffset);
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::Scroll(int32_t aXScroll, int32_t aYScroll)
+{
+  ScrollTo(CSSIntPoint(aXScroll, aYScroll), ScrollOptions());
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::ScrollTo(int32_t aXScroll, int32_t aYScroll)
+{
+  ScrollTo(CSSIntPoint(aXScroll, aYScroll), ScrollOptions());
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::ScrollBy(int32_t aXScrollDif, int32_t aYScrollDif)
+{
+  ScrollBy(double(aXScrollDif), double(aYScrollDif));
+
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetScreenX(int32_t* aScreenX)
+{
+  FORWARD_TO_INNER(GetScreenX, (aScreenX), NS_ERROR_UNEXPECTED);
+
+  ErrorResult rv;
+  *aScreenX = GetScreenX(rv);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::SetScreenX(int32_t aScreenX)
+{
+  FORWARD_TO_OUTER(SetScreenX, (aScreenX), NS_ERROR_UNEXPECTED);
+
+  if (IsFrame()) {
+    return NS_OK;
+  }
+
+  ErrorResult rv;
+  SetScreenXOuter(aScreenX, rv, /* aCallerIsChrome = */ true);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetScreenY(int32_t* aScreenY)
+{
+  FORWARD_TO_INNER(GetScreenY, (aScreenY), NS_ERROR_UNEXPECTED);
+
+  ErrorResult rv;
+  *aScreenY = GetScreenY(rv);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::SetScreenY(int32_t aScreenY)
+{
+  FORWARD_TO_OUTER(SetScreenY, (aScreenY), NS_ERROR_UNEXPECTED);
+
+  if (IsFrame()) {
+    return NS_OK;
+  }
+
+  ErrorResult rv;
+  SetScreenYOuter(aScreenY, rv, /* aCallerIsChrome = */ true);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetOuterWidth(int32_t* aOuterWidth)
+{
+  FORWARD_TO_INNER(GetOuterWidth, (aOuterWidth), NS_ERROR_UNEXPECTED);
+
+  ErrorResult rv;
+  *aOuterWidth = GetOuterWidth(rv);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::SetOuterWidth(int32_t aOuterWidth)
+{
+  FORWARD_TO_OUTER(SetOuterWidth, (aOuterWidth), NS_ERROR_UNEXPECTED);
+
+  if (IsFrame()) {
+    return NS_OK;
+  }
+
+  ErrorResult rv;
+  SetOuterWidthOuter(aOuterWidth, rv, /* aCallerIsChrome = */ true);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetOuterHeight(int32_t* aOuterHeight)
+{
+  FORWARD_TO_INNER(GetOuterHeight, (aOuterHeight), NS_ERROR_UNEXPECTED);
+
+  ErrorResult rv;
+  *aOuterHeight = GetOuterHeight(rv);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::SetOuterHeight(int32_t aOuterHeight)
+{
+  FORWARD_TO_OUTER(SetOuterHeight, (aOuterHeight), NS_ERROR_UNEXPECTED);
+
+  if (IsFrame()) {
+    return NS_OK;
+  }
+
+  ErrorResult rv;
+  SetOuterHeightOuter(aOuterHeight, rv, /* aCallerIsChrome = */ true);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetComputedStyle(nsIDOMElement* aElt,
+                                 const nsAString& aPseudoElt,
+                                 nsIDOMCSSStyleDeclaration** aReturn)
+{
+  FORWARD_TO_INNER(GetComputedStyle, (aElt, aPseudoElt, aReturn), NS_ERROR_UNEXPECTED);
+  return GetComputedStyleHelper(aElt, aPseudoElt, false, aReturn);
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetDefaultComputedStyle(nsIDOMElement* aElt,
+                                        const nsAString& aPseudoElt,
+                                        nsIDOMCSSStyleDeclaration** aReturn)
+{
+  FORWARD_TO_INNER(GetDefaultComputedStyle, (aElt, aPseudoElt, aReturn), NS_ERROR_UNEXPECTED);
+  return GetComputedStyleHelper(aElt, aPseudoElt, true, aReturn);
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetFrames(nsIDOMWindowCollection** aFrames)
+{
+  FORWARD_TO_OUTER(GetFrames, (aFrames), NS_ERROR_NOT_INITIALIZED);
+
+  *aFrames = GetWindowList();
+  NS_IF_ADDREF(*aFrames);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetTextZoom(float *aZoom)
+{
+  FORWARD_TO_OUTER(GetTextZoom, (aZoom), NS_ERROR_NOT_INITIALIZED);
+
+  if (mDocShell) {
+    nsCOMPtr<nsIContentViewer> contentViewer;
+    mDocShell->GetContentViewer(getter_AddRefs(contentViewer));
+
+    if (contentViewer) {
+      return contentViewer->GetTextZoom(aZoom);
+    }
+  }
+  return NS_ERROR_FAILURE;
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::SetTextZoom(float aZoom)
+{
+  FORWARD_TO_OUTER(SetTextZoom, (aZoom), NS_ERROR_NOT_INITIALIZED);
+
+  if (mDocShell) {
+    nsCOMPtr<nsIContentViewer> contentViewer;
+    mDocShell->GetContentViewer(getter_AddRefs(contentViewer));
+
+    if (contentViewer)
+      return contentViewer->SetTextZoom(aZoom);
+  }
+  return NS_ERROR_FAILURE;
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::ScrollByLines(int32_t numLines)
+{
+  FORWARD_TO_INNER(ScrollByLines, (numLines), NS_ERROR_UNEXPECTED);
+
+  ScrollByLines(numLines, ScrollOptions());
+
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::ScrollByPages(int32_t numPages)
+{
+  FORWARD_TO_INNER(ScrollByPages, (numPages), NS_ERROR_UNEXPECTED);
+
+  ScrollByPages(numPages, ScrollOptions());
+
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetMozInnerScreenX(float* aScreenX)
+{
+  FORWARD_TO_INNER(GetMozInnerScreenX, (aScreenX), NS_ERROR_UNEXPECTED);
+
+  ErrorResult rv;
+  *aScreenX = GetMozInnerScreenX(rv);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetMozInnerScreenY(float* aScreenY)
+{
+  FORWARD_TO_INNER(GetMozInnerScreenY, (aScreenY), NS_ERROR_UNEXPECTED);
+
+  ErrorResult rv;
+  *aScreenY = GetMozInnerScreenY(rv);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetScrollMaxX(int32_t* aScrollMaxX)
+{
+  FORWARD_TO_INNER(GetScrollMaxX, (aScrollMaxX), NS_ERROR_UNEXPECTED);
+
+  NS_ENSURE_ARG_POINTER(aScrollMaxX);
+  ErrorResult rv;
+  *aScrollMaxX = GetScrollMaxX(rv);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetScrollMaxY(int32_t* aScrollMaxY)
+{
+  FORWARD_TO_INNER(GetScrollMaxY, (aScrollMaxY), NS_ERROR_UNEXPECTED);
+
+  NS_ENSURE_ARG_POINTER(aScrollMaxY);
+  ErrorResult rv;
+  *aScrollMaxY = GetScrollMaxY(rv);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetFullScreen(bool* aFullScreen)
+{
+  FORWARD_TO_INNER(GetFullScreen, (aFullScreen), NS_ERROR_UNEXPECTED);
+
+  ErrorResult rv;
+  *aFullScreen = GetFullScreen(rv);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::Back()
+{
+  FORWARD_TO_INNER(Back, (), NS_ERROR_UNEXPECTED);
+
+  ErrorResult rv;
+  Back(rv);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::Forward()
+{
+  FORWARD_TO_INNER(Forward, (), NS_ERROR_UNEXPECTED);
+
+  ErrorResult rv;
+  Forward(rv);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::Home()
+{
+  FORWARD_TO_INNER(Home, (), NS_ERROR_UNEXPECTED);
+
+  ErrorResult rv;
+  Home(rv);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::Open(const nsAString& aUrl, const nsAString& aName,
+                     const nsAString& aOptions, nsIDOMWindow **_retval)
+{
+  FORWARD_TO_OUTER(Open, (aUrl, aName, aOptions, _retval),
+                   NS_ERROR_NOT_INITIALIZED);
+  nsCOMPtr<nsPIDOMWindowOuter> window;
+  nsresult rv =  OpenInternal(aUrl, aName, aOptions,
+                              false,          // aDialog
+                              false,          // aContentModal
+                              true,           // aCalledNoScript
+                              false,          // aDoJSFixups
+                              true,           // aNavigate
+                              nullptr, nullptr,  // No args
+                              nullptr,           // aJSCallerContext
+                              getter_AddRefs(window));
+  NS_ENSURE_SUCCESS(rv, rv);
+  nsGlobalWindow *globalWindow = nsGlobalWindow::Cast(window);
+  *_retval = globalWindow;
+  window.forget();
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::Find(const nsAString& aStr, bool aCaseSensitive,
+                     bool aBackwards, bool aWrapAround, bool aWholeWord,
+                     bool aSearchInFrames, bool aShowDialog,
+                     bool *aDidFind)
+{
+  FORWARD_TO_INNER(Find,
+                   (aStr, aCaseSensitive, aBackwards, aWrapAround, aWholeWord,
+                    aSearchInFrames, aShowDialog, aDidFind),
+                   NS_ERROR_UNEXPECTED);
+
+  ErrorResult rv;
+  *aDidFind = Find(aStr, aCaseSensitive, aBackwards, aWrapAround, aWholeWord,
+                   aSearchInFrames, aShowDialog, rv);
+
+  return rv.StealNSResult();
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetDOMInnerWindow(mozIDOMWindow **aInnerWindow)
+{
+  FORWARD_TO_INNER(GetDOMInnerWindow, (aInnerWindow), NS_ERROR_UNEXPECTED);
+  nsCOMPtr<mozIDOMWindow> ret(this->AsInner());
+  ret.forget(aInnerWindow);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsGlobalWindow::GetDOMOuterWindow(mozIDOMWindowProxy **aOuterWindow)
+{
+  FORWARD_TO_OUTER(GetDOMOuterWindow, (aOuterWindow), NS_ERROR_UNEXPECTED);
+  nsCOMPtr<mozIDOMWindowProxy> ret(this->AsOuter());
+  ret.forget(aOuterWindow);
+  return NS_OK;
+}

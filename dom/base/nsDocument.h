@@ -894,6 +894,11 @@ public:
   virtual void StyleRuleRemoved(mozilla::StyleSheetHandle aStyleSheet,
                                 mozilla::css::Rule* aStyleRule) override;
 
+#ifdef WINE_GECKO_SRC
+  virtual void BindToDocument(nsIContent *aContent) override;
+  virtual void AttemptToExecuteScript(nsIContent *aContent, nsIParser *aParser, bool *aBlock) override;
+#endif
+
   virtual void FlushPendingNotifications(mozFlushType aType) override;
   virtual void FlushExternalResources(mozFlushType aType) override;
   virtual void SetXMLDeclaration(const char16_t *aVersion,

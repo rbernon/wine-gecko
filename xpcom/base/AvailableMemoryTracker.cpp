@@ -535,7 +535,11 @@ Init()
   // an instrumented build, the compiler adds function calls all over the place
   // which may call VirtualAlloc; this makes it hard to prevent
   // VirtualAllocHook from reentering itself.
+#ifdef WINE_GECKO_SRC
+  if (0) {
+#else
   if (!PR_GetEnv("MOZ_PGO_INSTRUMENTED")) {
+#endif
     sKernel32Intercept.Init("Kernel32.dll");
     sKernel32Intercept.AddHook("VirtualAlloc",
                                reinterpret_cast<intptr_t>(VirtualAllocHook),

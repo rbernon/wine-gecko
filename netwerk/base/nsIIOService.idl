@@ -12,6 +12,7 @@ interface nsIFile;
 interface nsIDOMNode;
 interface nsIPrincipal;
 interface nsILoadInfo;
+interface nsIIOServiceHook;
 
 /**
  * nsIIOService provides a set of network utility functions.  This interface
@@ -234,6 +235,8 @@ interface nsIIOService : nsISupports
      * @throws NS_ERROR_MALFORMED_URI if URL string is not of the right form.
      */
     ACString extractScheme(in AUTF8String urlString);
+
+    void setHook(in nsIIOServiceHook hook);
 };
 
 [scriptable, uuid(4ac296a0-ca1b-44f4-8787-117a88cb70fb)]
@@ -290,4 +293,14 @@ interface nsIIOServiceInternal : nsISupports
      * when we wake from sleep
      */
     void NotifyWakeup();
+};
+
+[builtinclass, uuid(d13c21ca-7329-45a5-8912-9d2e2fef1231)]
+interface nsIIOServiceHook : nsISupports
+{
+    nsIChannel newChannel(in nsIURI aURI, in nsILoadInfo aLoadInfo);
+    nsIProtocolHandler getProtocolHandler(in nsIProtocolHandler aHandler);
+    nsIURI newURI(in AUTF8String aSpec, in string aOriginCharset, in nsIURI aBaseURI);
+    boolean protocolHasFlags(in nsIURI aURI, in unsigned long aFlag);
+    boolean URIChainHasFlags(in nsIURI aURI, in unsigned long aFlags);
 };

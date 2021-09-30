@@ -115,6 +115,7 @@ static const cairo_surface_backend_t cairo_win32_surface_backend;
 cairo_status_t
 _cairo_win32_print_gdi_error (const char *context)
 {
+#ifndef WINE_GECKO_SRC
     void *lpMsgBuf;
     DWORD last_error = GetLastError ();
 
@@ -132,6 +133,7 @@ _cairo_win32_print_gdi_error (const char *context)
 	LocalFree (lpMsgBuf);
     }
     fflush(stderr);
+#endif
 
     /* We should switch off of last_status, but we'd either return
      * CAIRO_STATUS_NO_MEMORY or CAIRO_STATUS_UNKNOWN_ERROR and there

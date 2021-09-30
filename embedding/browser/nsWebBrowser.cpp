@@ -823,6 +823,12 @@ nsWebBrowser::SetProperty(uint32_t aId, uint32_t aValue)
                            static_cast<int32_t>(typeContentWrapper));
       break;
     }
+    case nsIWebBrowserSetup::SETUP_DISABLE_NOSCRIPT: {
+      NS_ENSURE_STATE(mDocShell);
+      NS_ENSURE_TRUE((aValue == true || aValue == false), NS_ERROR_INVALID_ARG);
+      mDocShell->SetDisableNoScript(!!aValue);
+      break;
+    }
     default:
       rv = NS_ERROR_INVALID_ARG;
   }

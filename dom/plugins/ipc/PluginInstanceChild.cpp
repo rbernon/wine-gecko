@@ -1771,6 +1771,7 @@ PluginInstanceChild::HookSetWindowLongPtr()
     if (!(GetQuirks() & QUIRK_FLASH_HOOK_SETLONGPTR))
         return;
 
+#ifndef WINE_GECKO_SRC
     sUser32Intercept.Init("user32.dll");
 #ifdef _WIN64
     if (!sUser32SetWindowLongAHookStub)
@@ -1786,6 +1787,7 @@ PluginInstanceChild::HookSetWindowLongPtr()
     if (!sUser32SetWindowLongWHookStub)
         sUser32Intercept.AddHook("SetWindowLongW", reinterpret_cast<intptr_t>(SetWindowLongWHook),
                                  (void**) &sUser32SetWindowLongWHookStub);
+#endif
 #endif
 }
 

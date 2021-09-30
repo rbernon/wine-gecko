@@ -262,6 +262,14 @@ HTMLStyleElement::WrapNode(JSContext *aCx, JS::Handle<JSObject*> aGivenProto)
   return HTMLStyleElementBinding::Wrap(aCx, this, aGivenProto);
 }
 
+nsresult
+HTMLStyleElement::GetDOMStyleSheet(nsIDOMStyleSheet **_retval)
+{
+  nsCOMPtr<nsIDOMStyleSheet> ss = GetSheet();
+  ss.forget(_retval);
+  return NS_OK;
+}
+
 } // namespace dom
 } // namespace mozilla
 

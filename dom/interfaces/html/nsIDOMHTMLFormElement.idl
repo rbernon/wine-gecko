@@ -16,6 +16,8 @@
  * http://www.whatwg.org/specs/web-apps/current-work/
  */
 
+interface nsIInputStream;
+
 [uuid(ad9b2ad0-9d29-43f6-b1a2-a1fd24627e6b)]
 interface nsIDOMHTMLFormElement : nsISupports
 {
@@ -35,4 +37,7 @@ interface nsIDOMHTMLFormElement : nsISupports
   void                      submit();
   void                      reset();
   boolean                   checkValidity();
+
+  // Wine extension
+  [noscript] void getFormData(in nsIDOMHTMLElement originatingElement, out DOMString method, out nsIInputStream dataSteam);
 };

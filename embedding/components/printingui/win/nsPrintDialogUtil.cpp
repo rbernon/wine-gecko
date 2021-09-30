@@ -854,11 +854,6 @@ nsresult NativeShowPrintDialog(HWND                aHWnd,
 {
   PrepareForPrintDialog(aWebBrowserPrint, aPrintSettings);
 
-  nsresult rv = ShowNativePrintDialog(aHWnd, aPrintSettings);
-  if (aHWnd) {
-    ::DestroyWindow(aHWnd);
-  }
-
-  return rv;
+  return ShowNativePrintDialog(aHWnd, aPrintSettings);
 }
 

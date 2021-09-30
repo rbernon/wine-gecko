@@ -882,7 +882,7 @@ nsHtml5StreamParser::OnStartRequest(nsIRequest* aRequest, nsISupports* aContext)
   // For View Source, the parser should run with scripts "enabled" if a normal
   // load would have scripts enabled.
   bool scriptingEnabled = mMode == LOAD_AS_DATA ?
-                                   false : mExecutor->IsScriptEnabled();
+                                   false : mExecutor->IsNoScriptDisabled();
   mOwner->StartTokenizer(scriptingEnabled);
 
   bool isSrcdoc = false;

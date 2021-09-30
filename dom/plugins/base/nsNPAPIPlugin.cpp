@@ -255,6 +255,9 @@ nsNPAPIPlugin::PluginCrashed(const nsAString& pluginDumpID,
 bool
 nsNPAPIPlugin::RunPluginOOP(const nsPluginTag *aPluginTag)
 {
+  // We need our ActiveX plugin to be loaded in process.
+  if(aPluginTag->HasMimeType(NS_LITERAL_CSTRING("application/x-oleobject")))
+    return false;
 #ifdef MOZ_WIDGET_ANDROID
   return false;
 #else

@@ -34,6 +34,8 @@
 // constraints, the reference identifier is the entire encoded name constraint
 // extension value.
 
+#include <cstring>
+
 #include "pkixcheck.h"
 #include "pkixutil.h"
 

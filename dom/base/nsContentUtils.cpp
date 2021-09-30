@@ -2705,7 +2705,11 @@ nsContentUtils::SubjectPrincipal()
   MOZ_ASSERT(NS_IsMainThread());
   JSContext* cx = GetCurrentJSContext();
   if (!cx) {
+    // Wine depends on case, so we have to disable MOZ_CRASH here. Ideally, we'd fix Wine.
+#if 0
     MOZ_CRASH("Accessing the Subject Principal without an AutoJSAPI on the stack is forbidden");
+#endif
+    return GetSystemPrincipal();
   }
 
   JSCompartment *compartment = js::GetContextCompartment(cx);
@@ -6662,6 +6666,81 @@ ReportPatternCompileFailure(nsAString& aPattern, nsIDocument* aDocument,
                                     strings, ArrayLength(strings));
     savedExc.drop();
 }
+
+#ifdef WINE_GECKO_SRC
+
+// static
+nsIIOService*
+nsContentUtils::GetIOService()
+{
+  nsCOMPtr<nsIIOService> ret = mozilla::services::GetIOService();
+  return ret.get();
+}
+
+#include "nsIContentUtils.h"
+
+NS_IMPL_ISUPPORTS(nsIContentUtils, nsIContentUtils)
+
+bool
+nsIContentUtils::IsSafeToRunScript()
+{
+  return nsContentUtils::IsSafeToRunScript();
+}
+
+NS_IMETHODIMP
+nsIContentUtils::AddDocumentObserver(nsIDocument *aDocument, nsIDocumentObserver *aObserver)
+{
+  aDocument->AddObserver(aObserver);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsIContentUtils::RemoveDocumentObserver(nsIDocument *aDocument, nsIDocumentObserver *aObserver)
+{
+  aDocument->RemoveObserver(aObserver);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsIContentUtils::AddMutationObserver(nsINode *aNode, nsIMutationObserver *aObserver)
+{
+  aNode->AddMutationObserver(aObserver);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsIContentUtils::RemoveMutationObserver(nsINode *aNode, nsIMutationObserver *aObserver)
+{
+  aNode->RemoveMutationObserver(aObserver);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsIContentUtils::AddScriptRunner(nsIRunnable *aRunnable)
+{
+  nsContentUtils::AddScriptRunner(aRunnable);
+  return NS_OK;
+}
+
+JSContext*
+nsIContentUtils::GetContextFromDocument(nsIDocument *aDocument)
+{
+  nsCOMPtr<nsIScriptGlobalObject> sgo =  do_QueryInterface(aDocument->GetScopeObject());
+  if (!sgo) {
+    // No script global, no context.
+    return nullptr;
+  }
+
+  nsIScriptContext *scx = sgo->GetContext();
+  if (!scx) {
+    // No context left in the scope...
+    return nullptr;
+  }
+
+  return scx->GetNativeContext();
+}
+
+#endif /* WINE_GECKO_SRC */
 
 // static
 bool

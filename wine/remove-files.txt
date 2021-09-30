@@ -1,0 +1,8 @@
+README*
+application.ini
+d3dcompiler*.dll
+firefox.exe
+platform.ini
+plugin-hang-ui.exe
+precomplete
+removed-files

@@ -108,4 +108,6 @@ interface nsIDOMNode : nsISupports
   nsIVariant         getUserData(in DOMString key);
 
   boolean            contains(in nsIDOMNode aOther);
+
+  [noscript] attribute nsISupports mshtmlNode;
 };

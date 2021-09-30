@@ -1645,6 +1645,10 @@ Element::BindToTree(nsIDocument* aDocument, nsIContent* aParent,
     }
   }
 
+  // Notify document observer
+  if(aDocument)
+    aDocument->BindToDocument(this);
+
   nsNodeUtils::ParentChainChanged(this);
   if (!hadParent && IsRootOfNativeAnonymousSubtree()) {
     nsNodeUtils::NativeAnonymousChildListChange(this, false);

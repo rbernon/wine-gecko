@@ -380,7 +380,7 @@ public:
   NS_DECL_NSIMUTATIONOBSERVER_CONTENTREMOVED
   NS_DECL_NSIMUTATIONOBSERVER_NODEWILLBEDESTROYED
 
-  virtual void AttributeSetToCurrentValue(nsIDocument* aDocument,
+  NS_IMETHOD_(void) AttributeSetToCurrentValue(nsIDocument* aDocument,
                                           mozilla::dom::Element* aElement,
                                           int32_t aNameSpaceID,
                                           nsIAtom* aAttribute) override

@@ -8,6 +8,7 @@
 
 #include "mozilla/Attributes.h"
 #include "nsGenericHTMLElement.h"
+#include "nsIDOMHTMLTableElement.h"
 #include "mozilla/dom/HTMLTableCaptionElement.h"
 #include "mozilla/dom/HTMLTableSectionElement.h"
 
@@ -18,7 +19,8 @@ namespace dom {
 
 class TableRowsCollection;
 
-class HTMLTableElement final : public nsGenericHTMLElement
+class HTMLTableElement final : public nsGenericHTMLElement,
+                               public nsIDOMHTMLTableElement
 {
 public:
   explicit HTMLTableElement(already_AddRefed<mozilla::dom::NodeInfo>& aNodeInfo);
@@ -27,6 +29,9 @@ public:
 
   // nsISupports
   NS_DECL_ISUPPORTS_INHERITED
+
+  // nsIDOMHTMLTableElement
+  NS_DECL_NSIDOMHTMLTABLEELEMENT
 
   HTMLTableCaptionElement* GetCaption() const
   {

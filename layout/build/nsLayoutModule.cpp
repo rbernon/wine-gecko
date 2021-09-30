@@ -587,6 +587,11 @@ MAKE_CTOR(CreatePluginDocument,           nsIDocument,                 NS_NewPlu
 MAKE_CTOR(CreateVideoDocument,            nsIDocument,                 NS_NewVideoDocument)
 MAKE_CTOR(CreateFocusManager,             nsIFocusManager,      NS_NewFocusManager)
 
+#ifdef WINE_GECKO_SRC
+#include "nsIContentUtils.h"
+NS_GENERIC_FACTORY_CONSTRUCTOR(nsIContentUtils)
+#endif
+
 MAKE_CTOR(CreateCanvasRenderingContextWebGL, nsIDOMWebGLRenderingContext, NS_NewCanvasRenderingContextWebGL)
 
 NS_GENERIC_FACTORY_CONSTRUCTOR_INIT(nsStyleSheetService, Init)
@@ -793,6 +798,9 @@ NS_DEFINE_NAMED_CID(NS_AUDIOCHANNEL_SERVICE_CID);
 NS_DEFINE_NAMED_CID(NS_WEBSOCKETEVENT_SERVICE_CID);
 NS_DEFINE_NAMED_CID(NS_DATASTORE_SERVICE_CID);
 NS_DEFINE_NAMED_CID(NS_FOCUSMANAGER_CID);
+#ifdef WINE_GECKO_SRC
+NS_DEFINE_NAMED_CID(NS_ICONTENTUTILS_CID);
+#endif
 NS_DEFINE_NAMED_CID(NS_CONTENTSECURITYMANAGER_CID);
 NS_DEFINE_NAMED_CID(CSPSERVICE_CID);
 NS_DEFINE_NAMED_CID(NS_CSPCONTEXT_CID);
@@ -1097,6 +1105,9 @@ static const mozilla::Module::CIDEntry kLayoutCIDs[] = {
   { &kNS_WEBSOCKETEVENT_SERVICE_CID, false, nullptr, WebSocketEventServiceConstructor },
   { &kNS_DATASTORE_SERVICE_CID, false, nullptr, DataStoreServiceConstructor },
   { &kNS_FOCUSMANAGER_CID, false, nullptr, CreateFocusManager },
+#ifdef WINE_GECKO_SRC
+  { &kNS_ICONTENTUTILS_CID, false, nullptr, nsIContentUtilsConstructor },
+#endif
 #ifdef MOZ_WEBSPEECH_TEST_BACKEND
   { &kNS_FAKE_SPEECH_RECOGNITION_SERVICE_CID, false, nullptr, FakeSpeechRecognitionServiceConstructor },
 #endif
@@ -1262,6 +1273,9 @@ static const mozilla::Module::ContractIDEntry kLayoutContracts[] = {
   { "@mozilla.org/websocketevent/service;1", &kNS_WEBSOCKETEVENT_SERVICE_CID },
   { "@mozilla.org/datastore-service;1", &kNS_DATASTORE_SERVICE_CID },
   { "@mozilla.org/focus-manager;1", &kNS_FOCUSMANAGER_CID },
+#ifdef WINE_GECKO_SRC
+  { "@mozilla.org/content/contentutils;1", &kNS_ICONTENTUTILS_CID },
+#endif
 #ifdef MOZ_WEBSPEECH_TEST_BACKEND
   { NS_SPEECH_RECOGNITION_SERVICE_CONTRACTID_PREFIX "fake", &kNS_FAKE_SPEECH_RECOGNITION_SERVICE_CID },
 #endif

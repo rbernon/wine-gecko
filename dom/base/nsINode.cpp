@@ -1446,6 +1446,9 @@ nsINode::Traverse(nsINode *tmp, nsCycleCollectionTraversalCallback &cb)
     }
   }
 
+
+  NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mMshtmlNode);
+
   if (tmp->NodeType() != nsIDOMNode::DOCUMENT_NODE &&
       tmp->HasFlag(NODE_HAS_LISTENERMANAGER)) {
     nsContentUtils::TraverseListenerManager(tmp, cb);
@@ -1459,6 +1462,8 @@ void
 nsINode::Unlink(nsINode* tmp)
 {
   tmp->ReleaseWrapper(tmp);
+
+  tmp->mMshtmlNode = nullptr;
 
   nsSlots *slots = tmp->GetExistingSlots();
   if (slots) {

@@ -1312,6 +1312,11 @@ public:
   virtual void StyleRuleRemoved(mozilla::StyleSheetHandle aStyleSheet,
                                 mozilla::css::Rule* aStyleRule) = 0;
 
+#ifdef WINE_GECKO_SRC
+  virtual void BindToDocument(nsIContent*) = 0;
+  virtual void AttemptToExecuteScript(nsIContent *aContent, nsIParser *aParser, bool *aBlock) = 0;
+#endif
+
   /**
    * Flush notifications for this document and its parent documents
    * (since those may affect the layout of this one).

@@ -253,27 +253,27 @@ class nsParser final : public nsIParser,
     /**
      * Return true.
      */
-    virtual bool IsInsertionPointDefined() override;
+    NS_IMETHOD_(bool) IsInsertionPointDefined() override;
 
     /**
      * No-op.
      */
-    virtual void BeginEvaluatingParserInsertedScript() override;
+    NS_IMETHOD_(void) BeginEvaluatingParserInsertedScript() override;
 
     /**
      * No-op.
      */
-    virtual void EndEvaluatingParserInsertedScript() override;
+    NS_IMETHOD_(void) EndEvaluatingParserInsertedScript() override;
 
     /**
      * No-op.
      */
-    virtual void MarkAsNotScriptCreated(const char* aCommand) override;
+    NS_IMETHOD_(void) MarkAsNotScriptCreated(const char* aCommand) override;
 
     /**
      * Always false.
      */
-    virtual bool IsScriptCreated() override;
+    NS_IMETHOD_(bool) IsScriptCreated() override;
 
     /**  
      *  Set to parser state to indicate whether parsing tokens can be interrupted
@@ -298,7 +298,7 @@ class nsParser final : public nsIParser,
      */
     void HandleParserContinueEvent(class nsParserContinueEvent *);
 
-    virtual void Reset() override {
+    NS_IMETHOD_(void) Reset() override {
       Cleanup();
       Initialize();
     }

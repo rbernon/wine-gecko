@@ -97,6 +97,8 @@ interface nsIWebBrowserSetup : nsISupports
      */
     const unsigned long SETUP_ALLOW_DNS_PREFETCH    = 8;
 
+    const unsigned long SETUP_DISABLE_NOSCRIPT = 16;
+
     /**
      * Sets an integer or boolean property on the new web browser object.
      * Only PR_TRUE and PR_FALSE are legal boolean values.

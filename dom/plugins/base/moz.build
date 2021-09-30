@@ -12,6 +12,7 @@ XPIDL_SOURCES += [
     'nsIPluginDocument.idl',
     'nsIPluginHost.idl',
     'nsIPluginInputStream.idl',
+    'nsIPluginInstance.idl',
     'nsIPluginInstanceOwner.idl',
     'nsIPluginTag.idl',
     'nspluginroot.idl',

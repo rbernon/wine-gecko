@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "mozilla/Logging.h"
+#define PR_LOG_ALWAYS PR_LOG_DEBUG /* Wine change: avoid poluting console */
 
 #include "IMMHandler.h"
 #include "nsWindow.h"

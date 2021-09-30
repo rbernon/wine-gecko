@@ -506,9 +506,13 @@ public:
   }
 
   static nsIIOService* GetIOService()
+#ifdef WINE_GECKO_SRC
+    ;
+#else
   {
     return sIOService;
   }
+#endif
 
   static nsIBidiKeyboard* GetBidiKeyboard();
 

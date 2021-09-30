@@ -8920,6 +8920,13 @@ nsLayoutUtils::ShouldUseNoScriptSheet(nsIDocument* aDocument)
   if (aDocument->IsStaticDocument()) {
     aDocument = aDocument->GetOriginalDocument();
   }
+  nsIDocShell* docShell = aDocument->GetDocShell();
+  if (docShell) {
+    bool disable = false;
+    docShell->GetDisableNoScript(&disable);
+    if (disable)
+      return true;
+  }
   return aDocument->IsScriptEnabled();
 }
 
